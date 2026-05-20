@@ -1,0 +1,1 @@
+"""Quotes infrastructure package."""

@@ -120,12 +120,11 @@ Haptic Design (Thiết kế Xúc giác): Tận dụng tối đa rung phản hồ
 Micro-interactions: Ảnh flip khi xem Memory Flashback, màn hình rung/sáng khi nhận Love Touch, Ari trượt theo gia tốc kế (Gyroscope) của điện thoại.
 6. TECH STACK ĐỀ XUẤT
 Layer	Technology
-Web Frontend	React + TypeScript + TailwindCSS + Framer Motion
-Mobile	React Native (Expo) hoặc Flutter (hỗ trợ tốt Animation/Haptic)
-Backend	Node.js + NestJS + GraphQL (tối ưu data fetching)
-Database	PostgreSQL (chính) + Redis (cache, realtime)
-Local Storage	SQLite / WatermelonDB (Cho phép xem ảnh/nhật ký Offline)
-AI / LLM	Claude API (Anthropic) + LangChain (giữ ngữ cảnh chat dài)
+Web Frontend	NextJS, TailwindCSS, Framer Motion
+Mobile	React Native (Expo)
+Backend Python FastApi, Socketio, Celery
+Database	PostgreSQL, Redis
+AI / LLM	Claude API, LangChain
 Realtime Chat	Socket.io + WebRTC (Call) + Firebase Cloud Messaging (FCM)
 Maps & Location	Mapbox GL JS + Geolocation API
 OS Integration	Swift (iOS Widgets/Live Activities) + Kotlin (Android Widgets)

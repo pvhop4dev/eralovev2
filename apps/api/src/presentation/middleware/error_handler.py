@@ -8,6 +8,8 @@ from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from infrastructure.trace_context import get_trace_id
+
 from domain.exceptions import (
     BusinessRuleError,
     ConflictError,
@@ -63,7 +65,7 @@ async def domain_exception_handler(
         status_code=status,
         content={
             "data": None,
-            "meta": None,
+            "meta": {"trace_id": get_trace_id()} if get_trace_id() else None,
             "error": {
                 "code": _error_code(type(exc)),
                 "message": str(exc),
@@ -88,7 +90,7 @@ async def validation_exception_handler(
         status_code=400,
         content={
             "data": None,
-            "meta": None,
+            "meta": {"trace_id": get_trace_id()} if get_trace_id() else None,
             "error": {
                 "code": "VALIDATION_ERROR",
                 "message": "Invalid input data",
