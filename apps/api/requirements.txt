@@ -1,0 +1,39 @@
+# Eralove API — Python Dependencies
+# Install: pip install -r requirements.txt
+
+# ── Web Framework ────────────────────────────
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+python-multipart==0.0.12
+
+# ── Database ─────────────────────────────────
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+
+# ── Redis ────────────────────────────────────
+redis[hiredis]==5.2.0
+
+# ── Validation & Settings ────────────────────
+pydantic==2.10.0
+pydantic-settings==2.6.0
+
+# ── Authentication ───────────────────────────
+python-jose[cryptography]==3.3.0
+bcrypt==4.2.0
+passlib[bcrypt]==1.7.4
+
+# ── HTTP Client ──────────────────────────────
+httpx==0.28.0
+
+# ── AWS S3 ───────────────────────────────────
+boto3==1.35.0
+
+# ── Logging ──────────────────────────────────
+structlog==24.4.0
+
+# ── Socket.IO ────────────────────────────────
+python-socketio[asyncio]==5.11.0
+
+# ── Celery (Background Tasks) ───────────────
+celery[redis]==5.4.0

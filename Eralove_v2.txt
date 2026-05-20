@@ -1,0 +1,163 @@
+
+Dưới đây là bản PRD hoàn chỉnh đã được gộp và tái cấu trúc liền mạch từ phiên bản v1.0 (Nền tảng) và v1.5 (Mở rộng).
+Bạn có thể copy toàn bộ nội dung bên dưới và lưu thành file .txt.
+--- BẮT ĐẦU NỘI DUNG FILE ---
+💗 ERALOVE — Product Requirements Document (PRD)
+"Nơi lưu giữ mọi khoảnh khắc yêu thương"
+Version: 2.0 (Bản Hoàn Chỉnh & Mở Rộng)
+Platform: Web App + Mobile App (iOS & Android)
+Target Users: Các cặp đôi đang yêu, từ 16 tuổi trở lên
+Design Language: Colorful & Playful — Pastel gradient, ấm áp, lãng mạn, haptic feedback.
+1. TỔNG QUAN SẢN PHẨM
+1.1 Tầm nhìn (Vision)
+Eralove là ứng dụng dành riêng cho các cặp đôi — một không gian đóng kín, lãng mạn và thông minh, nơi hai người có thể lưu giữ ký ức, kết nối mỗi ngày, tương tác qua các trò chơi nhỏ và nhận được những gợi ý yêu thương từ trợ lý AI.
+1.2 Giá trị cốt lõi (Core Values)
+💌 Riêng tư & An toàn — Không gian riêng tư tuyệt đối, bảo mật sinh trắc học.
+🌸 Lãng mạn & Ấm áp — Từng chi tiết UI/UX đều gợi cảm xúc và sự gắn kết.
+🤖 Thông minh & Thấu cảm — AI không chỉ gợi ý mà còn phân tích cảm xúc, hàn gắn rạn nứt.
+📍 Kết nối Thực & Ảo — Từ tương tác chạm (haptic) trên điện thoại đến việc xuất album ảnh vật lý.
+🎮 Giữ lửa tình yêu — Gamification (Thử thách, câu hỏi hằng ngày) giúp cả hai không bao giờ chán.
+1.3 Đối tượng người dùng
+Nhóm	Đặc điểm	Nhu cầu chính trong App
+Cặp đôi mới yêu	Đang trong giai đoạn tìm hiểu, nồng nhiệt	Đánh dấu ngày đầu, làm Daily Quiz để hiểu nhau
+Cặp đôi xa nhau	Khác biệt địa lý, múi giờ	Cần Love Touch, Widget, Call & Chat hằng ngày
+Cặp đôi lâu năm/Cưới	Đã ổn định, sống chung	Cần Shared Space (quản lý chi tiêu, công việc chung)
+Cặp đôi GenZ	Yêu thích công nghệ, cá nhân hóa	Thích app đẹp, nuôi thú ảo Ari, Widget Locket-style
+2. KIẾN TRÚC TÍNH NĂNG
+code
+Text
+Eralove
+├── 🌐 Welcome & Onboarding (Kèm MBTI Test)
+├── 🔐 Auth (Email/Social/Biometric)
+├── 💘 Match System (QR, Email, NFC Bump)
+├── 🏠 Home Dashboard & OS Widgets
+├── 📅 Love Calendar & Time Capsule
+├── 🗺️ Love Map & Live Location
+├── 💬 Chat, Call & Love Touch
+├── 🐾 Mascot Ari (AI Assistant & Virtual Pet)
+├── 🎮 Love Quests & Quiz (Gamification)
+├── 📝 Shared Space (Notes, To-do, Date Fund)
+├── 🎁 Smart Suggestions & Physical Store
+├── 🎨 Personalization (Themes, Icons, Wallpapers)
+└── ⚙️ Settings & Profile (Kèm Pause/Breakup Mode)
+3. CHI TIẾT TỪNG TÍNH NĂNG
+3.1 🌐 WELCOME PAGE & ONBOARDING
+Welcome Page: Animation trái tim đập nhẹ, tagline lãng mạn, gradient hồng-tím. Hiển thị tính năng nổi bật bằng micro-animation.
+Onboarding:
+Bước 1: Thông tin cơ bản (Tên, Ảnh, Ngày sinh).
+Bước 2: Personality Test Mini: Bài test 3 câu hỏi nhanh chuẩn MBTI tình yêu để AI Ari hiểu "Ngôn ngữ tình yêu" (Love Language) của bạn.
+Bước 3: Chọn hình nền mặc định & Hướng dẫn Match.
+3.2 🔐 AUTH — ĐĂNG KÝ / ĐĂNG NHẬP
+Đăng ký/Đăng nhập: Email, Google, Apple, Facebook.
+Bảo mật: JWT, Tùy chọn bật 2FA.
+Sinh trắc học (Biometric): Hỗ trợ FaceID / TouchID để mở khóa app mỗi lần truy cập, đảm bảo không ai có thể đọc lén tin nhắn.
+3.3 💘 MATCH SYSTEM
+Cách thức gửi Match Request:
+Qua Username / Email / QR Code.
+Match bằng "Bump": Nếu 2 người ở cạnh nhau, chỉ cần chạm nhẹ 2 điện thoại (NFC/Location) để gửi Match Request tức thì.
+Nhận & Xử lý: Accept (Chọn ngày bắt đầu yêu), Decline, Later. Animation 2 trái tim ghép lại + confetti khi thành công.
+Unmatch / Chia tay: Yêu cầu xác nhận 2 bước. Dữ liệu có thể được ẩn đi.
+3.4 🏠 HOME DASHBOARD & OS WIDGETS
+Dashboard trong App:
+Ảnh đôi & Đếm ngày yêu: "💕 365 ngày".
+Live Partner Status: Trạng thái "Real-time" của người kia: Mức pin điện thoại (%), thời tiết hiện tại nơi người đó đứng, khoảng cách địa lý giữa 2 người.
+Daily Card: Câu thơ/tục ngữ tình yêu, thay đổi mỗi ngày.
+Mood Check-in: Cùng chọn tâm trạng hôm nay (emoji).
+Current Quest: Thử thách tình yêu đang thực hiện.
+OS Widgets (iOS / Android Home Screen):
+Locket-style Widget: Hiển thị ngay lập tức ảnh người kia vừa chụp lên màn hình chính của bạn.
+Countdown Widget: Đếm ngược đến ngày kỷ niệm / ngày gặp mặt.
+Miss You Widget: Nhấn 1 nút trên màn hình chính để gửi tín hiệu "Nhớ bạn" (rung máy) thẳng đến thiết bị của người kia.
+3.5 📅 LOVE CALENDAR & ⏳ TIME CAPSULE
+Header Widget: Hiển thị ngày âm/dương, thời tiết, số ngày yêu, tử vi 12 cung hoàng đạo và phong thủy phương Đông hằng ngày.
+Calendar View: Quản lý Sự kiện (Hẹn hò, kỷ niệm, sinh nhật) và Ảnh. Tự động lấy tọa độ, nhắc nhở định kỳ.
+Time Capsule (Kén Thời Gian): Gửi tin nhắn, video, hoặc tâm thư bị "khóa". Người nhận thấy hộp quà đếm ngược và chỉ mở được vào đúng ngày/giờ đã set (VD: Kỷ niệm 5 năm).
+3.6 🗺️ LOVE MAP
+Bản đồ chính & Heat Map: Hiển thị tất cả địa điểm có sự kiện/ảnh. Nơi nào đi nhiều sẽ có màu hồng đậm hơn. Group các pin gần nhau.
+Live Location Sharing: Tùy chọn chia sẻ vị trí trực tiếp trong những lúc đi làm về khuya, đi du lịch (có thể bật/tắt dễ dàng).
+Thống kê (Love Footprint): Tổng km đã đi cùng nhau, % diện tích quốc gia/thế giới đã đặt chân đến. Các huy hiệu du lịch ("Hanoi Lovers 🏙️").
+3.7 💬 CHAT, CALL & 💓 LOVE TOUCH
+Chat 1-1 Private: Gửi text, ảnh, voice, file, sticker độc quyền. Reaction, reply, pin tin nhắn.
+Love Touch (Nút Nhớ Nhung): Nút bấm hình trái tim trong chat. Khi nhấn giữ, điện thoại của đối phương sẽ rung lên theo nhịp tim (Haptic Feedback) và màn hình sáng màu hồng, dù máy đang khóa.
+Secret Chat (Tin nhắn bí mật): Tin nhắn bị làm mờ, người nhận phải vuốt tay "cạo" màn hình (như vé số) để xem nội dung.
+Draw Together: Vẽ tay và gửi trực tiếp trong khung chat.
+Call: Voice/Video Call chất lượng HD, hỗ trợ Virtual background ảnh đôi.
+3.8 🐾 MASCOT ARI — AI & VIRTUAL PET
+Ari là Thú Cưng Chung (Virtual Pet): Ari sẽ "no" và "vui vẻ" nếu 2 người nhắn tin, thêm sự kiện. Nếu ít tương tác hoặc giận nhau, Ari sẽ ốm yếu. Người dùng có thể dùng Love Coins mua nón, kính cho Ari. Tương tác con quay hồi chuyển (nghiêng điện thoại Ari sẽ trượt theo).
+AI Chatbot Tư vấn: Chat riêng với Ari để xin lời khuyên khi cãi nhau, bí ý tưởng hẹn hò, tìm cách mở lời xin lỗi.
+AI Sentiment Analysis (Phân tích cảm xúc): Cảnh báo "Nhiệt độ": Nếu AI phát hiện ngôn từ trong chat có dấu hiệu căng thẳng, Ari sẽ hiện popup: "Hai bạn đang nóng giận phải không? Cùng hít thở sâu nhé!"
+3.9 🎮 LOVE QUESTS & QUIZ (GAMIFICATION)
+Daily Love Quiz (Câu hỏi hiểu nhau): Mỗi ngày 1 câu hỏi (VD: "Lần đầu gặp, bạn ấn tượng điều gì?"). Cả 2 phải cùng trả lời thì mới xem được đáp án của người kia.
+Weekly Love Quests (Thử thách hằng tuần): Ari giao nhiệm vụ (VD: "Cùng nấu 1 món mới", "Không dùng điện thoại 2 tiếng"). Hoàn thành nhận Love Coins.
+3.10 📝 SHARED SPACE (KHÔNG GIAN CHUNG)
+Shared To-do / Grocery List: Danh sách đi siêu thị chung, ai mua xong tick bỏ.
+Travel Packing List: Checklist đồ đạc trước khi du lịch.
+Quỹ Hẹn Hò (Date Fund): Công cụ ghi chép chi tiêu chung (Ai trả tiền ăn, ai trả tiền phim). Đồ thị thống kê thu/chi gọn nhẹ.
+Shared Notes: Lưu những thứ quan trọng: Size giày/quần áo của đối phương, món ăn dị ứng, v.v.
+3.11 🎁 SMART SUGGESTIONS & STORE
+Gợi ý Món Quà & Địa Điểm: Dựa trên ngày kỷ niệm, vị trí, ngân sách và sở thích. Tích hợp link mua sắm và Google Maps.
+Physical Store (Dịch vụ In Ấn): Nút "Biến Eralove thành Sách". AI tự động chọn 30 ảnh đẹp nhất + quotes hay xuất thành layout Photobook. Người dùng thanh toán để Eralove in và ship sách giấy đến tận nhà.
+3.12 🎨 PERSONALIZATION
+Giao diện: Light/Dark mode, đổi màu chủ đạo, font chữ.
+Tùy chỉnh Icon App: Đổi icon ứng dụng Eralove trên màn hình Home (Màu gốc, bản Giáng Sinh, bản Valentine).
+Nickname & Hình nền: Đổi tên hiển thị, hình nền chat riêng biệt hoặc đồng bộ cả 2.
+3.13 ⚙️ SETTINGS & PROFILE
+Hồ sơ & Bảo mật: Đổi thông tin, mật khẩu, xuất dữ liệu ra file ZIP.
+Chế độ "Breakup / Pause" (Ngủ đông): Dành cho lúc tạm dừng yêu hoặc chia tay. Dữ liệu không mất đi nhưng app sẽ đổi sang màu xám, ngắt mọi thông báo, khóa tương tác cho đến khi 1 trong 2 gửi yêu cầu "Nối lại tình xưa" và được đồng ý.
+4. LUỒNG NGƯỜI DÙNG (USER FLOWS)
+Flow 1: Lần đầu dùng app & Bump Match
+Mở app → Welcome & Bài test MBTI → Đăng ký → Cấp quyền sinh trắc học → Để 2 điện thoại chạm nhau (NFC Bump) → Match thành công → Trái tim ghép lại → Vào Home Dashboard.
+Flow 2: Gửi Tin nhắn bí mật & Love Touch
+Vào Chat → Nhập tin nhắn → Chọn chế độ "Secret" → Gửi → Người nhận nhận thông báo → Mở app và "cạo" màn hình để đọc. Sau đó người nhận nhấn giữ nút Love Touch → Máy người gửi rung lên nhịp tim.
+Flow 3: Hoàn thành Daily Quiz
+Home → Nhận thông báo "Ari có câu hỏi mới" → Bấm vào Quiz → Nhập câu trả lời của mình (bị ẩn) → Đợi đối phương trả lời → Mở khóa xem đáp án của cả 2 → Nhận Love Coins.
+Flow 4: In Photobook kỷ niệm
+Dashboard báo sắp đến kỷ niệm 1 năm → Gợi ý tạo Photobook → AI lọc ảnh & tạo layout → Người dùng xem preview và chỉnh sửa → Thanh toán (Checkout) → Đợi ship sách vật lý.
+5. THIẾT KẾ UI/UX
+Bảng màu chính: Rose Petal (#FF6B9D), Lavender Dream (#C084FC), Blush White (#FFF0F5).
+Typography: Nunito (Heading/Display), Inter (Body).
+Haptic Design (Thiết kế Xúc giác): Tận dụng tối đa rung phản hồi (Taptic Engine) khi: Thả tim, nhấn Love Touch, hoàn thành thử thách, cạo tin nhắn bí mật.
+Micro-interactions: Ảnh flip khi xem Memory Flashback, màn hình rung/sáng khi nhận Love Touch, Ari trượt theo gia tốc kế (Gyroscope) của điện thoại.
+6. TECH STACK ĐỀ XUẤT
+Layer	Technology
+Web Frontend	React + TypeScript + TailwindCSS + Framer Motion
+Mobile	React Native (Expo) hoặc Flutter (hỗ trợ tốt Animation/Haptic)
+Backend	Node.js + NestJS + GraphQL (tối ưu data fetching)
+Database	PostgreSQL (chính) + Redis (cache, realtime)
+Local Storage	SQLite / WatermelonDB (Cho phép xem ảnh/nhật ký Offline)
+AI / LLM	Claude API (Anthropic) + LangChain (giữ ngữ cảnh chat dài)
+Realtime Chat	Socket.io + WebRTC (Call) + Firebase Cloud Messaging (FCM)
+Maps & Location	Mapbox GL JS + Geolocation API
+OS Integration	Swift (iOS Widgets/Live Activities) + Kotlin (Android Widgets)
+Payment Gateway	Stripe (Quốc tế) / VNPay, MoMo (Việt Nam) cho Store
+Storage / CDN	AWS S3 / Cloudflare R2 (Có nén ảnh on-the-fly qua Lambda)
+7. ROADMAP PHÁT TRIỂN
+Phase 1 — MVP & Core Connect (Tháng 1–3)
+Welcome Page, Auth (Sinh trắc học), Match System (QR & Bump).
+Dashboard cơ bản, Calendar cơ bản.
+Chat Text, Voice Call, Gửi ảnh & Love Touch.
+Phase 2 — Memory & Gamification (Tháng 4–6)
+Calendar đầy đủ (Time Capsule, Tử vi), Love Map.
+Daily Quiz, Weekly Quests.
+Nuôi Mascot Ari & AI Chatbot tư vấn.
+OS Widgets (Locket style).
+Phase 3 — Deep Tech & Daily Life (Tháng 7–9)
+Shared Space (Notes, To-do, Date Fund).
+AI Sentiment Analysis (Cảnh báo mâu thuẫn).
+Draw Together & Secret Chat.
+Tối ưu Offline Mode với WatermelonDB.
+Phase 4 — Monetization & Scale (Tháng 10+)
+Ra mắt Eralove Premium (Icon app, sticker, backup dung lượng cao).
+Ra mắt Physical Store (In Photobook trực tiếp).
+Booking địa điểm hẹn hò qua các đối tác.
+8. CÁC CHỈ SỐ THÀNH CÔNG (KPIs)
+Chỉ số	Mục tiêu 6 tháng	Mục tiêu 1 năm
+Số cặp đôi (Couples) đăng ký	10,000	50,000
+Tỷ lệ DAU/MAU	≥ 45% (Nhờ Quiz & Widget)	≥ 50%
+Retention D30	≥ 40%	≥ 45%
+Tỷ lệ hoàn thành Quiz hằng ngày	≥ 60% DAU tham gia	≥ 65% DAU tham gia
+App Store/Google Play Rating	≥ 4.6 ⭐	≥ 4.8 ⭐
+Tỷ lệ chuyển đổi mua sắm/Premium	N/A	3 - 5% tổng user
+Tài liệu này được cập nhật lần cuối: 04/2026
+Mọi thay đổi tính năng cần được review và đồng ý bởi Product Owner.
+--- KẾT THÚC NỘI DUNG FILE ---

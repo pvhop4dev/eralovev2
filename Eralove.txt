@@ -1,0 +1,467 @@
+# 💗 ERALOVE — Product Requirements Document (PRD)
+> *"Nơi lưu giữ mọi khoảnh khắc yêu thương"*
+
+**Version:** 1.0  
+**Platform:** Web App + Mobile App (iOS & Android)  
+**Target Users:** Các cặp đôi đang yêu, từ 16 tuổi trở lên  
+**Design Language:** Colorful & Playful — Pastel gradient, ấm áp, lãng mạn
+
+---
+
+## 1. TỔNG QUAN SẢN PHẨM
+
+### 1.1 Tầm nhìn (Vision)
+Eralove là ứng dụng dành riêng cho các cặp đôi — một không gian riêng tư, lãng mạn và thông minh, nơi hai người có thể lưu giữ ký ức, kết nối mỗi ngày và nhận được những gợi ý yêu thương từ trợ lý AI.
+
+### 1.2 Giá trị cốt lõi (Core Values)
+- 💌 **Riêng tư & An toàn** — Không gian chỉ dành cho 2 người
+- 🌸 **Lãng mạn & Ấm áp** — Từng chi tiết UI đều gợi cảm xúc
+- 🤖 **Thông minh & Cá nhân hóa** — AI hiểu cặp đôi của bạn
+- 📍 **Kết nối với thực tế** — Gắn địa điểm, ảnh, thời tiết vào từng kỷ niệm
+
+### 1.3 Đối tượng người dùng
+| Nhóm | Đặc điểm |
+|---|---|
+| Cặp đôi mới yêu | Muốn đánh dấu ngày đầu, lưu kỷ niệm |
+| Cặp đôi xa nhau | Cần kết nối, chat, call, chia sẻ hằng ngày |
+| Cặp đôi lâu năm | Muốn ôn lại ký ức, tổ chức kỷ niệm |
+| Cặp đôi GenZ | Thích app đẹp, có AI, cá nhân hóa cao |
+
+---
+
+## 2. KIẾN TRÚC TÍNH NĂNG
+
+```
+Eralove
+├── 🌐 Welcome & Onboarding
+├── 🔐 Auth (Đăng ký / Đăng nhập)
+├── 💘 Match System
+├── 🏠 Home Dashboard
+├── 📅 Love Calendar
+│   ├── Header Widget
+│   ├── Calendar View
+│   └── Event & Photo Manager
+├── 🗺️ Love Map
+├── 💬 Chat & Call
+├── 🐾 Mascot Ari (AI)
+├── 🎁 Smart Suggestions
+├── 🎨 Personalization
+└── ⚙️ Settings & Profile
+```
+
+---
+
+## 3. CHI TIẾT TỪNG TÍNH NĂNG
+
+---
+
+### 3.1 🌐 WELCOME PAGE & ONBOARDING
+
+#### Welcome Page
+- **Hero Section:** Animation trái tim đập nhẹ, tagline lãng mạn, gradient hồng-tím
+- **Feature Highlights:** Giới thiệu 4–6 tính năng nổi bật bằng micro-animation
+- **Social Proof:** Số cặp đôi đang dùng, đánh giá người dùng
+- **CTA:** Nút "Bắt đầu yêu thương" → đăng ký, "Đã có tài khoản" → đăng nhập
+
+#### Onboarding (sau đăng ký lần đầu)
+- Bước 1: Chào mừng + tên hiển thị
+- Bước 2: Ảnh đại diện + ngày sinh (dùng cho tử vi)
+- Bước 3: Hướng dẫn gửi match request
+- Bước 4: Chọn hình nền mặc định
+- Progress bar dạng trái tim từng bước
+
+---
+
+### 3.2 🔐 AUTH — ĐĂNG KÝ / ĐĂNG NHẬP
+
+#### Đăng ký
+- Thông tin: Email, mật khẩu, tên hiển thị, ngày sinh, giới tính
+- Xác thực email qua OTP
+- Tùy chọn đăng ký nhanh: Google, Apple, Facebook
+
+#### Đăng nhập
+- Email + mật khẩu
+- Social login (Google / Apple / Facebook)
+- Nhớ đăng nhập (Remember me)
+- Quên mật khẩu → reset qua email
+
+#### Bảo mật
+- JWT + Refresh Token
+- Tùy chọn bật 2FA (xác thực 2 bước)
+- Đăng xuất khỏi tất cả thiết bị
+
+---
+
+### 3.3 💘 MATCH SYSTEM
+
+#### Gửi Match Request
+- Tìm kiếm người dùng qua: Username / Email / QR Code
+- Xem profile preview trước khi gửi
+- Kèm lời nhắn tùy chỉnh (ví dụ: "Anh thích em từ lâu rồi 💕")
+- Mỗi tài khoản chỉ có thể match với 1 người tại một thời điểm
+
+#### Nhận Match Request
+- Thông báo push + in-app notification
+- Xem profile + lời nhắn của người gửi
+- 3 lựa chọn:
+  - ✅ **Accept** → chọn ngày bắt đầu yêu (mặc định: hôm nay, có thể chọn ngày trong quá khứ)
+  - ❌ **Decline** → từ chối nhẹ nhàng, có thể kèm lý do (tùy chọn)
+  - ⏳ **Later** → để sau (tối đa 7 ngày)
+
+#### Sau khi Match thành công
+- Animation đặc biệt: 2 trái tim ghép lại + confetti
+- Tạo "Love Space" riêng cho cặp đôi
+- Thông báo: "Chúc mừng! Bạn và [tên] đã chính thức yêu nhau từ [ngày]! 🎉"
+- Mời đặt ảnh đôi đầu tiên
+
+#### Unmatch / Chia tay
+- Một trong hai người có thể unmatch
+- Xác nhận 2 bước để tránh nhầm lẫn
+- Dữ liệu: Ẩn (không xóa) — người dùng có thể yêu cầu xóa hoàn toàn
+- Gửi thông báo lịch sự đến người còn lại
+
+---
+
+### 3.4 🏠 HOME DASHBOARD
+
+Màn hình chính sau khi đăng nhập (đã match):
+
+- **Ảnh đôi** + tên 2 người + số ngày yêu nhau (dạng "💕 365 ngày")
+- **Shortcut nhanh:** Calendar, Map, Chat, Ari
+- **Daily Card:** Câu thơ/tục ngữ tình yêu hôm nay
+- **Upcoming:** Sự kiện sắp tới trong 7 ngày
+- **Memory Flashback:** "Ngày này năm ngoái..." — ảnh/sự kiện cũ
+- **Mood Check-in:** 2 người cùng chọn tâm trạng hôm nay (emoji), hiển thị cho nhau
+
+---
+
+### 3.5 📅 LOVE CALENDAR
+
+#### Header Widget (phần trên calendar)
+Hiển thị các thông tin sau theo thời gian thực:
+
+| Thông tin | Chi tiết |
+|---|---|
+| 📅 Ngày hôm nay | Ngày / tháng / năm, thứ trong tuần (tiếng Việt) |
+| ⛅ Thời tiết | Nhiệt độ, tình trạng thời tiết theo vị trí hiện tại (API weather) |
+| 💬 Câu yêu thương | Random mỗi ngày: ca dao, tục ngữ, thơ, ngạn ngữ về tình yêu (kho 500+ câu) |
+| 💕 Đếm ngày yêu | Số ngày, tháng, năm tính từ ngày match |
+| 🔮 Tử vi hôm nay | Tử vi 12 cung hoàng đạo (Tây) của cả 2 người |
+| ☯️ Phong thủy | Ngày tốt/xấu, hướng tốt, màu sắc may mắn (lịch Âm, Đông phương) |
+| 🌙 Ngày âm lịch | Hiển thị ngày âm tương ứng |
+
+#### Calendar View
+- Chế độ xem: Tháng / Tuần / Năm
+- Đánh dấu ngày đặc biệt:
+  - 📸 Có ảnh → icon camera hồng
+  - 🎉 Có sự kiện → icon tim đỏ
+  - 🎂 Sinh nhật → icon bánh kem
+  - 💘 Ngày kỷ niệm → icon nhẫn
+- Click vào ngày → xem chi tiết sự kiện & ảnh
+- Swipe trái/phải để chuyển tháng (mobile)
+
+#### Quản lý Sự kiện (CRUD)
+**Thêm sự kiện:**
+- Tiêu đề, mô tả, ngày giờ
+- Loại sự kiện: Hẹn hò / Kỷ niệm / Du lịch / Sinh nhật / Tự tạo
+- Địa điểm: Nhập tay hoặc chọn trên bản đồ (tự động lấy tọa độ)
+- Màu sắc / icon tùy chỉnh
+- Thêm ảnh (tối đa 20 ảnh/sự kiện)
+- Đặt nhắc nhở (1 ngày trước, 1 tuần trước, v.v.)
+- Lặp lại hằng năm (cho ngày kỷ niệm)
+
+**Sửa sự kiện:** Chỉnh sửa mọi thông tin, thêm/xóa ảnh
+
+**Xóa sự kiện:** Xác nhận trước khi xóa, có thể khôi phục trong 30 ngày
+
+#### Quản lý Ảnh
+- Upload ảnh trực tiếp vào ngày / sự kiện
+- Caption cho từng ảnh
+- Địa điểm chụp (tự động từ EXIF hoặc nhập tay)
+- Chế độ xem: Grid / Slideshow
+- **Memory Book:** Tự động tạo album theo tháng/năm
+- Pinch-to-zoom trên mobile
+
+---
+
+### 3.6 🗺️ LOVE MAP
+
+#### Bản đồ chính
+- Nền bản đồ: Mapbox với style pastel/romantic tùy chỉnh
+- Hiển thị tất cả địa điểm có sự kiện / ảnh của cặp đôi
+- **Heat Map:** Địa điểm nào có nhiều ảnh/sự kiện → màu hồng đậm hơn
+- Cluster pins khi zoom out (gộp nhiều điểm gần nhau)
+
+#### Pin / Marker
+- Icon: Trái tim (màu theo loại sự kiện)
+- Nhấn vào pin → popup mini: ảnh thumbnail + tiêu đề sự kiện + ngày
+- Nhấn vào popup → xem chi tiết đầy đủ
+
+#### Bộ lọc & Tìm kiếm
+- Lọc theo: Loại sự kiện / Thời gian / Có ảnh / Có video
+- Tìm kiếm địa điểm
+- "Hành trình của chúng ta": Vẽ đường nối các địa điểm theo thứ tự thời gian
+
+#### Thống kê Love Map
+- Số thành phố / tỉnh đã đến cùng nhau
+- Tổng km đã đi cùng nhau (tính gần đúng)
+- Huy hiệu: "Couple Traveler 🌍", "Hanoi Lovers 🏙️", v.v.
+
+---
+
+### 3.7 💬 CHAT & CALL
+
+#### Chat 1-1 Private
+- Giao diện chat bubble — theme hồng/tím, hỗ trợ dark mode
+- Nhắn tin văn bản, emoji, sticker (bộ sticker Eralove độc quyền)
+- Gửi ảnh, video, file
+- Voice message (giữ để ghi âm)
+- **Reaction:** React bằng emoji vào từng tin nhắn
+- **Reply:** Trả lời trích dẫn tin nhắn
+- **Pin message:** Ghim tin nhắn quan trọng
+- **Xóa tin nhắn:** Xóa phía mình / xóa cả 2 phía
+- Trạng thái: Đã gửi / Đã nhận / Đã xem (dấu tick)
+- Gõ phím đang nhập (typing indicator)
+- **Love Message:** Tin nhắn đặc biệt dạng thẻ: "Anh yêu em 💕" — hiệu ứng trái tim bay
+
+#### Sticker & GIF
+- Bộ sticker mascot Ari (20+ sticker)
+- Tích hợp GIPHY cho GIF
+- Sticker tùy chỉnh từ ảnh của cặp đôi
+
+#### Call
+- **Voice Call:** Gọi thoại 1-1, chất lượng HD
+- **Video Call:** Gọi video 1-1, lật camera trước/sau
+- Background blur / Virtual background (ảnh đôi)
+- Lịch sử cuộc gọi
+
+#### Thông báo
+- Push notification khi có tin nhắn mới
+- Tùy chỉnh âm báo riêng cho Eralove
+- Chế độ im lặng theo giờ (ví dụ: 23h–7h)
+
+---
+
+### 3.8 🐾 MASCOT ARI — AI TƯ VẤN TÌNH CẢM
+
+#### Nhân vật Ari
+- Ari là một chú mèo nhỏ dễ thương màu hồng tím với đôi mắt to
+- Tính cách: Vui tươi, ấm áp, tinh tế, không phán xét
+- Có animation: Nhún nhảy, vẫy đuôi, tim bay ra khi vui
+
+#### Tính năng Chat với Ari
+- Giao diện chat riêng biệt với Ari
+- Ari hiểu ngữ cảnh của cặp đôi (ngày bắt đầu yêu, các sự kiện, tâm trạng)
+- **Chủ đề tư vấn:**
+  - Cãi nhau / Hiểu lầm → cách giải quyết
+  - Thiếu ý tưởng hẹn hò → gợi ý sáng tạo
+  - Muốn nói điều gì đó nhưng không biết cách → Ari giúp viết
+  - Ngày kỷ niệm sắp đến → lên kế hoạch
+  - Cảm thấy mối quan hệ nhạt dần → lời khuyên
+  - Tâm sự chuyện buồn / vui → Ari lắng nghe
+
+#### Ari Daily Check-in
+- Mỗi sáng Ari gửi 1 câu hỏi nhỏ: "Hôm nay bạn cảm thấy thế nào về mối quan hệ của mình?" → chọn emoji → Ari phản hồi phù hợp
+
+#### Ari Love Report (hằng tuần)
+- Tổng kết tuần: Số tin nhắn, sự kiện thêm vào, mood tổng thể
+- Nhận xét nhẹ nhàng + 1 lời khuyên cho tuần tới
+
+---
+
+### 3.9 🎁 SMART SUGGESTIONS
+
+#### Gợi ý Món Quà
+- Dựa trên: Ngày kỷ niệm sắp tới, sở thích đã lưu, ngân sách
+- Phân loại: Vật chất / Trải nghiệm / Tự làm / Kỹ thuật số
+- Lọc theo giá: Dưới 200k / 200k–500k / 500k–1tr / Trên 1tr
+- Link mua hàng gợi ý (Shopee / Lazada)
+- **Countdown:** "Còn 5 ngày đến sinh nhật người ấy! 🎂"
+
+#### Gợi ý Ngày Kỷ Niệm
+- Tự động nhắc: 100 ngày, 200 ngày, 365 ngày, 500 ngày...
+- Gợi ý cách kỷ niệm theo từng mốc
+- Tạo "Anniversary Card" kỹ thuật số có thể chia sẻ
+- Gợi ý theo mùa: Valentine, Giáng sinh, Tết, v.v.
+
+#### Gợi ý Địa Điểm Hẹn Hò
+- Dựa trên: Vị trí hiện tại, thời tiết hôm nay, ngân sách, sở thích
+- Phân loại: Cà phê / Ăn uống / Vui chơi / Thiên nhiên / Văn hóa / Lãng mạn ban đêm
+- Tích hợp Google Maps để xem đường đi
+- Rating + Review từ các cặp đôi khác trong app
+- "Date Planner": Lên lịch cả buổi hẹn hò (sáng đi đâu, trưa ăn gì, tối làm gì)
+
+---
+
+### 3.10 🎨 PERSONALIZATION — CÁ NHÂN HÓA
+
+#### Hình nền (Wallpaper)
+- Thay đổi hình nền toàn app / từng màn hình
+- Nguồn: Thư viện Eralove (50+ hình) / Ảnh của chính cặp đôi / Màu gradient tùy chọn
+- Đồng bộ hình nền: 2 người cùng 1 hình nền hoặc mỗi người 1 hình
+
+#### Theme & Màu sắc
+- Light mode / Dark mode / Auto
+- Chọn màu chủ đạo: Hồng / Tím / Đỏ / Cam / Xanh pastel
+- Font chữ: Tròn mềm / Thanh lịch / Cổ điển
+
+#### Tên Gọi Nhau
+- Đặt nickname cho nhau trong app (ví dụ: "Gấu" / "Mèo")
+- Nickname hiển thị thay tên thật trong chat và calendar
+
+#### Avatar & Profile
+- Ảnh đại diện cá nhân
+- Ảnh đôi (couple photo) hiển thị trên dashboard
+- Frame ảnh đặc biệt theo mốc ngày yêu
+
+---
+
+### 3.11 ⚙️ SETTINGS & PROFILE
+
+#### Hồ sơ cá nhân
+- Tên, ảnh đại diện, bio ngắn
+- Ngày sinh (ẩn/hiện)
+- Cung hoàng đạo (tự động từ ngày sinh)
+- Liên kết mạng xã hội (tùy chọn)
+
+#### Cài đặt thông báo
+- Bật/tắt từng loại thông báo
+- Giờ im lặng
+- Âm thanh thông báo
+
+#### Quyền riêng tư & Bảo mật
+- Đổi mật khẩu
+- Bật/tắt 2FA
+- Xem lịch sử đăng nhập
+- Xóa tài khoản (kèm xóa toàn bộ dữ liệu)
+
+#### Dữ liệu & Backup
+- Export dữ liệu (ảnh, sự kiện) ra file ZIP
+- Backup lên Google Drive / iCloud
+- Xem dung lượng đã dùng
+
+---
+
+## 4. LUỒNG NGƯỜI DÙNG (USER FLOWS)
+
+### Flow 1: Lần đầu dùng app
+```
+Mở app → Welcome Page → Đăng ký → Onboarding → Tìm người yêu → 
+Gửi Match Request → Người kia Accept → Chọn ngày yêu → 
+Love Space được tạo → Home Dashboard
+```
+
+### Flow 2: Thêm kỷ niệm mới
+```
+Home → Love Calendar → Chọn ngày → Thêm sự kiện → 
+Nhập thông tin + ảnh + địa điểm → Lưu → 
+Hiển thị trên Calendar + Love Map
+```
+
+### Flow 3: Hỏi Ari tư vấn
+```
+Home → Mascot Ari → Chat → Ari hỏi vấn đề → 
+Người dùng mô tả → Ari đưa ra lời khuyên → 
+Gợi ý hành động cụ thể
+```
+
+---
+
+## 5. THIẾT KẾ UI/UX
+
+### Bảng màu chính
+| Tên | Hex | Dùng cho |
+|---|---|---|
+| Rose Petal | #FF6B9D | Primary CTA, accent |
+| Lavender Dream | #C084FC | Secondary, gradient |
+| Blush White | #FFF0F5 | Background sáng |
+| Deep Plum | #7C3AED | Text đậm, header |
+| Peach Glow | #FFB347 | Warning, highlight |
+| Mint Fresh | #6EE7B7 | Success, confirm |
+
+### Typography
+- **Display / Heading:** Nunito (tròn, thân thiện)
+- **Body:** Inter (dễ đọc)
+- **Accent / Tagline:** Playfair Display (lãng mạn)
+
+### Animation & Micro-interactions
+- Trái tim đập khi load
+- Confetti khi match thành công
+- Ảnh flip khi xem Memory Flashback
+- Ripple effect khi nhấn nút
+- Smooth page transition (slide từ phải)
+- Parallax nhẹ trên Welcome Page
+
+### Responsive
+- Web: Desktop (1440px) + Tablet (768px)
+- Mobile: 375px – 430px (iPhone, Android phổ biến)
+- PWA support (cài như app từ trình duyệt)
+
+---
+
+## 6. TECH STACK ĐỀ XUẤT
+
+| Layer | Technology |
+|---|---|
+| Web Frontend | React + TypeScript + TailwindCSS |
+| Mobile | React Native (Expo) |
+| Backend | Node.js + Express / NestJS |
+| Database | PostgreSQL (chính) + Redis (cache, realtime) |
+| Auth | JWT + OAuth2 (Google, Apple, Facebook) |
+| Realtime Chat | WebSocket (Socket.io) |
+| Call | WebRTC (hoặc Agora.io SDK) |
+| Maps | Mapbox GL JS |
+| Weather | OpenWeatherMap API |
+| AI Mascot | Claude API (Anthropic) |
+| Storage | AWS S3 / Cloudflare R2 (ảnh, video) |
+| Push Notification | Firebase Cloud Messaging (FCM) |
+| Hosting | Vercel (web) + Railway/Render (backend) |
+
+---
+
+## 7. ROADMAP PHÁT TRIỂN
+
+### Phase 1 — MVP (Tháng 1–3)
+- [ ] Welcome Page + Auth
+- [ ] Match System
+- [ ] Love Calendar (cơ bản)
+- [ ] Chat text
+- [ ] Personalization cơ bản
+
+### Phase 2 — Core Features (Tháng 4–6)
+- [ ] Love Calendar đầy đủ (header widget, tử vi, thời tiết)
+- [ ] Love Map
+- [ ] Voice & Video Call
+- [ ] Mascot Ari (AI)
+- [ ] Smart Suggestions
+
+### Phase 3 — Polish & Growth (Tháng 7–9)
+- [ ] Sticker shop
+- [ ] Anniversary Cards
+- [ ] Ari Love Report
+- [ ] Export dữ liệu
+- [ ] Huy hiệu & Gamification
+- [ ] Bản iOS & Android chính thức
+
+### Phase 4 — Monetization (Tháng 10+)
+- [ ] Eralove Premium (tính năng nâng cao, sticker độc quyền)
+- [ ] Theme & Frame mua thêm
+- [ ] Partner: Nhà hàng, khách sạn, florist gợi ý hẹn hò
+
+---
+
+## 8. CÁC CHỈ SỐ THÀNH CÔNG (KPIs)
+
+| Chỉ số | Mục tiêu 6 tháng |
+|---|---|
+| Số cặp đôi đăng ký | 10,000 couples |
+| DAU / MAU ratio | ≥ 40% |
+| Retention D30 | ≥ 35% |
+| Ảnh upload / ngày | ≥ 5,000 |
+| Chat messages / ngày | ≥ 50,000 |
+| App Store Rating | ≥ 4.5 ⭐ |
+
+---
+
+*Tài liệu này được cập nhật lần cuối: 04/2026*  
+*Mọi thay đổi tính năng cần được review và đồng ý bởi Product Owner.*
