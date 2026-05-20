@@ -177,11 +177,15 @@ class ApiResponse(BaseModel, Generic[T]):
 ```
 
 ### Error Response Examples
+
+**IMPORTANT**: All error responses include `trace_id` in `meta` for request correlation.
+The `X-Trace-Id` response header is also set for every response (success or error).
+
 ```json
 // 400 — Validation Error
 {
   "data": null,
-  "meta": null,
+  "meta": { "trace_id": "a1b2c3d4e5f67890" },
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "Invalid input data",
@@ -195,7 +199,7 @@ class ApiResponse(BaseModel, Generic[T]):
 // 401 — Unauthorized
 {
   "data": null,
-  "meta": null,
+  "meta": { "trace_id": "a1b2c3d4e5f67890" },
   "error": {
     "code": "UNAUTHORIZED",
     "message": "Access token expired"
@@ -205,7 +209,7 @@ class ApiResponse(BaseModel, Generic[T]):
 // 404 — Not Found
 {
   "data": null,
-  "meta": null,
+  "meta": { "trace_id": "a1b2c3d4e5f67890" },
   "error": {
     "code": "NOT_FOUND",
     "message": "Event not found"
@@ -215,7 +219,7 @@ class ApiResponse(BaseModel, Generic[T]):
 // 409 — Conflict
 {
   "data": null,
-  "meta": null,
+  "meta": { "trace_id": "a1b2c3d4e5f67890" },
   "error": {
     "code": "CONFLICT",
     "message": "Email is already registered"
@@ -225,7 +229,7 @@ class ApiResponse(BaseModel, Generic[T]):
 // 422 — Business Rule
 {
   "data": null,
-  "meta": null,
+  "meta": { "trace_id": "a1b2c3d4e5f67890" },
   "error": {
     "code": "BUSINESS_RULE_ERROR",
     "message": "You can only match with one person at a time"

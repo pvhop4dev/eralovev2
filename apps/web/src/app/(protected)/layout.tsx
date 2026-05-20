@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@/components/organisms/sidebar";
 import { BottomNav } from "@/components/organisms/bottom-nav";
+import { ErrorBoundary } from "@/components/organisms/error-boundary";
 
 export default function ProtectedLayout({
   children,
@@ -20,7 +21,7 @@ export default function ProtectedLayout({
         style={{ paddingBottom: "80px" }}
         className="md:ml-[240px] md:pb-0"
       >
-        {children}
+        <ErrorBoundary>{children}</ErrorBoundary>
       </main>
 
       {/* Mobile Bottom Nav — hidden on desktop */}

@@ -112,16 +112,17 @@ async def startup():
 ### Middleware Order (matters!)
 ```python
 # Register in REVERSE order (last registered = first executed)
+# TraceMiddleware must run BEFORE CORS to set trace_id for all requests.
+app.add_middleware(TraceMiddleware)  # trace_id + structlog binding
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Trace-Id"],  # Allow frontend to read trace header
 )
 app.add_middleware(RateLimitMiddleware)
-app.add_middleware(RequestIdMiddleware)
-app.add_middleware(LoggingMiddleware)
 ```
 
 ### Dependency Injection — Deep Pattern
@@ -219,7 +220,7 @@ import structlog
 
 logger = structlog.get_logger()
 
-# In use cases / services
+# In use cases / services — trace_id auto-bound by TraceMiddleware
 async def execute(self, dto: CreateEventRequest, user_id: UUID) -> EventResponse:
     logger.info("creating_event", user_id=str(user_id), title=dto.title)
     try:
@@ -229,6 +230,10 @@ async def execute(self, dto: CreateEventRequest, user_id: UUID) -> EventResponse
     except Exception as e:
         logger.error("event_creation_failed", error=str(e), user_id=str(user_id))
         raise
+
+# To access trace_id manually:
+from infrastructure.trace_context import get_trace_id
+trace_id = get_trace_id()  # available in any layer during request
 ```
 
 ### Logging Rules
@@ -307,6 +312,7 @@ apps/api/src/
 │   └── interfaces/        # External service interfaces (S3, AI, email)
 ├── infrastructure/
 │   ├── config.py          # Settings
+│   ├── trace_context.py   # Request-scoped trace_id (contextvars)
 │   ├── database/
 │   │   ├── connection.py  # Engine, session factory
 │   │   ├── models/        # SQLAlchemy models
@@ -315,6 +321,8 @@ apps/api/src/
 │   ├── redis/
 │   │   ├── client.py      # Redis connection
 │   │   └── cache.py       # Cache service
+│   ├── quotes/
+│   │   └── love_quotes.py # Daily love quotes (50+)
 │   ├── s3/
 │   │   └── client.py      # S3 presigned URL generation
 │   ├── ai/
@@ -327,10 +335,10 @@ apps/api/src/
     ├── api/
     │   └── v1/            # All route files
     ├── middleware/
-    │   ├── auth.py
+    │   ├── auth_middleware.py
     │   ├── error_handler.py
-    │   ├── rate_limit.py
-    │   └── request_id.py
+    │   ├── trace_middleware.py  # X-Trace-Id + structlog binding
+    │   └── rate_limit.py
     ├── deps.py            # Shared FastAPI dependencies
     └── schemas/
         └── response.py    # ApiResponse wrapper

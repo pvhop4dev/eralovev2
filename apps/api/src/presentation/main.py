@@ -13,6 +13,7 @@ from collections.abc import AsyncIterator
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 from domain.exceptions import DomainError
 from infrastructure.config import get_settings
@@ -24,6 +25,7 @@ from presentation.api.v1.dashboard import router as dashboard_router
 from presentation.api.v1.events import router as events_router
 from presentation.api.v1.health import router as health_router
 from presentation.api.v1.match import router as match_router
+from presentation.api.v1.messages import router as messages_router
 from presentation.api.v1.mood import router as mood_router
 from presentation.api.v1.onboarding import router as onboarding_router
 from presentation.api.v1.users import router as users_router
@@ -62,7 +64,8 @@ app = FastAPI(
 # ── Middleware ───────────────────────────────────────────
 # Note: Starlette middleware is LIFO — last added runs first.
 # TraceMiddleware runs BEFORE CORS so trace_id is available everywhere.
-app.add_middleware(TraceMiddleware)
+app.add_middleware(TraceMiddleware)  # trace_id + structlog binding
+app.add_middleware(GZipMiddleware, minimum_size=500)  # compress responses > 500 bytes
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -86,6 +89,4 @@ app.include_router(onboarding_router, prefix="/api/v1")
 app.include_router(dashboard_router, prefix="/api/v1")
 app.include_router(mood_router, prefix="/api/v1")
 app.include_router(events_router, prefix="/api/v1")
-
-# Future routers will be added here:
-# app.include_router(messages_router, prefix="/api/v1")
+app.include_router(messages_router, prefix="/api/v1")

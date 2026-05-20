@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/atoms/theme-toggle";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: "🏠", label: "Trang chủ" },
+  { href: "/chat", icon: "💬", label: "Chat" },
   { href: "/calendar", icon: "📅", label: "Lịch" },
   { href: "/match", icon: "💕", label: "Ghép đôi" },
   { href: "/match/requests", icon: "💌", label: "Yêu cầu" },
@@ -85,6 +87,11 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Theme Toggle */}
+      <div style={{ padding: "0.75rem", borderTop: "1px solid var(--border)" }}>
+        <ThemeToggle />
+      </div>
     </aside>
   );
 }
