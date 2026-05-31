@@ -32,7 +32,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Configure SQLAlchemy 2.0 async engine + session
 - [x] Configure Alembic for migrations
 - [x] Setup Redis client
-- [ ] Setup S3 client (boto3) with presigned URL helper
+- [x] Setup S3 client (boto3) with presigned URL helper
 - [x] Setup dependency injection container
 - [x] Configure CORS, rate limiter middleware
 - [x] Setup pytest + pytest-asyncio
@@ -58,13 +58,13 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 
 #### 2.1 Backend: Auth Domain & Use Cases
 - [x] Domain: `User` entity, `Email` and `Password` value objects
-- [/] Use Cases: `RegisterUser` [x], `LoginUser` [x], `RefreshToken` [x], `OAuthLogin` [ ]
-- [/] Infrastructure: `UserRepository` (PostgreSQL) [x], `JWTHandler` [x], `OAuthProviders` [ ]
-- [/] Presentation: Auth routes (`/auth/register` [x], `/auth/login` [x], `/auth/refresh` [x], `/auth/logout` [x], `/auth/oauth` [ ])
+- [x] Use Cases: `RegisterUser` [x], `LoginUser` [x], `RefreshToken` [x], `OAuthLogin` [x]
+- [x] Infrastructure: `UserRepository` (PostgreSQL) [x], `JWTHandler` [x], `OAuthProviders` [x]
+- [x] Presentation: Auth routes (`/auth/register` [x], `/auth/login` [x], `/auth/refresh` [x], `/auth/logout` [x], `/auth/oauth` [x])
 - [x] Email verification with OTP (6-digit code)
 - [x] Password hashing with bcrypt
 - [x] JWT access token (15min) + refresh token (7 days, httpOnly cookie with rotation)
-- [ ] Rate limiting on auth endpoints (10 req/min)
+- [x] Rate limiting on auth endpoints (10 req/min) (via Redis Sliding Window dependency)
 
 #### 2.2 Frontend: Auth Pages
 - [ ] Welcome/Landing page with hero animation, feature highlights, CTA
@@ -74,7 +74,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Email verification page (OTP input)
 - [x] Auth store (Zustand) for token management
 - [ ] Protected route middleware (Next.js middleware.ts)
-- [ ] Google OAuth integration (frontend + backend)
+- [x] Google OAuth integration (frontend + backend)
 
 #### 2.3 Shared UI Components
 - [ ] Button (variants: primary, secondary, outline, ghost)
@@ -86,7 +86,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 
 #### Deliverable
 - User can register, verify email, login, logout
-- Google OAuth login works
+- [x] Google OAuth login works
 - Protected routes redirect to login
 - [x] JWT tokens refresh automatically (via HTTP 401 interceptor in ApiClient)
 
@@ -98,23 +98,23 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 
 #### 3.1 Backend: Onboarding
 - [ ] Use Case: `CompleteOnboarding` (save profile, love language, avatar)
-- [ ] S3 presigned URL for avatar upload
+- [x] S3 presigned URL for avatar upload
 - [ ] Update user `is_onboarded` flag
 
 #### 3.2 Backend: Match System
 - [ ] Domain: `MatchRequest` entity, `Couple` entity
-- [ ] Use Cases: `SendMatchRequest`, `AcceptMatch`, `DeclineMatch`, `Unmatch`
+- [x] Use Cases: `SendMatchRequest`, `AcceptMatch`, `DeclineMatch`, `Unmatch`
 - [ ] Domain rule: one active match per user at a time
 - [ ] Match request expiry (7 days)
 - [ ] Create `couples` record on accept with `start_date`
-- [ ] Soft unmatch (hide data, don't delete)
+- [x] Soft unmatch (hide data, don't delete)
 
 #### 3.3 Frontend: Onboarding Flow
-- [ ] Step 1: Welcome + display name
-- [ ] Step 2: Avatar upload + DOB (for zodiac)
-- [ ] Step 3: Mini love language quiz (3 questions)
-- [ ] Step 4: Choose default wallpaper
-- [ ] Progress bar (heart steps)
+- [x] Step 1: Welcome + display name
+- [x] Step 2: Avatar upload + DOB (for zodiac)
+- [x] Step 3: Mini love language quiz (3 questions)
+- [ ] Choose default wallpaper
+- [x] Progress bar (heart steps)
 - [ ] Framer Motion page transitions
 
 #### 3.4 Frontend: Match System

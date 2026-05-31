@@ -23,6 +23,69 @@ export default function OnboardingPage() {
     love_language: "",
     avatar_url: "",
   });
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Kích thước ảnh tối đa là 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError("");
+
+    try {
+      const { useAuthStore } = await import("@/stores/auth-store");
+      const token = useAuthStore.getState().accessToken;
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/storage/presigned-url`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token || localStorage.getItem("access_token") || ""}`,
+          },
+          body: JSON.stringify({
+            file_name: file.name,
+            content_type: file.type,
+            file_type: "avatar",
+          }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) {
+        setUploadError(data.error?.message || "Không thể lấy link tải ảnh");
+        return;
+      }
+
+      const { upload_url, file_url } = data.data;
+
+      const putRes = await fetch(upload_url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!putRes.ok) {
+        throw new Error("Failed to upload file to storage");
+      }
+
+      setFormData((prev) => ({ ...prev, avatar_url: file_url }));
+    } catch (err) {
+      setUploadError("Lỗi tải ảnh lên server lưu trữ");
+      console.error(err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const steps = ["Chào mừng", "Thông tin", "Ngôn ngữ yêu", "Hoàn thành"];
 
@@ -134,6 +197,83 @@ export default function OnboardingPage() {
                 Thông tin của bạn 📝
               </h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                {/* Avatar upload */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "0.5rem" }}>
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "90px",
+                      height: "90px",
+                      borderRadius: "50%",
+                      border: "2px dashed var(--color-rose-petal)",
+                      background: "rgba(255,107,157,0.02)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      overflow: "hidden",
+                      transition: "all 0.2s ease",
+                    }}
+                    onClick={() => document.getElementById("avatar-input")?.click()}
+                  >
+                    {formData.avatar_url ? (
+                      <img
+                        src={formData.avatar_url}
+                        alt="Avatar Preview"
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: "1.5rem" }}>📷</span>
+                    )}
+                    {isUploading && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          background: "rgba(0,0,0,0.5)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#fff",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Tải lên...
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    id="avatar-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    style={{ display: "none" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById("avatar-input")?.click()}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "var(--color-rose-petal)",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      marginTop: "0.5rem",
+                    }}
+                  >
+                    Chọn ảnh đại diện
+                  </button>
+                  {uploadError && (
+                    <div style={{ color: "#ef4444", fontSize: "0.75rem", marginTop: "0.25rem" }}>
+                      {uploadError}
+                    </div>
+                  )}
+                </div>
+
                 <FormField
                   label="Tên hiển thị"
                   name="display_name"
@@ -246,9 +386,19 @@ export default function OnboardingPage() {
                   borderRadius: "var(--radius-md)",
                   padding: "1rem",
                   marginBottom: "1.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
                   textAlign: "left",
                 }}
               >
+                {formData.avatar_url && (
+                  <img
+                    src={formData.avatar_url}
+                    alt="Avatar"
+                    style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover", border: "1px solid var(--color-rose-petal)" }}
+                  />
+                )}
                 <div style={{ fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
                   <strong>📛</strong> {formData.display_name || "—"}<br />
                   <strong>🎂</strong> {formData.date_of_birth || "Chưa cập nhật"}<br />

@@ -32,6 +32,13 @@ class LoginRequest(BaseModel):
     password: str = Field(..., min_length=1, max_length=128)
 
 
+class OAuthLoginRequest(BaseModel):
+    """Request body for OAuth login (Google)."""
+
+    provider: str = Field(..., description="OAuth provider, e.g., 'google'")
+    token: str = Field(..., description="OAuth ID token or access token credential")
+
+
 class VerifyEmailRequest(BaseModel):
     """Request body for email verification."""
 

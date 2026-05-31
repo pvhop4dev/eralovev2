@@ -139,3 +139,10 @@ class InvalidTokenError(UnauthorizedError):
 
     def __init__(self, message: str = "Invalid token"):
         super().__init__(message)
+
+
+class TooManyRequestsError(DomainError):
+    """Too many requests (Rate limit exceeded)."""
+
+    def __init__(self, message: str = "Rate limit exceeded. Please try again later."):
+        super().__init__(message)

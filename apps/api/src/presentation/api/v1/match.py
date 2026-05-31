@@ -14,10 +14,12 @@ from application.dtos.match_dto import (
     AcceptMatchRequestDTO,
     MatchRequestResponse,
     SendMatchRequestDTO,
+    UnmatchRequest,
 )
 from application.use_cases.match.accept_request import AcceptMatchRequestUseCase
 from application.use_cases.match.decline_request import DeclineMatchRequestUseCase
 from application.use_cases.match.send_request import SendMatchRequestUseCase
+from application.use_cases.match.unmatch import UnmatchUseCase
 from infrastructure.database.repositories.couple_repository import PostgresCoupleRepository
 from infrastructure.database.repositories.match_repository import PostgresMatchRequestRepository
 from infrastructure.database.repositories.user_repository import PostgresUserRepository
@@ -127,3 +129,20 @@ async def decline_match_request(
     )
     await use_case.execute(current_user.id, UUID(request_id))
     return {"data": {"declined": True}, "meta": None, "error": None}
+
+
+@router.post("/unmatch", status_code=200)
+async def unmatch_couple(
+    body: UnmatchRequest,
+    current_user: CurrentUser,
+    session: DbSession,
+) -> dict:
+    """Unmatch from the current partner."""
+    use_case = UnmatchUseCase(couple_repo=PostgresCoupleRepository(session))
+    await use_case.execute(current_user.id)
+    return {
+        "data": {"message": "Unmatched successfully"},
+        "meta": None,
+        "error": None,
+    }
+

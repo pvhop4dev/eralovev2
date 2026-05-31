@@ -10,13 +10,16 @@ POST /api/v1/auth/forgot-password — Send password reset email
 
 import secrets
 
-from fastapi import APIRouter, Response, Cookie
+from fastapi import APIRouter, Response, Cookie, Depends
 from typing import Annotated
+
+from presentation.middleware.rate_limiter import RateLimiter
 
 from application.dtos.auth_dto import (
     AuthResponse,
     ForgotPasswordRequest,
     LoginRequest,
+    OAuthLoginRequest,
     RegisterRequest,
     TokenResponse,
     VerifyEmailRequest,
@@ -24,6 +27,7 @@ from application.dtos.auth_dto import (
 from application.use_cases.auth.login import LoginUserUseCase
 from application.use_cases.auth.register import RegisterUserUseCase
 from application.use_cases.auth.refresh import RefreshTokenUseCase
+from application.use_cases.auth.oauth_login import OAuthLoginUseCase
 from application.use_cases.auth.verify_email import VerifyEmailUseCase
 from domain.exceptions import UnauthorizedError, UserNotFoundError, ValidationError
 from infrastructure.auth.jwt_handler import (
@@ -32,6 +36,7 @@ from infrastructure.auth.jwt_handler import (
     hash_token,
 )
 from infrastructure.database.repositories.refresh_token_repository import PostgresRefreshTokenRepository
+from infrastructure.database.repositories.oauth_account_repository import PostgresOAuthAccountRepository
 from infrastructure.database.repositories.user_repository import PostgresUserRepository
 from infrastructure.email.email_service import send_reset_password_email
 from presentation.deps import DbSession, RedisClient
@@ -41,6 +46,9 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 # Cookie settings for refresh token
 _REFRESH_COOKIE_NAME = "eralove_refresh_token"
 _REFRESH_COOKIE_MAX_AGE = 7 * 24 * 60 * 60  # 7 days in seconds
+
+# Rate limiter for auth endpoints (10 requests per minute)
+auth_limiter = RateLimiter(requests=10, window_seconds=60)
 
 
 def _set_refresh_cookie(response: Response, refresh_token: str) -> None:
@@ -64,7 +72,7 @@ def _clear_refresh_cookie(response: Response) -> None:
     )
 
 
-@router.post("/register", status_code=201)
+@router.post("/register", status_code=201, dependencies=[Depends(auth_limiter)])
 async def register(
     body: RegisterRequest,
     response: Response,
@@ -94,7 +102,7 @@ async def register(
     }
 
 
-@router.post("/login")
+@router.post("/login", dependencies=[Depends(auth_limiter)])
 async def login(
     body: LoginRequest,
     response: Response,
@@ -108,6 +116,33 @@ async def login(
     token_repo = PostgresRefreshTokenRepository(session)
     use_case = LoginUserUseCase(user_repo=user_repo, token_repo=token_repo)
     auth_response, refresh_token = await use_case.execute(body)
+
+    _set_refresh_cookie(response, refresh_token)
+
+    return {
+        "data": auth_response.model_dump(),
+        "meta": None,
+        "error": None,
+    }
+
+
+@router.post("/oauth", dependencies=[Depends(auth_limiter)])
+async def oauth_login(
+    body: OAuthLoginRequest,
+    response: Response,
+    session: DbSession,
+) -> dict:
+    """Login or register with OAuth provider (Google)."""
+    user_repo = PostgresUserRepository(session)
+    oauth_repo = PostgresOAuthAccountRepository(session)
+    token_repo = PostgresRefreshTokenRepository(session)
+
+    use_case = OAuthLoginUseCase(
+        user_repo=user_repo,
+        oauth_repo=oauth_repo,
+        token_repo=token_repo,
+    )
+    auth_response, refresh_token = await use_case.execute(body.provider, body.token)
 
     _set_refresh_cookie(response, refresh_token)
 
@@ -162,7 +197,7 @@ async def logout(
     _clear_refresh_cookie(response)
 
 
-@router.post("/verify-email")
+@router.post("/verify-email", dependencies=[Depends(auth_limiter)])
 async def verify_email(
     body: VerifyEmailRequest,
     session: DbSession,
@@ -183,7 +218,7 @@ async def verify_email(
     }
 
 
-@router.post("/forgot-password")
+@router.post("/forgot-password", dependencies=[Depends(auth_limiter)])
 async def forgot_password(
     body: ForgotPasswordRequest,
     session: DbSession,

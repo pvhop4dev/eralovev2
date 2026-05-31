@@ -60,3 +60,8 @@ class OnboardingRequest(BaseModel):
     date_of_birth: date | None = None
     love_language: str | None = Field(None, max_length=50)
     avatar_url: str | None = None
+
+
+class UnmatchRequest(BaseModel):
+    confirmation_code: str | None = Field(None, max_length=100, description="Optional confirmation string")
+

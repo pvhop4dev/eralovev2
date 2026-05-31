@@ -16,6 +16,7 @@ from domain.exceptions import (
     DomainError,
     ForbiddenError,
     NotFoundError,
+    TooManyRequestsError,
     UnauthorizedError,
     ValidationError,
 )
@@ -28,6 +29,7 @@ _EXCEPTION_STATUS_MAP: dict[type[DomainError], int] = {
     UnauthorizedError: 401,
     ValidationError: 400,
     BusinessRuleError: 422,
+    TooManyRequestsError: 429,
 }
 
 

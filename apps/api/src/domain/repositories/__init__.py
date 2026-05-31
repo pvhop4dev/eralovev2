@@ -6,6 +6,7 @@ from domain.repositories.event_repository import LoveEventRepository
 from domain.repositories.match_repository import MatchRequestRepository
 from domain.repositories.message_repository import MessageRepository
 from domain.repositories.refresh_token_repository import RefreshTokenRepository
+from domain.repositories.oauth_account_repository import OAuthAccountRepository
 
 __all__ = [
     "UserRepository",
@@ -14,4 +15,5 @@ __all__ = [
     "MatchRequestRepository",
     "MessageRepository",
     "RefreshTokenRepository",
+    "OAuthAccountRepository",
 ]

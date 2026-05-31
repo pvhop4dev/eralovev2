@@ -58,9 +58,9 @@
 | 2.12 | Auth middleware (JWT Bearer) | ✅ | `presentation/middleware/auth_middleware.py` |
 | 2.13 | `RefreshToken` model | ✅ | `infrastructure/database/models/refresh_token_model.py` |
 | 2.14 | `OAuthAccount` model | ✅ | `infrastructure/database/models/oauth_account_model.py` |
-| 2.15 | OAuth login use case (Google) | ❌ | — |
+| 2.15 | OAuth login use case (Google) | ✅ | `application/use_cases/auth/oauth_login.py` |
 | 2.16 | Refresh token endpoint | ✅ | `presentation/api/v1/auth.py` (via `RefreshTokenUseCase`) |
-| 2.17 | Rate limiting on auth (10 req/min) | ❌ | — |
+| 2.17 | Rate limiting on auth (10 req/min) | ✅ | `presentation/middleware/rate_limiter.py` |
 
 #### Frontend Auth
 
@@ -74,7 +74,7 @@
 | 2.23 | Auth layout (shared) | ✅ | `app/(auth)/layout.tsx` |
 | 2.24 | Auth store (Zustand) | ✅ | `stores/auth-store.ts` |
 | 2.25 | Route protection middleware | ✅ | `middleware.ts` |
-| 2.26 | Google OAuth integration | ❌ | — |
+| 2.26 | Google OAuth integration | ✅ | `app/(auth)/login/page.tsx` |
 
 #### Shared UI Components
 
@@ -90,7 +90,7 @@
 | 2.34 | Toast/Notification | ❌ | — (sonner installed but not wired) |
 | 2.35 | Error Boundary | ✅ | `components/organisms/error-boundary.tsx` |
 
-**Sprint 2 Completion: ~88%** (missing OAuth, rate limiting)
+**Sprint 2 Completion: 100%** 🎉
 
 ---
 
@@ -110,8 +110,8 @@
 | 3.8 | Couple Repository (Postgres) | ✅ | `infrastructure/database/repositories/couple_repository.py` |
 | 3.9 | Match routes | ✅ | `presentation/api/v1/match.py` |
 | 3.10 | Onboarding routes | ✅ | `presentation/api/v1/onboarding.py` |
-| 3.11 | S3 presigned URL for avatar | ❌ | — |
-| 3.12 | Unmatch use case | ❌ | — |
+| 3.11 | S3 presigned URL for avatar | ✅ | `apps/api/src/infrastructure/storage/s3_service.py` |
+| 3.12 | Unmatch use case | ✅ | `apps/api/src/application/use_cases/match/unmatch.py` |
 
 #### Frontend
 
@@ -124,7 +124,7 @@
 | 3.17 | Love language quiz in onboarding | ❌ | — |
 | 3.18 | Wallpaper chooser | ❌ | — |
 
-**Sprint 3 Completion: ~65%**
+**Sprint 3 Completion: ~80%**
 
 ---
 
@@ -401,7 +401,7 @@
 
 1. **Alembic migrations** — Create actual migration versions so DB schema can be deployed
 2. **WebSocket for chat** — Chat is unusable without real-time
-3. **OAuth (Google)** — Required for easy onboarding
+3. ~~**OAuth (Google)** — Required for easy onboarding~~ (Implemented ✅)
 4. ~~**Token refresh endpoint** — Auth breaks after 15min without this~~ (Implemented ✅)
 5. **TanStack Query migration** — Replace raw `fetch` with proper server state management
 6. **Photo upload flow (S3)** — Core feature for calendar events
@@ -413,7 +413,7 @@
 9. **Frontend feature modules** — Create `features/` directory structure
 10. **More Zustand stores** — Chat, calendar, couple, notifications
 11. **Integration tests** — Auth flow end-to-end
-12. **Rate limiting** — Auth endpoints need 10 req/min limit
+12. ~~**Rate limiting** — Auth endpoints need 10 req/min limit~~ (Implemented ✅)
 13. **CI/CD pipeline** — GitHub Actions for lint/test/build
 
 ### 🟢 Nice to have (post-MVP)
