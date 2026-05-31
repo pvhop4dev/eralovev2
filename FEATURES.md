@@ -59,7 +59,7 @@
 | 2.13 | `RefreshToken` model | ✅ | `infrastructure/database/models/refresh_token_model.py` |
 | 2.14 | `OAuthAccount` model | ✅ | `infrastructure/database/models/oauth_account_model.py` |
 | 2.15 | OAuth login use case (Google) | ❌ | — |
-| 2.16 | Refresh token endpoint | ❌ | — |
+| 2.16 | Refresh token endpoint | ✅ | `presentation/api/v1/auth.py` (via `RefreshTokenUseCase`) |
 | 2.17 | Rate limiting on auth (10 req/min) | ❌ | — |
 
 #### Frontend Auth
@@ -90,7 +90,7 @@
 | 2.34 | Toast/Notification | ❌ | — (sonner installed but not wired) |
 | 2.35 | Error Boundary | ✅ | `components/organisms/error-boundary.tsx` |
 
-**Sprint 2 Completion: ~80%** (missing OAuth, refresh token, rate limiting)
+**Sprint 2 Completion: ~88%** (missing OAuth, rate limiting)
 
 ---
 
@@ -206,11 +206,11 @@
 | 6.5 | Mark as read | ✅ | in messages routes |
 | 6.6 | Soft delete | ✅ | in messages routes |
 | 6.7 | Cursor-based pagination | ✅ | in messages routes |
-| 6.8 | WebSocket handler + JWT auth | ❌ | — |
-| 6.9 | Redis Pub/Sub for real-time | ❌ | — |
-| 6.10 | Typing indicator | ❌ | — |
+| 6.8 | WebSocket handler + JWT auth | ✅ | `presentation/socketio/server.py` |
+| 6.9 | Redis Pub/Sub for real-time | ✅ | via AsyncRedisManager |
+| 6.10 | Typing indicator | ✅ | `presentation/socketio/handlers/chat.py` |
 | 6.11 | Message reactions | ❌ | — |
-| 6.12 | Love Touch WebSocket event | ❌ | — |
+| 6.12 | Love Touch WebSocket event | ✅ | `presentation/socketio/handlers/love.py` |
 | 6.13 | Push notification | ❌ | — |
 
 #### Frontend
@@ -218,20 +218,20 @@
 | # | Task | Status | File |
 |---|------|--------|------|
 | 6.14 | Chat page (basic UI) | ✅ | `app/(protected)/chat/page.tsx` |
-| 6.15 | Chat bubbles (pink/purple) | 🟡 | Basic implementation |
-| 6.16 | WebSocket connection manager | ❌ | — |
-| 6.17 | Real-time message receive | ❌ | — |
+| 6.15 | Chat bubbles (pink/purple) | ✅ | in page.tsx |
+| 6.16 | WebSocket connection manager | ✅ | `lib/socket.ts` |
+| 6.17 | Real-time message receive | ✅ | in page.tsx |
 | 6.18 | Image upload in chat | ❌ | — |
 | 6.19 | Voice message | ❌ | — |
 | 6.20 | Emoji picker | ❌ | — |
 | 6.21 | Message reactions | ❌ | — |
 | 6.22 | Reply to message | ❌ | — |
-| 6.23 | Typing indicator | ❌ | — |
-| 6.24 | Read receipts | ❌ | — |
-| 6.25 | Love Touch button | ❌ | — |
+| 6.23 | Typing indicator | ✅ | in page.tsx |
+| 6.24 | Read receipts | ✅ | in page.tsx |
+| 6.25 | Love Touch button | ✅ | in page.tsx |
 | 6.26 | Online/offline status | ❌ | — |
 
-**Sprint 6 Completion: ~30%** (REST API done, no real-time)
+**Sprint 6 Completion: ~70%** (Real-time WebSockets, Typing, Read receipts, and Love Touch completed)
 
 ---
 
@@ -402,7 +402,7 @@
 1. **Alembic migrations** — Create actual migration versions so DB schema can be deployed
 2. **WebSocket for chat** — Chat is unusable without real-time
 3. **OAuth (Google)** — Required for easy onboarding
-4. **Token refresh endpoint** — Auth breaks after 15min without this
+4. ~~**Token refresh endpoint** — Auth breaks after 15min without this~~ (Implemented ✅)
 5. **TanStack Query migration** — Replace raw `fetch` with proper server state management
 6. **Photo upload flow (S3)** — Core feature for calendar events
 

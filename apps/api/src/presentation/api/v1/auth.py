@@ -23,12 +23,15 @@ from application.dtos.auth_dto import (
 )
 from application.use_cases.auth.login import LoginUserUseCase
 from application.use_cases.auth.register import RegisterUserUseCase
+from application.use_cases.auth.refresh import RefreshTokenUseCase
 from application.use_cases.auth.verify_email import VerifyEmailUseCase
 from domain.exceptions import UnauthorizedError, UserNotFoundError, ValidationError
 from infrastructure.auth.jwt_handler import (
     create_access_token,
     get_user_id_from_token,
+    hash_token,
 )
+from infrastructure.database.repositories.refresh_token_repository import PostgresRefreshTokenRepository
 from infrastructure.database.repositories.user_repository import PostgresUserRepository
 from infrastructure.email.email_service import send_reset_password_email
 from presentation.deps import DbSession, RedisClient
@@ -73,8 +76,10 @@ async def register(
     Creates account, sends OTP verification email, returns JWT tokens.
     """
     user_repo = PostgresUserRepository(session)
+    token_repo = PostgresRefreshTokenRepository(session)
     use_case = RegisterUserUseCase(
         user_repo=user_repo,
+        token_repo=token_repo,
         redis_client=redis,
         email_sender=True,  # Enable email sending
     )
@@ -100,7 +105,8 @@ async def login(
     Returns JWT access token and sets refresh token cookie.
     """
     user_repo = PostgresUserRepository(session)
-    use_case = LoginUserUseCase(user_repo=user_repo)
+    token_repo = PostgresRefreshTokenRepository(session)
+    use_case = LoginUserUseCase(user_repo=user_repo, token_repo=token_repo)
     auth_response, refresh_token = await use_case.execute(body)
 
     _set_refresh_cookie(response, refresh_token)
@@ -114,27 +120,25 @@ async def login(
 
 @router.post("/refresh")
 async def refresh_token(
+    response: Response,
     session: DbSession,
     eralove_refresh_token: Annotated[str | None, Cookie()] = None,
 ) -> dict:
     """Refresh the access token using the refresh token cookie.
 
-    Returns a new access token. Requires valid refresh token in cookie.
+    Rotates refresh token in cookie, returns a new access token.
     """
     if not eralove_refresh_token:
         raise UnauthorizedError("No refresh token provided")
 
-    # Decode refresh token
-    user_id = get_user_id_from_token(eralove_refresh_token, expected_type="refresh")
-
-    # Verify user still exists
     user_repo = PostgresUserRepository(session)
-    user = await user_repo.get_by_id(user_id)
-    if not user:
-        raise UserNotFoundError("User account not found")
+    token_repo = PostgresRefreshTokenRepository(session)
+    use_case = RefreshTokenUseCase(user_repo=user_repo, token_repo=token_repo)
 
-    # Issue new access token
-    new_access_token = create_access_token(user.id)
+    # Rotate tokens (deletes old one, persists and returns new one)
+    new_access_token, new_refresh_token = await use_case.execute(eralove_refresh_token)
+
+    _set_refresh_cookie(response, new_refresh_token)
 
     return {
         "data": {"access_token": new_access_token},
@@ -144,8 +148,17 @@ async def refresh_token(
 
 
 @router.post("/logout", status_code=204)
-async def logout(response: Response) -> None:
-    """Logout — clear the refresh token cookie."""
+async def logout(
+    response: Response,
+    session: DbSession,
+    eralove_refresh_token: Annotated[str | None, Cookie()] = None,
+) -> None:
+    """Logout — clear and revoke the refresh token."""
+    if eralove_refresh_token:
+        token_repo = PostgresRefreshTokenRepository(session)
+        token_hash = hash_token(eralove_refresh_token)
+        await token_repo.delete_by_hash(token_hash)
+
     _clear_refresh_cookie(response)
 
 

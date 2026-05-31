@@ -90,3 +90,12 @@ app.include_router(dashboard_router, prefix="/api/v1")
 app.include_router(mood_router, prefix="/api/v1")
 app.include_router(events_router, prefix="/api/v1")
 app.include_router(messages_router, prefix="/api/v1")
+
+# Wrap FastAPI app with Socket.IO AsyncServer
+import socketio
+from presentation.socketio.server import sio
+
+# Expose wrapped ASGI app as 'app' to match standard runner entrypoint
+socket_app = socketio.ASGIApp(sio, other_app=app)
+app = socket_app
+

@@ -31,8 +31,9 @@ class TestLoginUserUseCase:
         user_repo = AsyncMock()
         user_repo.get_by_email.return_value = user
         user_repo.update.return_value = user
+        token_repo = AsyncMock()
 
-        use_case = LoginUserUseCase(user_repo=user_repo)
+        use_case = LoginUserUseCase(user_repo=user_repo, token_repo=token_repo)
         dto = LoginRequest(email="test@example.com", password="StrongPass1")
         auth_response, refresh_token = await use_case.execute(dto)
 
@@ -40,13 +41,15 @@ class TestLoginUserUseCase:
         assert auth_response.access_token is not None
         assert refresh_token is not None
         user_repo.update.assert_called_once()  # last_login_at updated
+        token_repo.create.assert_called_once()  # refresh token persisted
 
     @pytest.mark.asyncio
     async def test_login_wrong_email_raises(self):
         user_repo = AsyncMock()
         user_repo.get_by_email.return_value = None
+        token_repo = AsyncMock()
 
-        use_case = LoginUserUseCase(user_repo=user_repo)
+        use_case = LoginUserUseCase(user_repo=user_repo, token_repo=token_repo)
         dto = LoginRequest(email="wrong@example.com", password="StrongPass1")
 
         with pytest.raises(InvalidCredentialsError):
@@ -57,8 +60,9 @@ class TestLoginUserUseCase:
         user = self._make_user()
         user_repo = AsyncMock()
         user_repo.get_by_email.return_value = user
+        token_repo = AsyncMock()
 
-        use_case = LoginUserUseCase(user_repo=user_repo)
+        use_case = LoginUserUseCase(user_repo=user_repo, token_repo=token_repo)
         dto = LoginRequest(email="test@example.com", password="WrongPass1")
 
         with pytest.raises(InvalidCredentialsError):
@@ -76,8 +80,9 @@ class TestLoginUserUseCase:
         )
         user_repo = AsyncMock()
         user_repo.get_by_email.return_value = user
+        token_repo = AsyncMock()
 
-        use_case = LoginUserUseCase(user_repo=user_repo)
+        use_case = LoginUserUseCase(user_repo=user_repo, token_repo=token_repo)
         dto = LoginRequest(email="social@example.com", password="AnyPass1")
 
         with pytest.raises(InvalidCredentialsError, match="social login"):
@@ -91,11 +96,13 @@ class TestLoginUserUseCase:
         user_repo = AsyncMock()
         user_repo.get_by_email.return_value = user
         user_repo.update.return_value = user
+        token_repo = AsyncMock()
 
-        use_case = LoginUserUseCase(user_repo=user_repo)
+        use_case = LoginUserUseCase(user_repo=user_repo, token_repo=token_repo)
         dto = LoginRequest(email="test@example.com", password="StrongPass1")
         await use_case.execute(dto)
 
         # User's last_login_at should be set
         update_call_user = user_repo.update.call_args[0][0]
         assert update_call_user.last_login_at is not None
+        token_repo.create.assert_called_once()

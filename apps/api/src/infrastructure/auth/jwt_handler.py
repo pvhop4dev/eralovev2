@@ -3,6 +3,7 @@
 Creates and decodes JWT access tokens and refresh tokens.
 """
 
+import hashlib
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
@@ -12,6 +13,11 @@ from domain.exceptions import InvalidTokenError, TokenExpiredError
 from infrastructure.config import get_settings
 
 settings = get_settings()
+
+
+def hash_token(token: str) -> str:
+    """Hash token using SHA256."""
+    return hashlib.sha256(token.encode()).hexdigest()
 
 
 def create_access_token(user_id: UUID) -> str:

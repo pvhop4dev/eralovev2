@@ -29,6 +29,8 @@ interface ApiResponse<T> {
 class ApiClient {
   private baseUrl: string;
   private getToken: (() => string | null) | null = null;
+  private isRefreshing = false;
+  private refreshSubscribers: ((token: string) => void)[] = [];
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -40,6 +42,69 @@ class ApiClient {
    */
   setTokenProvider(fn: () => string | null) {
     this.getToken = fn;
+  }
+
+  private onTokenRefreshed(token: string) {
+    this.refreshSubscribers.forEach((cb) => cb(token));
+    this.refreshSubscribers = [];
+  }
+
+  private addRefreshSubscriber(cb: (token: string) => void) {
+    this.refreshSubscribers.push(cb);
+  }
+
+  private async handleTokenRefresh(): Promise<string> {
+    if (this.isRefreshing) {
+      return new Promise<string>((resolve) => {
+        this.addRefreshSubscriber((token) => {
+          resolve(token);
+        });
+      });
+    }
+
+    this.isRefreshing = true;
+
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // send refresh cookie
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to refresh token");
+      }
+
+      const json = await response.json();
+      const newToken = json.data?.access_token;
+      if (!newToken) {
+        throw new Error("Access token not returned from refresh endpoint");
+      }
+
+      // Update Zustand auth store
+      // Dynamic import to avoid circular dependencies
+      const { useAuthStore } = await import("../stores/auth-store");
+      useAuthStore.getState().setToken(newToken);
+
+      this.onTokenRefreshed(newToken);
+      return newToken;
+    } catch (error) {
+      // Clear token and logout
+      const { useAuthStore } = await import("../stores/auth-store");
+      useAuthStore.getState().logout();
+      
+      // Redirect to login if on client-side
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+
+      this.refreshSubscribers = []; // Clear queue on failure
+      throw error;
+    } finally {
+      this.isRefreshing = false;
+    }
   }
 
   private async request<T>(
@@ -95,7 +160,28 @@ class ApiClient {
       error.status = response.status;
       error.details = json.error?.details;
 
-      // TODO: Handle 401 — refresh token and retry
+      // Handle 401 — refresh token and retry
+      if (
+        response.status === 401 &&
+        !path.includes("/auth/login") &&
+        !path.includes("/auth/register") &&
+        !path.includes("/auth/refresh")
+      ) {
+        try {
+          const newToken = await this.handleTokenRefresh();
+          // Retry original request with new token
+          const updatedOptions = {
+            ...options,
+            headers: {
+              ...options?.headers,
+              "Authorization": `Bearer ${newToken}`,
+            },
+          };
+          return this.request<T>(method, path, updatedOptions);
+        } catch (refreshError) {
+          throw error; // throw original 401 error if refresh failed
+        }
+      }
 
       throw error;
     }

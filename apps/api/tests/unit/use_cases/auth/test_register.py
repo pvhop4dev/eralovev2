@@ -47,9 +47,11 @@ class TestRegisterUserUseCase:
 
         redis = AsyncMock()
         redis.setex = AsyncMock()
+        token_repo = AsyncMock()
 
         use_case = RegisterUserUseCase(
             user_repo=user_repo,
+            token_repo=token_repo,
             redis_client=redis,
             email_sender=None,
         )
@@ -62,6 +64,7 @@ class TestRegisterUserUseCase:
         assert refresh_token is not None
         user_repo.create.assert_called_once()
         redis.setex.assert_called_once()
+        token_repo.create.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_register_duplicate_email_raises(self):
@@ -69,9 +72,11 @@ class TestRegisterUserUseCase:
         user_repo.email_exists.return_value = True
 
         redis = AsyncMock()
+        token_repo = AsyncMock()
 
         use_case = RegisterUserUseCase(
             user_repo=user_repo,
+            token_repo=token_repo,
             redis_client=redis,
         )
 
@@ -87,9 +92,11 @@ class TestRegisterUserUseCase:
         user_repo.username_exists.return_value = True
 
         redis = AsyncMock()
+        token_repo = AsyncMock()
 
         use_case = RegisterUserUseCase(
             user_repo=user_repo,
+            token_repo=token_repo,
             redis_client=redis,
         )
 
@@ -108,9 +115,11 @@ class TestRegisterUserUseCase:
         user_repo.username_exists.return_value = False
 
         redis = AsyncMock()
+        token_repo = AsyncMock()
 
         use_case = RegisterUserUseCase(
             user_repo=user_repo,
+            token_repo=token_repo,
             redis_client=redis,
         )
 
@@ -126,9 +135,11 @@ class TestRegisterUserUseCase:
 
         redis = AsyncMock()
         redis.setex = AsyncMock()
+        token_repo = AsyncMock()
 
         use_case = RegisterUserUseCase(
             user_repo=user_repo,
+            token_repo=token_repo,
             redis_client=redis,
             email_sender=None,
         )

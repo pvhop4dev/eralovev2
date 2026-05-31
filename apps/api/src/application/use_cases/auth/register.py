@@ -4,17 +4,25 @@ Creates a new user account, hashes password, sends verification OTP.
 """
 
 import secrets
+from datetime import datetime, timezone
 from uuid import uuid4
 
 import structlog
 
 from application.dtos.auth_dto import AuthResponse, RegisterRequest, UserResponse
+from domain.entities.refresh_token import RefreshToken
 from domain.entities.user import User
 from domain.exceptions import EmailAlreadyExistsError, UsernameAlreadyExistsError
+from domain.repositories.refresh_token_repository import RefreshTokenRepository
 from domain.repositories.user_repository import UserRepository
 from domain.value_objects.email import Email
 from domain.value_objects.password import Password
-from infrastructure.auth.jwt_handler import create_access_token, create_refresh_token
+from infrastructure.auth.jwt_handler import (
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    hash_token,
+)
 
 logger = structlog.get_logger()
 
@@ -40,10 +48,12 @@ class RegisterUserUseCase:
     def __init__(
         self,
         user_repo: UserRepository,
+        token_repo: RefreshTokenRepository,
         redis_client: object,
         email_sender: object | None = None,
     ) -> None:
         self.user_repo = user_repo
+        self.token_repo = token_repo
         self.redis = redis_client
         self.email_sender = email_sender
 
@@ -100,6 +110,19 @@ class RegisterUserUseCase:
         # 9. Generate tokens
         access_token = create_access_token(created_user.id)
         refresh_token = create_refresh_token(created_user.id)
+
+        # 9.1 Persist refresh token hash to DB
+        payload = decode_token(refresh_token, expected_type="refresh")
+        expires_at = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+        token_hash = hash_token(refresh_token)
+        
+        token_entity = RefreshToken(
+            id=None,
+            user_id=created_user.id,
+            token_hash=token_hash,
+            expires_at=expires_at,
+        )
+        await self.token_repo.create(token_entity)
 
         logger.info("user_registered", user_id=str(created_user.id), email=email_vo.value)
 

@@ -57,13 +57,13 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 2.1 Backend: Auth Domain & Use Cases
-- [ ] Domain: `User` entity, `Email` and `Password` value objects
-- [ ] Use Cases: `RegisterUser`, `LoginUser`, `OAuthLogin`, `RefreshToken`
-- [ ] Infrastructure: `UserRepository` (PostgreSQL), `JWTHandler`, `OAuthProviders`
-- [ ] Presentation: Auth routes (`/auth/register`, `/auth/login`, `/auth/oauth`, `/auth/refresh`, `/auth/logout`)
-- [ ] Email verification with OTP (6-digit code)
-- [ ] Password hashing with bcrypt
-- [ ] JWT access token (15min) + refresh token (7 days, httpOnly cookie)
+- [x] Domain: `User` entity, `Email` and `Password` value objects
+- [/] Use Cases: `RegisterUser` [x], `LoginUser` [x], `RefreshToken` [x], `OAuthLogin` [ ]
+- [/] Infrastructure: `UserRepository` (PostgreSQL) [x], `JWTHandler` [x], `OAuthProviders` [ ]
+- [/] Presentation: Auth routes (`/auth/register` [x], `/auth/login` [x], `/auth/refresh` [x], `/auth/logout` [x], `/auth/oauth` [ ])
+- [x] Email verification with OTP (6-digit code)
+- [x] Password hashing with bcrypt
+- [x] JWT access token (15min) + refresh token (7 days, httpOnly cookie with rotation)
 - [ ] Rate limiting on auth endpoints (10 req/min)
 
 #### 2.2 Frontend: Auth Pages
@@ -72,7 +72,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Login page (email/password + social login buttons)
 - [ ] Forgot password page
 - [ ] Email verification page (OTP input)
-- [ ] Auth store (Zustand) for token management
+- [x] Auth store (Zustand) for token management
 - [ ] Protected route middleware (Next.js middleware.ts)
 - [ ] Google OAuth integration (frontend + backend)
 
@@ -88,7 +88,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - User can register, verify email, login, logout
 - Google OAuth login works
 - Protected routes redirect to login
-- JWT tokens refresh automatically
+- [x] JWT tokens refresh automatically (via HTTP 401 interceptor in ApiClient)
 
 ---
 
@@ -209,39 +209,39 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 6.1 Backend: Realtime Chat
-- [ ] Domain: `Message` entity
-- [ ] WebSocket handler with JWT auth
-- [ ] Redis Pub/Sub for message broadcasting
-- [ ] Message persistence to PostgreSQL
-- [ ] Message types: text, image, voice, love_message
-- [ ] Message status: sent → delivered → read
-- [ ] Typing indicator via WebSocket
-- [ ] Pin/unpin messages
-- [ ] Delete message (for me / for both)
+- [x] Domain: `Message` entity
+- [x] WebSocket handler with JWT auth
+- [x] Redis Pub/Sub for message broadcasting
+- [x] Message persistence to PostgreSQL
+- [ ] Message types: text, image, voice, love_message (text & love_message done, image/voice pending S3)
+- [x] Message status: sent → delivered → read
+- [x] Typing indicator via WebSocket
+- [x] Pin/unpin messages
+- [x] Delete message (for me / for both)
 - [ ] Reactions (emoji)
 
 #### 6.2 Backend: Love Touch
-- [ ] WebSocket event: `love_touch`
+- [x] WebSocket event: `love_touch`
 - [ ] Push notification when partner offline
 
 #### 6.3 Frontend: Chat Interface
-- [ ] Chat bubble layout (pink/purple theme)
-- [ ] Text input with send button
+- [x] Chat bubble layout (pink/purple theme)
+- [x] Text input with send button
 - [ ] Image upload in chat
 - [ ] Voice message (hold to record)
 - [ ] Emoji picker
 - [ ] Message reactions (long press)
 - [ ] Reply to message (quote)
-- [ ] Typing indicator
-- [ ] Read receipts (double check marks)
-- [ ] Pin message
-- [ ] Love Message: special card style with heart animation
-- [ ] Love Touch button: hold to send heartbeat vibration
-- [ ] Scroll to bottom, load more on scroll up
+- [x] Typing indicator
+- [x] Read receipts (double check marks)
+- [x] Pin message
+- [x] Love Message: special card style with heart animation
+- [x] Love Touch button: hold to send heartbeat vibration
+- [x] Scroll to bottom, load more on scroll up
 
 #### 6.4 Frontend: Real-time
-- [ ] WebSocket connection manager
-- [ ] Auto-reconnect on disconnect
+- [x] WebSocket connection manager
+- [x] Auto-reconnect on disconnect
 - [ ] Online/offline status indicator
 - [ ] Unread message count badge
 

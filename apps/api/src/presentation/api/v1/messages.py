@@ -14,6 +14,8 @@ from infrastructure.database.repositories.couple_repository import PostgresCoupl
 from infrastructure.database.repositories.message_repository import PostgresMessageRepository
 from presentation.deps import DbSession
 from presentation.middleware.auth_middleware import CurrentUser
+from presentation.socketio.server import sio
+
 
 router = APIRouter(prefix="/messages", tags=["Messages"])
 
@@ -49,6 +51,10 @@ async def send_message(
 
     msg_repo = PostgresMessageRepository(session)
     created = await msg_repo.create(message)
+    
+    # Broadcast to couple room via WebSocket
+    await sio.emit("chat:message", created.to_dict(), room=f"couple:{couple.id}")
+    
     return {"data": created.to_dict(), "meta": None, "error": None}
 
 
@@ -93,6 +99,16 @@ async def mark_messages_read(
     msg_repo = PostgresMessageRepository(session)
     count = await msg_repo.mark_read_for_user(couple.id, current_user.id)
 
+    # Broadcast read status via WebSocket
+    await sio.emit(
+        "chat:read",
+        {
+            "reader_id": str(current_user.id),
+            "marked_read": count,
+        },
+        room=f"couple:{couple.id}",
+    )
+
     return {"data": {"marked_read": count}, "meta": None, "error": None}
 
 
@@ -120,6 +136,10 @@ async def pin_message(
         message.pin()
 
     updated = await msg_repo.update(message)
+
+    # Broadcast updated message (with new pin status) via WebSocket
+    await sio.emit("chat:message", updated.to_dict(), room=f"couple:{couple.id}")
+
     return {"data": updated.to_dict(), "meta": None, "error": None}
 
 
@@ -163,5 +183,12 @@ async def delete_message(
 
     message.soft_delete()
     await msg_repo.update(message)
+
+    # Broadcast message deletion via WebSocket
+    await sio.emit(
+        "chat:delete",
+        {"message_id": str(message.id)},
+        room=f"couple:{couple.id}",
+    )
 
     return {"data": {"deleted": True}, "meta": None, "error": None}
