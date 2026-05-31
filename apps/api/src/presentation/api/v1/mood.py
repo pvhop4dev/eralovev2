@@ -4,7 +4,7 @@ POST /api/v1/mood/checkin — Submit daily mood
 GET /api/v1/mood/today — Get today's mood
 """
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
@@ -39,7 +39,7 @@ async def submit_mood(
         "data": {
             "mood_emoji": body.mood_emoji,
             "mood_note": body.mood_note,
-            "checked_in_at": datetime.now(timezone.utc).isoformat(),
+            "checked_in_at": datetime.now(UTC).isoformat(),
         },
         "meta": None,
         "error": None,

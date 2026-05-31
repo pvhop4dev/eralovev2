@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 
-from domain.exceptions import InvalidTokenError, TokenExpiredError
+from domain.exceptions import InvalidTokenError
 from infrastructure.auth.jwt_handler import (
     create_access_token,
     create_refresh_token,

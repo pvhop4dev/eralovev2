@@ -6,10 +6,18 @@ import { Input } from "@/components/atoms/input";
 import { Avatar } from "@/components/atoms/avatar";
 import { useAuthStore } from "@/stores/auth-store";
 
+interface SearchUser {
+  id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  zodiac_sign?: string | null;
+}
+
 export default function MatchPage() {
   const { user: currentUser } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchUser[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [sendingTo, setSendingTo] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -19,7 +27,7 @@ export default function MatchPage() {
   // QR State
   const [qrCodeInput, setQrCodeInput] = useState("");
   const [qrScanError, setQrScanError] = useState("");
-  const [qrScanResult, setQrScanResult] = useState<any>(null);
+  const [qrScanResult, setQrScanResult] = useState<SearchUser | null>(null);
   const [copied, setCopied] = useState(false);
 
   const handleQRScan = async () => {
@@ -47,7 +55,7 @@ export default function MatchPage() {
       );
       const data = await res.json();
       const users = data.data?.users || [];
-      const foundUser = users.find((u: any) => u.username.toLowerCase() === username.toLowerCase());
+      const foundUser = users.find((u: SearchUser) => u.username.toLowerCase() === username.toLowerCase());
       if (foundUser) {
         setQrScanResult(foundUser);
       } else {

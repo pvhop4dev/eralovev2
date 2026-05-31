@@ -8,8 +8,6 @@ from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from infrastructure.trace_context import get_trace_id
-
 from domain.exceptions import (
     BusinessRuleError,
     ConflictError,
@@ -20,6 +18,7 @@ from domain.exceptions import (
     UnauthorizedError,
     ValidationError,
 )
+from infrastructure.trace_context import get_trace_id
 
 # Domain exception → HTTP status code mapping
 _EXCEPTION_STATUS_MAP: dict[type[DomainError], int] = {

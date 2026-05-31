@@ -1,21 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/atoms/button";
 import { Avatar } from "@/components/atoms/avatar";
 
+interface MatchRequest {
+  id: string;
+  sender_id: string;
+  sender_name: string;
+  sender_username: string;
+  receiver_id: string;
+  receiver_name: string;
+  receiver_username: string;
+  status: string;
+  message?: string;
+}
+
 export default function MatchRequestsPage() {
+  const router = useRouter();
   const [tab, setTab] = useState<"received" | "sent">("received");
-  const [requests, setRequests] = useState<{ sent: any[]; received: any[] }>({
+  const [requests, setRequests] = useState<{ sent: MatchRequest[]; received: MatchRequest[] }>({
     sent: [],
     received: [],
   });
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchRequests();
-  }, []);
 
   const fetchRequests = async () => {
     try {
@@ -36,6 +46,12 @@ export default function MatchRequestsPage() {
     }
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      fetchRequests();
+    }, 0);
+  }, []);
+
   const handleAccept = async (requestId: string) => {
     setActionLoading(requestId);
     try {
@@ -51,7 +67,7 @@ export default function MatchRequestsPage() {
         }
       );
       if (res.ok) {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       }
     } catch {
       // Handle error

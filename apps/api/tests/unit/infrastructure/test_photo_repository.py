@@ -6,7 +6,6 @@ from uuid import uuid4
 
 import pytest
 
-from domain.entities.photo import Photo
 from infrastructure.database.models.photo_model import PhotoModel
 from infrastructure.database.repositories.photo_repository import PostgresPhotoRepository
 

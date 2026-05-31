@@ -19,6 +19,7 @@ export default function LoginPage() {
     password: "",
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleGoogleCredentialResponse = async (response: any) => {
     setIsLoading(true);
     setErrors({});
@@ -58,6 +59,7 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const google = (window as any).google;
     if (scriptLoaded || (typeof window !== "undefined" && google)) {
       try {

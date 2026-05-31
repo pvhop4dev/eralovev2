@@ -4,7 +4,7 @@ Creates and decodes JWT access tokens and refresh tokens.
 """
 
 import hashlib
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 from jose import ExpiredSignatureError, JWTError, jwt
@@ -29,7 +29,7 @@ def create_access_token(user_id: UUID) -> str:
     Returns:
         Encoded JWT string (exp: 15 minutes by default).
     """
-    expires = datetime.now(timezone.utc) + timedelta(
+    expires = datetime.now(UTC) + timedelta(
         minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES
     )
     payload = {
@@ -49,7 +49,7 @@ def create_refresh_token(user_id: UUID) -> str:
     Returns:
         Encoded JWT string (exp: 7 days by default).
     """
-    expires = datetime.now(timezone.utc) + timedelta(
+    expires = datetime.now(UTC) + timedelta(
         days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS
     )
     payload = {
@@ -80,10 +80,10 @@ def decode_token(token: str, expected_type: str = "access") -> dict:
             settings.JWT_SECRET_KEY,
             algorithms=[settings.JWT_ALGORITHM],
         )
-    except ExpiredSignatureError:
-        raise TokenExpiredError("Token has expired")
-    except JWTError:
-        raise InvalidTokenError("Invalid token")
+    except ExpiredSignatureError as e:
+        raise TokenExpiredError("Token has expired") from e
+    except JWTError as e:
+        raise InvalidTokenError("Invalid token") from e
 
     # Validate token type
     if payload.get("type") != expected_type:
@@ -109,5 +109,5 @@ def get_user_id_from_token(token: str, expected_type: str = "access") -> UUID:
     payload = decode_token(token, expected_type)
     try:
         return UUID(payload["sub"])
-    except (ValueError, KeyError):
-        raise InvalidTokenError("Invalid user ID in token")
+    except (ValueError, KeyError) as e:
+        raise InvalidTokenError("Invalid user ID in token") from e

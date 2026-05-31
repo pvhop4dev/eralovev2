@@ -3,7 +3,7 @@
 GET /api/v1/health — returns server health status.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter
 
@@ -30,7 +30,7 @@ async def health_check() -> dict:
             "status": "healthy",
             "version": "0.1.0",
             "service": "Eralove API",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         },
         "meta": None,
         "error": None,

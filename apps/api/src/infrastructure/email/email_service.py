@@ -4,7 +4,6 @@ Sends transactional emails (verification OTP, password reset).
 Uses aiosmtplib for async SMTP. In dev, use Mailpit on port 1025.
 """
 
-import asyncio
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 

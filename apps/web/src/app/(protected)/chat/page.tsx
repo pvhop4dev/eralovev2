@@ -8,8 +8,18 @@ import { useSocketEvent } from "@/hooks/use-socket-event";
 
 const LOVE_TOUCH_EMOJIS = ["💗", "💕", "😘", "🥰", "💋", "❤️‍🔥"];
 
+interface ChatMessage {
+  id: string;
+  sender_id: string;
+  content: string;
+  message_type: string;
+  status: string;
+  is_pinned: boolean;
+  created_at: string;
+}
+
 export default function ChatPage() {
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [showLoveTouch, setShowLoveTouch] = useState(false);
@@ -18,54 +28,6 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentUserId = typeof window !== "undefined" ? localStorage.getItem("user_id") : null;
-
-  // Initialize socket on mount, disconnect on unmount
-  useEffect(() => {
-    getSocket();
-    fetchMessages();
-    return () => {
-      disconnectSocket();
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Listen to socket events
-  useSocketEvent("chat:message", (newMsg: any) => {
-    setMessages((prev) => {
-      // Prevent duplicate messages in list
-      if (prev.some((m) => m.id === newMsg.id)) {
-        return prev;
-      }
-      return [...prev, newMsg];
-    });
-  });
-
-  useSocketEvent("chat:typing", (data: any) => {
-    setPartnerTyping(data.is_typing);
-  });
-
-  useSocketEvent("chat:read", (data: any) => {
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.sender_id !== data.reader_id ? { ...m, status: "read" } : m
-      )
-    );
-  });
-
-  useSocketEvent("chat:delete", (data: any) => {
-    setMessages((prev) => prev.filter((m) => m.id !== data.message_id));
-  });
-
-  useSocketEvent("love:touch", () => {
-    setLoveAnimation(true);
-    setTimeout(() => setLoveAnimation(false), 2000);
-  });
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   const fetchMessages = async () => {
     try {
@@ -79,6 +41,56 @@ export default function ChatPage() {
       }
     } catch {}
   };
+
+  // Initialize socket on mount, disconnect on unmount
+  useEffect(() => {
+    getSocket();
+    setTimeout(() => {
+      fetchMessages();
+    }, 0);
+    return () => {
+      disconnectSocket();
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Listen to socket events
+  useSocketEvent<ChatMessage>("chat:message", (newMsg) => {
+    setMessages((prev) => {
+      // Prevent duplicate messages in list
+      if (prev.some((m) => m.id === newMsg.id)) {
+        return prev;
+      }
+      return [...prev, newMsg];
+    });
+  });
+
+  useSocketEvent<{ is_typing: boolean }>("chat:typing", (data) => {
+    setPartnerTyping(data.is_typing);
+  });
+
+  useSocketEvent<{ reader_id: string }>("chat:read", (data) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.sender_id !== data.reader_id ? { ...m, status: "read" } : m
+      )
+    );
+  });
+
+  useSocketEvent<{ message_id: string }>("chat:delete", (data) => {
+    setMessages((prev) => prev.filter((m) => m.id !== data.message_id));
+  });
+
+  useSocketEvent<void>("love:touch", () => {
+    setLoveAnimation(true);
+    setTimeout(() => setLoveAnimation(false), 2000);
+  });
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const sendMessage = async (type: string = "text", content?: string) => {
     const msgContent = content || input.trim();
@@ -182,7 +194,7 @@ export default function ChatPage() {
     markRead();
   }, [messages]);
 
-  const isMyMessage = (msg: any) => msg.sender_id === currentUserId;
+  const isMyMessage = (msg: ChatMessage) => msg.sender_id === currentUserId;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)", maxWidth: "800px", margin: "0 auto" }}>

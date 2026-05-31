@@ -5,7 +5,7 @@ Pure Python — no framework dependencies.
 """
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from uuid import UUID, uuid4
 
 from domain.exceptions import BusinessRuleError
@@ -54,7 +54,7 @@ class Photo:
         """Soft delete the photo."""
         if self.is_deleted:
             raise BusinessRuleError("Photo is already deleted")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)
 
     def restore(self) -> None:
         """Restore a soft-deleted photo."""

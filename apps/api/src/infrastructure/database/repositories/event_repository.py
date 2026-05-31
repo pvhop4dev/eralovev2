@@ -1,10 +1,10 @@
 """PostgreSQL LoveEvent Repository Implementation."""
 
 import calendar
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from uuid import UUID
 
-from sqlalchemy import and_, extract, select
+from sqlalchemy import extract, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.entities.love_event import LoveEvent
@@ -118,7 +118,7 @@ class PostgresLoveEventRepository(LoveEventRepository):
         result = await self.session.execute(stmt)
         model = result.scalar_one_or_none()
         if model:
-            model.deleted_at = datetime.now(timezone.utc)
+            model.deleted_at = datetime.now(UTC)
             await self.session.flush()
 
     async def get_past_events_on_this_day(self, couple_id: UUID) -> list[LoveEvent]:

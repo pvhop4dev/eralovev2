@@ -7,7 +7,7 @@ Pure Python — no framework dependencies.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from uuid import UUID, uuid4
 
 # Zodiac sign mapping by month-day ranges
@@ -121,19 +121,17 @@ class User:
 
     def update_last_login(self) -> None:
         """Update the last login timestamp."""
-        from datetime import timezone
 
-        self.last_login_at = datetime.now(timezone.utc)
+        self.last_login_at = datetime.now(UTC)
 
     def soft_delete(self) -> None:
         """Soft delete the user account."""
-        from datetime import timezone
 
         if self.is_deleted:
             from domain.exceptions import AlreadyDeletedError
 
             raise AlreadyDeletedError("User account is already deleted")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)
 
     def restore(self) -> None:
         """Restore a soft-deleted user account."""

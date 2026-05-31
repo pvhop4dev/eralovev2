@@ -1,6 +1,6 @@
 """Tests for MatchRequest Domain Entity."""
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from uuid import uuid4
 
 import pytest
@@ -28,7 +28,7 @@ class TestMatchRequestEntity:
 
     def test_default_expiry_is_7_days(self):
         req = self._make_request()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         # Should be roughly 7 days from now
         diff = req.expires_at - now
         assert 6 <= diff.days <= 7
@@ -48,7 +48,7 @@ class TestMatchRequestEntity:
 
     def test_accept_expired_raises(self):
         req = self._make_request(
-            expires_at=datetime.now(timezone.utc) - timedelta(hours=1)
+            expires_at=datetime.now(UTC) - timedelta(hours=1)
         )
         with pytest.raises(BusinessRuleError, match="expired"):
             req.accept()
@@ -67,7 +67,7 @@ class TestMatchRequestEntity:
 
     def test_is_expired(self):
         req = self._make_request(
-            expires_at=datetime.now(timezone.utc) - timedelta(hours=1)
+            expires_at=datetime.now(UTC) - timedelta(hours=1)
         )
         assert req.is_expired is True
         assert req.is_pending is False

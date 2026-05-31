@@ -3,8 +3,9 @@
 Handles real-time haptic/animation interactions between couples.
 """
 
+from datetime import UTC, datetime
+
 import structlog
-from datetime import datetime, timezone
 
 from presentation.socketio.server import sio
 
@@ -32,7 +33,7 @@ async def handle_love_touch(sid: str, data: dict) -> None:
             "sender_id": user_id,
             "sender_name": display_name,
             "intensity": intensity,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         },
         room=couple_room,
         skip_sid=sid,

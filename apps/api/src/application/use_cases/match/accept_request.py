@@ -7,7 +7,7 @@ import structlog
 
 from application.dtos.match_dto import AcceptMatchRequestDTO, CoupleResponse
 from domain.entities.couple import Couple
-from domain.exceptions import BusinessRuleError, ForbiddenError, NotFoundError
+from domain.exceptions import ForbiddenError, NotFoundError
 from domain.repositories.couple_repository import CoupleRepository
 from domain.repositories.match_repository import MatchRequestRepository
 

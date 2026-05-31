@@ -10,14 +10,14 @@ from infrastructure.database.models.refresh_token_model import RefreshTokenModel
 from infrastructure.database.models.user_model import UserModel
 
 __all__ = [
-    "UserModel",
-    "RefreshTokenModel",
-    "OAuthAccountModel",
     "CoupleModel",
-    "MatchRequestModel",
     "LoveEventModel",
+    "MatchRequestModel",
     "MessageModel",
+    "OAuthAccountModel",
     "PhotoModel",
+    "RefreshTokenModel",
+    "UserModel",
 ]
 
 

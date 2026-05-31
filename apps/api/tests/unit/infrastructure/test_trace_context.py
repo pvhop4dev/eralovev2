@@ -1,6 +1,5 @@
 """Tests for Trace Context module."""
 
-import asyncio
 from infrastructure.trace_context import clear_trace_id, get_trace_id, set_trace_id
 
 

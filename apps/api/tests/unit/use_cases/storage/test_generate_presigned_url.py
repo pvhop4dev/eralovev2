@@ -1,6 +1,7 @@
 """Tests for Generate Presigned URL Use Case."""
 
 from unittest.mock import MagicMock
+
 import pytest
 
 from application.dtos.storage_dto import PresignedUrlRequest

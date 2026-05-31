@@ -7,9 +7,15 @@ This is the main FastAPI application with:
 - API router registration
 """
 
-from contextlib import asynccontextmanager
+import datetime
 from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
+# Patch UTC timezone for Python versions < 3.11 (e.g. Python 3.10)
+if not hasattr(datetime, "UTC"):
+    datetime.UTC = datetime.timezone.utc  # noqa: UP017
+
+import socketio
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,6 +42,7 @@ from presentation.middleware.error_handler import (
     validation_exception_handler,
 )
 from presentation.middleware.trace_middleware import TraceMiddleware
+from presentation.socketio.server import sio
 
 settings = get_settings()
 
@@ -94,10 +101,6 @@ app.include_router(events_router, prefix="/api/v1")
 app.include_router(messages_router, prefix="/api/v1")
 app.include_router(storage_router, prefix="/api/v1")
 app.include_router(photos_router, prefix="/api/v1")
-
-# Wrap FastAPI app with Socket.IO AsyncServer
-import socketio
-from presentation.socketio.server import sio
 
 # Expose wrapped ASGI app as 'app' to match standard runner entrypoint
 socket_app = socketio.ASGIApp(sio, other_app=app)

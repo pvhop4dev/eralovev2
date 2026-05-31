@@ -1,6 +1,7 @@
 """Tests for Rate Limiter Dependency."""
 
 from unittest.mock import MagicMock
+
 import pytest
 
 from domain.exceptions import TooManyRequestsError

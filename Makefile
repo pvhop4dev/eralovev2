@@ -20,8 +20,8 @@ ifeq ($(OS),Windows_NT)
     RUN_MIGRATE_CREATE = cd apps\api && .venv\Scripts\alembic.exe revision --autogenerate -m
     RUN_ROLLBACK = cd apps\api && .venv\Scripts\alembic.exe downgrade -1
     RUN_TEST_API = cd apps\api && .venv\Scripts\pytest.exe
-    RUN_RUFF_FORMAT = apps\api\.venv\Scripts\ruff.exe format src/ tests/
-    RUN_RUFF_LINT = apps\api\.venv\Scripts\ruff.exe check src/ tests/
+    RUN_RUFF_FORMAT = apps\api\.venv\Scripts\ruff.exe format apps/api/src/ apps/api/tests/
+    RUN_RUFF_LINT = apps\api\.venv\Scripts\ruff.exe check apps/api/src/ apps/api/tests/
 else
     PYTHON = apps/api/.venv/bin/python
     PIP = apps/api/.venv/bin/pip
@@ -35,8 +35,8 @@ else
     RUN_MIGRATE_CREATE = cd apps/api && .venv/bin/alembic revision --autogenerate -m
     RUN_ROLLBACK = cd apps/api && .venv/bin/alembic downgrade -1
     RUN_TEST_API = cd apps/api && .venv/bin/pytest
-    RUN_RUFF_FORMAT = apps/api/.venv/bin/ruff format src/ tests/
-    RUN_RUFF_LINT = apps/api/.venv/bin/ruff check src/ tests/
+    RUN_RUFF_FORMAT = apps/api/.venv/bin/ruff format apps/api/src/ apps/api/tests/
+    RUN_RUFF_LINT = apps/api/.venv/bin/ruff check apps/api/src/ apps/api/tests/
 endif
 
 .PHONY: help setup dev dev-infra dev-infra-down test test-api test-web lint format db-migrate db-migration db-rollback docker-build docker-up docker-down clean

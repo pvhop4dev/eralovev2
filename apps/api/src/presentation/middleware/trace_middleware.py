@@ -18,7 +18,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import Response
 
-from infrastructure.trace_context import clear_trace_id, get_trace_id, set_trace_id
+from infrastructure.trace_context import clear_trace_id, set_trace_id
 
 logger = structlog.get_logger()
 

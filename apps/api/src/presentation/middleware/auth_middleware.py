@@ -5,14 +5,12 @@ Provides CurrentUser dependency for protected routes.
 """
 
 from typing import Annotated
-from uuid import UUID
 
-from fastapi import Depends, Request
+from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from domain.entities.user import User
 from domain.exceptions import UnauthorizedError, UserNotFoundError
-from domain.repositories.user_repository import UserRepository
 from infrastructure.auth.jwt_handler import get_user_id_from_token
 from infrastructure.database.repositories.user_repository import PostgresUserRepository
 from presentation.deps import DbSession

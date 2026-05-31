@@ -4,7 +4,7 @@ Represents a request from one user to match with another.
 """
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from uuid import UUID, uuid4
 
 from domain.exceptions import BusinessRuleError
@@ -27,7 +27,7 @@ class MatchRequest:
     def __post_init__(self) -> None:
         """Set default expiry (7 days) if not provided."""
         if self.expires_at is None:
-            self.expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+            self.expires_at = datetime.now(UTC) + timedelta(days=7)
 
     @property
     def is_pending(self) -> bool:
@@ -37,11 +37,10 @@ class MatchRequest:
     @property
     def is_expired(self) -> bool:
         """Check if request has expired."""
-        if self.status == "expired":
-            return True
-        if self.expires_at and datetime.now(timezone.utc) > self.expires_at:
-            return True
-        return False
+        return (
+            self.status == "expired"
+            or (self.expires_at is not None and datetime.now(UTC) > self.expires_at)
+        )
 
     def accept(self, start_date: date | None = None) -> None:
         """Accept the match request.
@@ -59,7 +58,7 @@ class MatchRequest:
             raise BusinessRuleError("Match request has expired")
 
         self.status = "accepted"
-        self.responded_at = datetime.now(timezone.utc)
+        self.responded_at = datetime.now(UTC)
         if start_date:
             self.proposed_start_date = start_date
 
@@ -73,7 +72,7 @@ class MatchRequest:
             raise BusinessRuleError(f"Cannot decline — status is '{self.status}'")
 
         self.status = "declined"
-        self.responded_at = datetime.now(timezone.utc)
+        self.responded_at = datetime.now(UTC)
 
     def expire(self) -> None:
         """Mark the request as expired."""

@@ -1,29 +1,30 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(true);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "light") {
-      setIsDark(false);
-      document.documentElement.setAttribute("data-theme", "light");
-    }
+    setTimeout(() => {
+      setMounted(true);
+    }, 0);
   }, []);
 
-  const toggle = () => {
-    const newTheme = isDark ? "light" : "dark";
-    setIsDark(!isDark);
-    document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
-  };
+  if (!mounted) {
+    return (
+      <div style={{ width: "40px", height: "40px" }} />
+    );
+  }
+
+  const isDark = theme === "dark";
 
   return (
     <button
       type="button"
-      onClick={toggle}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label="Toggle theme"
       title={isDark ? "Chuyển sang sáng" : "Chuyển sang tối"}
       style={{

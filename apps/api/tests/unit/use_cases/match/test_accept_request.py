@@ -1,6 +1,6 @@
 """Tests for AcceptMatchRequest Use Case."""
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
@@ -67,7 +67,7 @@ class TestAcceptMatchRequestUseCase:
         req = MatchRequest(
             sender_id=self.sender_id,
             receiver_id=self.receiver_id,
-            expires_at=datetime.now(timezone.utc) - timedelta(days=1),
+            expires_at=datetime.now(UTC) - timedelta(days=1),
         )
         self.match_repo.get_by_id.return_value = req
         dto = AcceptMatchRequestDTO(start_date=date.today())

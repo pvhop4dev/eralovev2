@@ -5,7 +5,7 @@ Request/Response schemas for authentication endpoints.
 
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RegisterRequest(BaseModel):

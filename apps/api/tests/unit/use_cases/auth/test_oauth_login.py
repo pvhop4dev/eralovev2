@@ -1,10 +1,8 @@
 """Tests for OAuth Login Use Case."""
 
-from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
-import httpx
 import pytest
 
 from application.use_cases.auth.oauth_login import OAuthLoginUseCase

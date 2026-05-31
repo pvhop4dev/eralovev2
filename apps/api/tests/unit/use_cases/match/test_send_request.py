@@ -9,7 +9,12 @@ from application.dtos.match_dto import SendMatchRequestDTO
 from application.use_cases.match.send_request import SendMatchRequestUseCase
 from domain.entities.couple import Couple
 from domain.entities.user import User
-from domain.exceptions import AlreadyMatchedError, BusinessRuleError, ConflictError, UserNotFoundError
+from domain.exceptions import (
+    AlreadyMatchedError,
+    BusinessRuleError,
+    ConflictError,
+    UserNotFoundError,
+)
 
 
 class TestSendMatchRequestUseCase:

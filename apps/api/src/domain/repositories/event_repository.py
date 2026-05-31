@@ -1,7 +1,6 @@
 """LoveEvent Repository Interface."""
 
 from abc import ABC, abstractmethod
-from datetime import date
 from uuid import UUID
 
 from domain.entities.love_event import LoveEvent

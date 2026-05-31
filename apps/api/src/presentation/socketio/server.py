@@ -3,16 +3,16 @@
 Sets up the AsyncServer and registers connection and lifecycle events.
 """
 
-import structlog
+
 import socketio
-from uuid import UUID
+import structlog
 
 from domain.exceptions import DomainError
-from infrastructure.config import get_settings
 from infrastructure.auth.jwt_handler import get_user_id_from_token
+from infrastructure.config import get_settings
 from infrastructure.database.connection import async_session_maker
-from infrastructure.database.repositories.user_repository import PostgresUserRepository
 from infrastructure.database.repositories.couple_repository import PostgresCoupleRepository
+from infrastructure.database.repositories.user_repository import PostgresUserRepository
 
 settings = get_settings()
 logger = structlog.get_logger(__name__)
@@ -46,7 +46,7 @@ async def connect(sid: str, environ: dict, auth: dict | None) -> None:
         user_id = get_user_id_from_token(token, expected_type="access")
     except DomainError as e:
         logger.warn("ws_connect_rejected", sid=sid, reason="Invalid token", error=str(e))
-        raise socketio.exceptions.ConnectionRefusedError("Invalid token")
+        raise socketio.exceptions.ConnectionRefusedError("Invalid token") from e
 
     # Fetch user and active couple
     async with async_session_maker() as db_session:
@@ -111,6 +111,6 @@ async def disconnect(sid: str) -> None:
 
 
 # Import handlers to register events
-import presentation.socketio.handlers.chat  # noqa: F401
-import presentation.socketio.handlers.love  # noqa: F401
+import presentation.socketio.handlers.chat  # noqa: E402
+import presentation.socketio.handlers.love  # noqa: F401, E402
 

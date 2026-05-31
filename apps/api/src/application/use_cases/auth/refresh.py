@@ -3,9 +3,10 @@
 Verifies the old refresh token, rotates the token pair, and persists the new token hash.
 """
 
-from datetime import datetime, timezone
-import structlog
+from datetime import UTC, datetime
 from uuid import UUID
+
+import structlog
 
 from domain.entities.refresh_token import RefreshToken
 from domain.exceptions import InvalidTokenError, TokenExpiredError, UserNotFoundError
@@ -60,8 +61,8 @@ class RefreshTokenUseCase:
         
         try:
             user_id = UUID(payload["sub"])
-        except (ValueError, KeyError):
-            raise InvalidTokenError("Invalid user ID in token")
+        except (ValueError, KeyError) as e:
+            raise InvalidTokenError("Invalid user ID in token") from e
 
         # 2. Compute token hash
         old_hash = hash_token(refresh_token)
@@ -107,7 +108,7 @@ class RefreshTokenUseCase:
 
         # 9. Persist the new refresh token hash
         new_payload = decode_token(new_refresh_token, expected_type="refresh")
-        new_expires_at = datetime.fromtimestamp(new_payload["exp"], tz=timezone.utc)
+        new_expires_at = datetime.fromtimestamp(new_payload["exp"], tz=UTC)
         new_token_hash = hash_token(new_refresh_token)
 
         new_token_entity = RefreshToken(

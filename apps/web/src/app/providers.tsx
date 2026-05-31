@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/api-client";
+import { useAuthStore } from "@/stores/auth-store";
 
 const WALLPAPERS = {
   primary: "linear-gradient(135deg, #FFF0F5 0%, #F3E8FF 50%, #FFF0F5 100%)",
@@ -27,6 +29,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
+    // Register token provider for the API client
+    apiClient.setTokenProvider(() => useAuthStore.getState().accessToken);
+
     const saved = localStorage.getItem("eralove_wallpaper");
     if (saved && saved in WALLPAPERS) {
       document.documentElement.style.setProperty(

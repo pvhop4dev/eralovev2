@@ -4,7 +4,7 @@ Represents the relationship between two matched users.
 """
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from uuid import UUID, uuid4
 
 from domain.exceptions import BusinessRuleError
@@ -75,7 +75,7 @@ class Couple:
         if self.status != "active":
             raise BusinessRuleError(f"Cannot pause — current status is '{self.status}'")
         self.status = "paused"
-        self.paused_at = datetime.now(timezone.utc)
+        self.paused_at = datetime.now(UTC)
 
     def resume(self) -> None:
         """Resume the relationship after a pause.
@@ -97,7 +97,7 @@ class Couple:
         if self.status == "broken_up":
             raise BusinessRuleError("Already broken up")
         self.status = "broken_up"
-        self.broken_up_at = datetime.now(timezone.utc)
+        self.broken_up_at = datetime.now(UTC)
 
     def update_settings(
         self,

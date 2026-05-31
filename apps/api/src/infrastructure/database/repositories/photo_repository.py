@@ -1,9 +1,9 @@
 """PostgreSQL Photo Repository Implementation."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy import and_, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.entities.photo import Photo
@@ -105,7 +105,7 @@ class PostgresPhotoRepository(PhotoRepository):
         result = await self.session.execute(stmt)
         model = result.scalar_one_or_none()
         if model:
-            model.deleted_at = datetime.now(timezone.utc)
+            model.deleted_at = datetime.now(UTC)
             await self.session.flush()
 
     @staticmethod

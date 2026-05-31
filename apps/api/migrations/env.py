@@ -4,7 +4,12 @@ Async migration configuration for PostgreSQL.
 """
 
 import asyncio
+import datetime
 import sys
+# Patch UTC timezone for Python versions < 3.11 (e.g. Python 3.10)
+if not hasattr(datetime, "UTC"):
+    datetime.UTC = datetime.timezone.utc
+
 from logging.config import fileConfig
 from pathlib import Path
 

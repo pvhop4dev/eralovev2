@@ -21,7 +21,7 @@ export interface EventPhoto {
   height: number | null;
   file_size: number | null;
   mime_type: string | null;
-  exif_data: any | null;
+  exif_data: Record<string, unknown> | null;
   created_at: string | null;
 }
 
@@ -39,7 +39,7 @@ export interface AddPhotoInput {
   height?: number;
   file_size?: number;
   mime_type?: string;
-  exif_data?: any;
+  exif_data?: Record<string, unknown>;
   event_id?: string;
 }
 

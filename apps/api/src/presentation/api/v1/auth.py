@@ -9,37 +9,36 @@ POST /api/v1/auth/forgot-password — Send password reset email
 """
 
 import secrets
-
-from fastapi import APIRouter, Response, Cookie, Depends
 from typing import Annotated
 
-from presentation.middleware.rate_limiter import RateLimiter
+from fastapi import APIRouter, Cookie, Depends, Response
 
 from application.dtos.auth_dto import (
-    AuthResponse,
     ForgotPasswordRequest,
     LoginRequest,
     OAuthLoginRequest,
     RegisterRequest,
-    TokenResponse,
     VerifyEmailRequest,
 )
 from application.use_cases.auth.login import LoginUserUseCase
-from application.use_cases.auth.register import RegisterUserUseCase
-from application.use_cases.auth.refresh import RefreshTokenUseCase
 from application.use_cases.auth.oauth_login import OAuthLoginUseCase
+from application.use_cases.auth.refresh import RefreshTokenUseCase
+from application.use_cases.auth.register import RegisterUserUseCase
 from application.use_cases.auth.verify_email import VerifyEmailUseCase
-from domain.exceptions import UnauthorizedError, UserNotFoundError, ValidationError
+from domain.exceptions import UnauthorizedError
 from infrastructure.auth.jwt_handler import (
-    create_access_token,
-    get_user_id_from_token,
     hash_token,
 )
-from infrastructure.database.repositories.refresh_token_repository import PostgresRefreshTokenRepository
-from infrastructure.database.repositories.oauth_account_repository import PostgresOAuthAccountRepository
+from infrastructure.database.repositories.oauth_account_repository import (
+    PostgresOAuthAccountRepository,
+)
+from infrastructure.database.repositories.refresh_token_repository import (
+    PostgresRefreshTokenRepository,
+)
 from infrastructure.database.repositories.user_repository import PostgresUserRepository
 from infrastructure.email.email_service import send_reset_password_email
 from presentation.deps import DbSession, RedisClient
+from presentation.middleware.rate_limiter import RateLimiter
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -239,10 +238,9 @@ async def forgot_password(
         await redis.setex(reset_key, 900, str(user.id))  # 15 min TTL
 
         # Send email
-        try:
+        import contextlib
+        with contextlib.suppress(Exception):
             await send_reset_password_email(user.email, reset_token)
-        except Exception:
-            pass  # Don't fail the request
 
     # Always return success to prevent email enumeration
     return {

@@ -1,9 +1,9 @@
 """PostgreSQL Message Repository Implementation."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy import and_, func, select, update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.entities.message import Message
@@ -97,7 +97,7 @@ class PostgresMessageRepository(MessageRepository):
 
     async def mark_read_for_user(self, couple_id: UUID, reader_id: UUID) -> int:
         """Mark all unread messages as read (messages NOT sent by reader)."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stmt = (
             update(MessageModel)
             .where(

@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import { LoveEvent } from "./use-events";
 
 export interface UserProfile {
   id: string;
@@ -38,8 +39,8 @@ export interface DashboardData {
   partner: UserProfile | null;
   days_together: number;
   daily_quote: DailyQuote;
-  upcoming_events: any[];
-  memory_flashback: any[];
+  upcoming_events: (LoveEvent & { days_until: number })[];
+  memory_flashback: LoveEvent[];
 }
 
 export interface MoodCheckinInput {

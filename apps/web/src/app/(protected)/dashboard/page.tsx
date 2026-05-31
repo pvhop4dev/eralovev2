@@ -6,6 +6,7 @@ import { Button } from "@/components/atoms/button";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDashboardData, useCheckinMood } from "@/hooks/use-dashboard";
+import { LoveEvent } from "@/hooks/use-events";
 
 const MOOD_EMOJIS = ["😊", "😍", "🥰", "😢", "😤", "😴", "🤗", "😎"];
 
@@ -22,7 +23,6 @@ export default function DashboardPage() {
   const checkinMoodMutation = useCheckinMood();
 
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
-  const [moodNote, setMoodNote] = useState("");
   const [moodSubmitted, setMoodSubmitted] = useState(false);
   const [showUnmatchModal, setShowUnmatchModal] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -65,7 +65,7 @@ export default function DashboardPage() {
     try {
       await checkinMoodMutation.mutateAsync({
         mood_emoji: selectedMood,
-        mood_note: moodNote || undefined,
+        mood_note: undefined,
       });
       setMoodSubmitted(true);
     } catch {}
@@ -265,7 +265,7 @@ export default function DashboardPage() {
               </h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {memoryFlashback.map((event: any) => {
+              {memoryFlashback.map((event: LoveEvent) => {
                 const eventYear = new Date(event.event_date).getFullYear();
                 const currentYear = new Date().getFullYear();
                 const yearsAgo = currentYear - eventYear;
@@ -453,7 +453,7 @@ export default function DashboardPage() {
 
           {upcomingEvents.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {upcomingEvents.map((event: any) => {
+              {upcomingEvents.map((event: LoveEvent & { days_until: number }) => {
                 const daysUntil = event.days_until;
                 let daysText = "";
                 if (daysUntil === 0) {

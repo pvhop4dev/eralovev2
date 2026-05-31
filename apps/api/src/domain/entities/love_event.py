@@ -5,7 +5,7 @@ birthdays, travel, and custom events.
 """
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, time, timezone
+from datetime import UTC, date, datetime, time
 from uuid import UUID, uuid4
 
 from domain.exceptions import BusinessRuleError
@@ -84,7 +84,7 @@ class LoveEvent:
         """Soft delete the event (recoverable for 30 days)."""
         if self.is_deleted:
             raise BusinessRuleError("Event is already deleted")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)
 
     def restore(self) -> None:
         """Restore a soft-deleted event."""

@@ -1,14 +1,15 @@
 """Integration tests for Socket.IO WebSocket handlers."""
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
+import pytest
 import socketio
+
 from domain.exceptions import InvalidTokenError
-from presentation.socketio.server import connect, disconnect
-from presentation.socketio.handlers.chat import handle_message, handle_typing, handle_read
+from presentation.socketio.handlers.chat import handle_message, handle_read, handle_typing
 from presentation.socketio.handlers.love import handle_love_touch
+from presentation.socketio.server import connect, disconnect
 
 
 @pytest.mark.asyncio

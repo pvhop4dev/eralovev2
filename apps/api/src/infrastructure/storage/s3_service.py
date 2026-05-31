@@ -1,8 +1,8 @@
 """AWS S3 Storage Service Implementation."""
 
 import boto3
-from botocore.config import Config
 import structlog
+from botocore.config import Config
 
 from infrastructure.config import get_settings
 

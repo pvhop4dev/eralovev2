@@ -1,5 +1,6 @@
+from datetime import UTC, datetime
+
 import structlog
-from datetime import datetime, timezone
 
 from application.dtos.auth_dto import AuthResponse, LoginRequest, UserResponse
 from domain.entities.refresh_token import RefreshToken
@@ -72,7 +73,7 @@ class LoginUserUseCase:
 
         # 6. Persist refresh token hash to DB
         payload = decode_token(refresh_token, expected_type="refresh")
-        expires_at = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+        expires_at = datetime.fromtimestamp(payload["exp"], tz=UTC)
         token_hash = hash_token(refresh_token)
         
         token_entity = RefreshToken(

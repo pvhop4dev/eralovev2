@@ -16,7 +16,6 @@ from presentation.deps import DbSession
 from presentation.middleware.auth_middleware import CurrentUser
 from presentation.socketio.server import sio
 
-
 router = APIRouter(prefix="/messages", tags=["Messages"])
 
 

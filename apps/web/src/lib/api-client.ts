@@ -178,7 +178,7 @@ class ApiClient {
             },
           };
           return this.request<T>(method, path, updatedOptions);
-        } catch (refreshError) {
+        } catch {
           throw error; // throw original 401 error if refresh failed
         }
       }

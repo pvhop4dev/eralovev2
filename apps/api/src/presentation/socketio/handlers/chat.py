@@ -3,10 +3,11 @@
 Handles events like sending messages, typing status, and read receipts.
 """
 
-import structlog
 from uuid import UUID, uuid4
 
-from domain.entities.message import Message, MESSAGE_TYPES
+import structlog
+
+from domain.entities.message import MESSAGE_TYPES, Message
 from infrastructure.database.connection import async_session_maker
 from infrastructure.database.repositories.message_repository import PostgresMessageRepository
 from presentation.socketio.server import sio
@@ -20,7 +21,6 @@ async def handle_message(sid: str, data: dict) -> None:
     async with sio.session(sid) as session:
         user_id = session.get("user_id")
         couple_id = session.get("couple_id")
-        display_name = session.get("display_name")
 
     if not user_id or not couple_id:
         logger.warn("ws_chat_message_rejected", sid=sid, reason="Unauthorized")

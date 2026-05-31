@@ -4,7 +4,7 @@ Represents a chat message between a couple.
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from domain.exceptions import BusinessRuleError
@@ -51,13 +51,13 @@ class Message:
         """Mark message as delivered."""
         if self.status == "sent":
             self.status = "delivered"
-            self.delivered_at = datetime.now(timezone.utc)
+            self.delivered_at = datetime.now(UTC)
 
     def mark_read(self) -> None:
         """Mark message as read."""
         if self.status in ("sent", "delivered"):
             self.status = "read"
-            self.read_at = datetime.now(timezone.utc)
+            self.read_at = datetime.now(UTC)
             if not self.delivered_at:
                 self.delivered_at = self.read_at
 
@@ -73,7 +73,7 @@ class Message:
         """Soft delete the message."""
         if self.is_deleted:
             raise BusinessRuleError("Message is already deleted")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)
 
     def to_dict(self) -> dict:
         """Serialize to dictionary."""

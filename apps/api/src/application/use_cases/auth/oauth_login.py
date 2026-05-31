@@ -3,10 +3,10 @@
 Handles authentication with third-party providers (Google).
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 import httpx
 import structlog
-from uuid import UUID
 
 from application.dtos.auth_dto import AuthResponse, UserResponse
 from domain.entities.oauth_account import OAuthAccount
@@ -140,7 +140,7 @@ class OAuthLoginUseCase:
 
         # 8. Persist refresh token hash
         refresh_payload = decode_token(refresh_token, expected_type="refresh")
-        expires_at = datetime.fromtimestamp(refresh_payload["exp"], tz=timezone.utc)
+        expires_at = datetime.fromtimestamp(refresh_payload["exp"], tz=UTC)
         token_hash = hash_token(refresh_token)
 
         token_entity = RefreshToken(
@@ -182,7 +182,7 @@ class OAuthLoginUseCase:
                 )
             except httpx.RequestError as e:
                 logger.error("oauth_google_verify_failed", error=str(e))
-                raise InvalidTokenError("Failed to connect to Google OAuth service")
+                raise InvalidTokenError("Failed to connect to Google OAuth service") from e
 
             if response.status_code != 200:
                 raise InvalidTokenError("Invalid Google ID token")

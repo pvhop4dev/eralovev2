@@ -1,7 +1,7 @@
 """Refresh Token Domain Entity."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 class RefreshToken:
@@ -28,9 +28,9 @@ class RefreshToken:
         # Convert expires_at to timezone-aware UTC if it is naive
         exp = self.expires_at
         if exp.tzinfo is None:
-            exp = exp.replace(tzinfo=timezone.utc)
+            exp = exp.replace(tzinfo=UTC)
             
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         return now > exp
 
     def to_dict(self) -> dict:

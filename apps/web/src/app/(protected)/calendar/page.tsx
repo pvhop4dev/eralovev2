@@ -16,6 +16,7 @@ import {
   useAddPhoto,
   useDeletePhoto,
 } from "@/hooks/use-photos";
+import { apiClient } from "@/lib/api-client";
 
 const EVENT_TYPES = [
   { id: "date", icon: "❤️", label: "Hẹn hò" },
@@ -100,10 +101,17 @@ export default function CalendarPage() {
   useEffect(() => {
     if (selectedEvents.length > 0) {
       if (!selectedEventIdForPhotos || !selectedEvents.some((e) => e.id === selectedEventIdForPhotos)) {
-        setSelectedEventIdForPhotos(selectedEvents[0].id);
+        const firstEventId = selectedEvents[0].id;
+        setTimeout(() => {
+          setSelectedEventIdForPhotos(firstEventId);
+        }, 0);
       }
     } else {
-      setSelectedEventIdForPhotos(null);
+      if (selectedEventIdForPhotos !== null) {
+        setTimeout(() => {
+          setSelectedEventIdForPhotos(null);
+        }, 0);
+      }
     }
   }, [selectedEvents, selectedEventIdForPhotos]);
 
@@ -142,8 +150,8 @@ export default function CalendarPage() {
       if (selectedDate === formData.event_date) {
         setSelectedDate(formData.event_date);
       }
-    } catch (err: any) {
-      toast.error(err.message || "Lỗi tạo sự kiện");
+    } catch (err) {
+      toast.error((err as Error).message || "Lỗi tạo sự kiện");
     }
   };
 
@@ -168,8 +176,8 @@ export default function CalendarPage() {
 
       toast.success("Cập nhật sự kiện thành công! ✏️");
       setShowEdit(false);
-    } catch (err: any) {
-      toast.error(err.message || "Lỗi cập nhật sự kiện");
+    } catch (err) {
+      toast.error((err as Error).message || "Lỗi cập nhật sự kiện");
     }
   };
 
@@ -182,8 +190,8 @@ export default function CalendarPage() {
       if (updatedSelectedEvents.length === 0) {
         setShowDayDetail(false);
       }
-    } catch (err: any) {
-      toast.error(err.message || "Lỗi xóa sự kiện");
+    } catch (err) {
+      toast.error((err as Error).message || "Lỗi xóa sự kiện");
     }
   };
 
@@ -195,28 +203,15 @@ export default function CalendarPage() {
     const toastId = toast.loading("Đang tải ảnh kỷ niệm lên...");
     try {
       // 1. Get presigned upload URL
-      const presignedRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/storage/presigned-url`,
+      const presignedData = await apiClient.post<{ upload_url: string; file_url: string }>(
+        "/api/v1/storage/presigned-url",
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
-          },
-          body: JSON.stringify({
-            file_name: file.name,
-            content_type: file.type,
-            file_type: "event",
-          }),
+          file_name: file.name,
+          content_type: file.type,
+          file_type: "event",
         }
       );
-
-      if (!presignedRes.ok) {
-        throw new Error("Không thể tạo link tải ảnh lên");
-      }
-
-      const presignedData = await presignedRes.json();
-      const { upload_url, file_url } = presignedData.data;
+      const { upload_url, file_url } = presignedData;
 
       // 2. Put file to S3/MinIO
       const uploadRes = await fetch(upload_url, {
@@ -245,8 +240,8 @@ export default function CalendarPage() {
       });
 
       toast.success("Tải kỷ niệm lên thành công! 📸", { id: toastId });
-    } catch (err: any) {
-      toast.error(err.message || "Đã xảy ra lỗi khi tải ảnh lên", { id: toastId });
+    } catch (err) {
+      toast.error((err as Error).message || "Đã xảy ra lỗi khi tải ảnh lên", { id: toastId });
     }
   };
 

@@ -3,13 +3,9 @@
 GET /api/v1/dashboard — Aggregated dashboard data
 """
 
-from datetime import date, datetime, timezone
 
 from fastapi import APIRouter
 
-from application.dtos.auth_dto import UserResponse
-from application.dtos.match_dto import CoupleResponse
-from domain.exceptions import CoupleNotFoundError
 from infrastructure.database.repositories.couple_repository import PostgresCoupleRepository
 from infrastructure.database.repositories.user_repository import PostgresUserRepository
 from infrastructure.quotes.love_quotes import get_daily_quote
@@ -76,7 +72,9 @@ async def get_dashboard(
             }
 
         # Get upcoming and memory flashback events
-        from infrastructure.database.repositories.event_repository import PostgresLoveEventRepository
+        from infrastructure.database.repositories.event_repository import (
+            PostgresLoveEventRepository,
+        )
         event_repo = PostgresLoveEventRepository(session)
         upcoming = await event_repo.get_upcoming(couple.id, 7)
         flashback = await event_repo.get_past_events_on_this_day(couple.id)

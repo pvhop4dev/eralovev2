@@ -4,7 +4,7 @@ Creates a new user account, hashes password, sends verification OTP.
 """
 
 import secrets
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 import structlog
@@ -113,7 +113,7 @@ class RegisterUserUseCase:
 
         # 9.1 Persist refresh token hash to DB
         payload = decode_token(refresh_token, expected_type="refresh")
-        expires_at = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+        expires_at = datetime.fromtimestamp(payload["exp"], tz=UTC)
         token_hash = hash_token(refresh_token)
         
         token_entity = RefreshToken(

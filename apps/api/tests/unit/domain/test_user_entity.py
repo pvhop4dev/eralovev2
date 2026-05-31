@@ -1,6 +1,6 @@
 """Tests for User Entity."""
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from uuid import uuid4
 
 import pytest
@@ -106,7 +106,7 @@ class TestUserEntity:
             email="a@b.com",
             display_name="Test",
             username="test",
-            deleted_at=datetime.now(timezone.utc),
+            deleted_at=datetime.now(UTC),
         )
         with pytest.raises(AlreadyDeletedError):
             user.soft_delete()
@@ -116,7 +116,7 @@ class TestUserEntity:
             email="a@b.com",
             display_name="Test",
             username="test",
-            deleted_at=datetime.now(timezone.utc),
+            deleted_at=datetime.now(UTC),
         )
         assert user.is_deleted is True
         user.restore()

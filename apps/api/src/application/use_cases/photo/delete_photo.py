@@ -4,6 +4,7 @@ Handles soft deleting a photo in the couple space.
 """
 
 from uuid import UUID
+
 import structlog
 
 from domain.exceptions import ForbiddenError, NotFoundError

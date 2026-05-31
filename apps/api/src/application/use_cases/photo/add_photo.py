@@ -4,13 +4,14 @@ Handles registering a new photo metadata in the system.
 """
 
 from uuid import UUID, uuid4
+
 import structlog
 
 from application.dtos.photo_dto import AddPhotoRequest, PhotoResponse
 from domain.entities.photo import Photo
-from domain.exceptions import CoupleNotFoundError, ForbiddenError, NotFoundError
-from domain.repositories.photo_repository import PhotoRepository
+from domain.exceptions import ForbiddenError, NotFoundError
 from domain.repositories.event_repository import LoveEventRepository
+from domain.repositories.photo_repository import PhotoRepository
 
 logger = structlog.get_logger()
 

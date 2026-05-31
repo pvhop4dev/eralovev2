@@ -1,14 +1,14 @@
 """Tests for Unmatch Use Case."""
 
+from datetime import date
 from unittest.mock import AsyncMock
 from uuid import uuid4
-from datetime import date
 
 import pytest
 
 from application.use_cases.match.unmatch import UnmatchUseCase
 from domain.entities.couple import Couple
-from domain.exceptions import CoupleNotFoundError, BusinessRuleError
+from domain.exceptions import BusinessRuleError, CoupleNotFoundError
 
 
 class TestUnmatchUseCase:

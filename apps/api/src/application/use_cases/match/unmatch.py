@@ -1,6 +1,7 @@
 """Unmatch Use Case."""
 
 from uuid import UUID
+
 import structlog
 
 from domain.exceptions import CoupleNotFoundError

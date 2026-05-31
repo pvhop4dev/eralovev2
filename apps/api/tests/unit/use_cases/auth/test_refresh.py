@@ -1,6 +1,6 @@
 """Tests for Refresh Token Use Case."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock
 from uuid import uuid4
 
@@ -27,9 +27,9 @@ class TestRefreshTokenUseCase:
 
     def _make_token_entity(self, user_id, token_hash, expired=False) -> RefreshToken:
         if expired:
-            expires_at = datetime.now(timezone.utc) - timedelta(days=1)
+            expires_at = datetime.now(UTC) - timedelta(days=1)
         else:
-            expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+            expires_at = datetime.now(UTC) + timedelta(days=7)
             
         return RefreshToken(
             id=uuid4(),
@@ -73,7 +73,6 @@ class TestRefreshTokenUseCase:
         """Token is valid signature wise but hash is not in DB."""
         user_id = uuid4()
         old_refresh_token = create_refresh_token(user_id)
-        old_hash = hash_token(old_refresh_token)
 
         user_repo = AsyncMock()
         token_repo = AsyncMock()
