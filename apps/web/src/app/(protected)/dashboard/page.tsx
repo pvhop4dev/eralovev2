@@ -233,7 +233,9 @@ export default function DashboardPage() {
             <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--muted-foreground)" }}>
               {s.label}
             </div>
-          </div>
+          </Link>
+        ))}
+      </div>
 
       {/* Memory Flashback */}
       {couple && memoryFlashback.length > 0 && (

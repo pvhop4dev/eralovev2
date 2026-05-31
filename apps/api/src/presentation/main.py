@@ -28,6 +28,7 @@ from presentation.api.v1.match import router as match_router
 from presentation.api.v1.messages import router as messages_router
 from presentation.api.v1.mood import router as mood_router
 from presentation.api.v1.onboarding import router as onboarding_router
+from presentation.api.v1.photos import router as photos_router
 from presentation.api.v1.storage import router as storage_router
 from presentation.api.v1.users import router as users_router
 from presentation.middleware.error_handler import (
@@ -92,6 +93,7 @@ app.include_router(mood_router, prefix="/api/v1")
 app.include_router(events_router, prefix="/api/v1")
 app.include_router(messages_router, prefix="/api/v1")
 app.include_router(storage_router, prefix="/api/v1")
+app.include_router(photos_router, prefix="/api/v1")
 
 # Wrap FastAPI app with Socket.IO AsyncServer
 import socketio
