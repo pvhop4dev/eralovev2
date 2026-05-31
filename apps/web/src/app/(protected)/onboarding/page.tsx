@@ -13,6 +13,13 @@ const LOVE_LANGUAGES = [
   { id: "touch", emoji: "🤗", label: "Cử chỉ", desc: "Thích ôm, nắm tay, gần gũi" },
 ];
 
+const WALLPAPERS = [
+  { id: "primary", name: "Hồng mộng mơ", value: "linear-gradient(135deg, #FFF0F5 0%, #F3E8FF 50%, #FFF0F5 100%)", preview: "linear-gradient(135deg, #FF6B9D 0%, #C084FC 100%)" },
+  { id: "warm", name: "Cam hoàng hôn", value: "linear-gradient(135deg, #FFF7ED 0%, #FFE4E6 50%, #FFF7ED 100%)", preview: "linear-gradient(135deg, #FFB347 0%, #FF6B9D 100%)" },
+  { id: "cool", name: "Mint tươi mát", value: "linear-gradient(135deg, #ECFDF5 0%, #EEF2F6 50%, #ECFDF5 100%)", preview: "linear-gradient(135deg, #C084FC 0%, #6EE7B7 100%)" },
+  { id: "deep", name: "Tím quyến rũ", value: "linear-gradient(135deg, #FAF5FF 0%, #F5F3FF 50%, #FAF5FF 100%)", preview: "linear-gradient(135deg, #7C3AED 0%, #C084FC 100%)" },
+];
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -22,9 +29,19 @@ export default function OnboardingPage() {
     date_of_birth: "",
     love_language: "",
     avatar_url: "",
+    wallpaper: "primary",
   });
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+
+  const handleWallpaperChange = (wpId: string) => {
+    setFormData((prev) => ({ ...prev, wallpaper: wpId }));
+    const selected = WALLPAPERS.find((w) => w.id === wpId);
+    if (selected) {
+      document.documentElement.style.setProperty("--gradient-bg", selected.value);
+    }
+  };
+
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -87,7 +104,7 @@ export default function OnboardingPage() {
     }
   };
 
-  const steps = ["Chào mừng", "Thông tin", "Ngôn ngữ yêu", "Hoàn thành"];
+  const steps = ["Chào mừng", "Thông tin", "Ngôn ngữ yêu", "Hình nền", "Hoàn thành"];
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -109,6 +126,7 @@ export default function OnboardingPage() {
         }
       );
       if (res.ok) {
+        localStorage.setItem("eralove_wallpaper", formData.wallpaper);
         router.push("/match");
       }
     } catch {
@@ -117,6 +135,7 @@ export default function OnboardingPage() {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div
@@ -363,8 +382,70 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* Step 3: Complete */}
+          {/* Step 3: Wallpaper Chooser */}
           {step === 3 && (
+            <div>
+              <h2
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "1.25rem",
+                  fontWeight: 700,
+                  textAlign: "center",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                Chọn hình nền 🎨
+              </h2>
+              <p style={{ color: "var(--muted-foreground)", fontSize: "0.85rem", textAlign: "center", marginBottom: "1.5rem" }}>
+                Hình nền này sẽ được hiển thị cho không gian yêu thương của bạn.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.5rem" }}>
+                {WALLPAPERS.map((wp) => (
+                  <button
+                    key={wp.id}
+                    type="button"
+                    onClick={() => handleWallpaperChange(wp.id)}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      padding: "1rem 0.5rem",
+                      borderRadius: "var(--radius-md)",
+                      border: `2px solid ${formData.wallpaper === wp.id ? "var(--color-rose-petal)" : "var(--border)"}`,
+                      background: "var(--card)",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      transform: formData.wallpaper === wp.id ? "scale(1.03)" : "scale(1)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "60px",
+                        borderRadius: "var(--radius-sm)",
+                        background: wp.preview,
+                        marginBottom: "0.5rem",
+                      }}
+                    />
+                    <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--foreground)" }}>
+                      {wp.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: "0.75rem" }}>
+                <Button variant="ghost" onClick={() => setStep(2)} style={{ flex: 1 }}>
+                  ← Quay lại
+                </Button>
+                <Button onClick={() => setStep(4)} style={{ flex: 2 }}>
+                  Tiếp tục →
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Complete */}
+          {step === 4 && (
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🎉</div>
               <h2
@@ -402,11 +483,12 @@ export default function OnboardingPage() {
                 <div style={{ fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
                   <strong>📛</strong> {formData.display_name || "—"}<br />
                   <strong>🎂</strong> {formData.date_of_birth || "Chưa cập nhật"}<br />
-                  <strong>💕</strong> {LOVE_LANGUAGES.find(l => l.id === formData.love_language)?.label || "Chưa chọn"}
+                  <strong>💕</strong> {LOVE_LANGUAGES.find(l => l.id === formData.love_language)?.label || "Chưa chọn"}<br />
+                  <strong>🎨</strong> {WALLPAPERS.find(w => w.id === formData.wallpaper)?.name || "Mặc định"}
                 </div>
               </div>
               <div style={{ display: "flex", gap: "0.75rem" }}>
-                <Button variant="ghost" onClick={() => setStep(2)} style={{ flex: 1 }}>
+                <Button variant="ghost" onClick={() => setStep(3)} style={{ flex: 1 }}>
                   ← Sửa lại
                 </Button>
                 <Button onClick={handleSubmit} isLoading={isLoading} style={{ flex: 2 }} size="lg">

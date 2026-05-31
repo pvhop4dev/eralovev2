@@ -46,6 +46,8 @@ async def get_dashboard(
         "partner": None,
         "daily_quote": get_daily_quote(),
         "days_together": 0,
+        "upcoming_events": [],
+        "memory_flashback": [],
     }
 
     if couple:
@@ -73,4 +75,14 @@ async def get_dashboard(
                 "zodiac_sign": partner.zodiac_sign,
             }
 
+        # Get upcoming and memory flashback events
+        from infrastructure.database.repositories.event_repository import PostgresLoveEventRepository
+        event_repo = PostgresLoveEventRepository(session)
+        upcoming = await event_repo.get_upcoming(couple.id, 7)
+        flashback = await event_repo.get_past_events_on_this_day(couple.id)
+
+        dashboard_data["upcoming_events"] = [e.to_dict() for e in upcoming]
+        dashboard_data["memory_flashback"] = [e.to_dict() for e in flashback]
+
     return {"data": dashboard_data, "meta": None, "error": None}
+

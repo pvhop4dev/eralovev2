@@ -113,18 +113,18 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Step 1: Welcome + display name
 - [x] Step 2: Avatar upload + DOB (for zodiac)
 - [x] Step 3: Mini love language quiz (3 questions)
-- [ ] Choose default wallpaper
+- [x] Choose default wallpaper
 - [x] Progress bar (heart steps)
 - [ ] Framer Motion page transitions
 
 #### 3.4 Frontend: Match System
-- [ ] Search user page (by username/email)
+- [x] Search user page (by username/email)
 - [ ] User profile preview card
-- [ ] Send match request with custom message
-- [ ] Match requests inbox (sent & received)
-- [ ] Accept flow: choose start date, confetti animation
-- [ ] Decline flow: gentle rejection
-- [ ] QR code generation & scanner for quick match
+- [x] Send match request with custom message
+- [x] Match requests inbox (sent & received)
+- [x] Accept flow: choose start date, confetti animation
+- [x] Decline flow: gentle rejection
+- [x] QR code generation & scanner for quick match
 
 #### Deliverable
 - New user goes through onboarding wizard
@@ -139,33 +139,33 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 4.1 Backend: Dashboard API
-- [ ] Aggregated `GET /dashboard` endpoint
-- [ ] Days together calculation from `couples.start_date`
-- [ ] Daily love quote (cached in Redis, 500+ quotes seeded)
-- [ ] Upcoming events (next 7 days)
-- [ ] Memory flashback ("This day last year...")
-- [ ] Mood check-in endpoints
+- [x] Aggregated `GET /dashboard` endpoint
+- [x] Days together calculation from `couples.start_date`
+- [x] Daily love quote (cached in Redis, 500+ quotes seeded)
+- [x] Upcoming events (next 7 days)
+- [x] Memory flashback ("This day last year...")
+- [x] Mood check-in endpoints
 
 #### 4.2 Frontend: Dashboard
-- [ ] Couple photo + names + days counter ("365 ngay")
-- [ ] Quick shortcut grid (Calendar, Map, Chat, Ari)
-- [ ] Daily love card with quote
-- [ ] Upcoming events section
-- [ ] Memory flashback card (if applicable)
-- [ ] Mood check-in widget (emoji picker for both users)
-- [ ] Responsive layout (desktop sidebar + mobile bottom nav)
+- [x] Couple photo + names + days counter ("365 ngay")
+- [x] Quick shortcut grid (Calendar, Map, Chat, Ari)
+- [x] Daily love card with quote
+- [x] Upcoming events section
+- [x] Memory flashback card (if applicable)
+- [x] Mood check-in widget (emoji picker for both users)
+- [x] Responsive layout (desktop sidebar + mobile bottom nav)
 
 #### 4.3 Navigation & Layout
-- [ ] Desktop: Sidebar navigation with icons
-- [ ] Mobile: Bottom tab navigation
+- [x] Desktop: Sidebar navigation with icons
+- [x] Mobile: Bottom tab navigation
 - [ ] Header with couple avatar + notification bell
 - [ ] Notification dropdown (basic)
-- [ ] Dark mode toggle
+- [x] Dark mode toggle
 
 #### Deliverable
-- Dashboard shows couple info, daily quote, mood check-in
-- Navigation works on desktop and mobile
-- Dark mode works throughout app
+- [x] Dashboard shows couple info, daily quote, mood check-in
+- [x] Navigation works on desktop and mobile
+- [x] Dark mode works throughout app
 
 ---
 

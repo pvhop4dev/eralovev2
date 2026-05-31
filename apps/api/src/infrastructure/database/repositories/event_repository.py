@@ -117,6 +117,23 @@ class PostgresLoveEventRepository(LoveEventRepository):
             model.deleted_at = datetime.now(timezone.utc)
             await self.session.flush()
 
+    async def get_past_events_on_this_day(self, couple_id: UUID) -> list[LoveEvent]:
+        today = date.today()
+        stmt = (
+            select(LoveEventModel)
+            .where(
+                LoveEventModel.couple_id == couple_id,
+                extract("month", LoveEventModel.event_date) == today.month,
+                extract("day", LoveEventModel.event_date) == today.day,
+                LoveEventModel.event_date < today,
+                LoveEventModel.deleted_at.is_(None),
+            )
+            .order_by(LoveEventModel.event_date.desc())
+        )
+        result = await self.session.execute(stmt)
+        return [self._to_entity(m) for m in result.scalars().all()]
+
+
     @staticmethod
     def _to_entity(model: LoveEventModel) -> LoveEvent:
         return LoveEvent(

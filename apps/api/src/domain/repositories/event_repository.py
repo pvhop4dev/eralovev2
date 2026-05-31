@@ -35,3 +35,8 @@ class LoveEventRepository(ABC):
     @abstractmethod
     async def soft_delete(self, event_id: UUID) -> None:
         """Soft delete an event."""
+
+    @abstractmethod
+    async def get_past_events_on_this_day(self, couple_id: UUID) -> list[LoveEvent]:
+        """Get all past events for a couple that happened on this day in previous years."""
+

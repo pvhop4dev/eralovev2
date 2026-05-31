@@ -118,13 +118,13 @@
 | # | Task | Status | File |
 |---|------|--------|------|
 | 3.13 | Match page (search + send request) | ✅ | `app/(protected)/match/page.tsx` |
-| 3.14 | Match requests inbox | 🟡 | `app/(protected)/match/requests/` (exists) |
+| 3.14 | Match requests inbox | ✅ | `apps/web/src/app/(protected)/match/requests/page.tsx` |
 | 3.15 | Onboarding wizard (multi-step) | ✅ | `app/(protected)/onboarding/page.tsx` |
-| 3.16 | QR code match | ❌ | — |
-| 3.17 | Love language quiz in onboarding | ❌ | — |
-| 3.18 | Wallpaper chooser | ❌ | — |
+| 3.16 | QR code match | ✅ | `apps/web/src/app/(protected)/match/page.tsx` |
+| 3.17 | Love language quiz in onboarding | ✅ | `apps/web/src/app/(protected)/onboarding/page.tsx` |
+| 3.18 | Wallpaper chooser | ✅ | `apps/web/src/app/(protected)/onboarding/page.tsx` |
 
-**Sprint 3 Completion: ~80%**
+**Sprint 3 Completion: 100%** 🎉
 
 ---
 
@@ -138,7 +138,7 @@
 | 4.2 | Daily love quote (500+ seeded, Redis cached) | ✅ | `infrastructure/quotes/love_quotes.py` |
 | 4.3 | Mood check-in endpoint | ✅ | `presentation/api/v1/mood.py` |
 | 4.4 | Days together calculation | ✅ | via dashboard endpoint |
-| 4.5 | Memory flashback ("This day last year") | ❌ | — |
+| 4.5 | Memory flashback ("This day last year") | ✅ | via dashboard endpoint |
 
 #### Frontend
 
@@ -152,10 +152,10 @@
 | 4.11 | Mobile bottom nav | ✅ | `components/organisms/bottom-nav.tsx` |
 | 4.12 | Protected layout | ✅ | `app/(protected)/layout.tsx` |
 | 4.13 | Notification dropdown | ❌ | — |
-| 4.14 | Memory flashback card | ❌ | — |
-| 4.15 | Upcoming events section | ❌ | — (API exists but not wired to dashboard) |
+| 4.14 | Memory flashback card | ✅ | in dashboard |
+| 4.15 | Upcoming events section | ✅ | in dashboard |
 
-**Sprint 4 Completion: ~70%**
+**Sprint 4 Completion: ~93%**
 
 ---
 
