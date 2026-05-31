@@ -1,6 +1,7 @@
 # Eralove - Phase 2: Core Features Implementation Plan
 
 ## Goal
+
 Full Calendar experience, Love Map, AI Mascot Ari, Gamification (Quiz & Quests), OS Widgets.
 
 ## Timeline: Month 4-6 (6 sprints)
@@ -10,6 +11,7 @@ Full Calendar experience, Love Map, AI Mascot Ari, Gamification (Quiz & Quests),
 ## Sprint 8: Calendar Header Widget (Week 15-16)
 
 ### Tasks
+
 - [ ] Backend: Weather API integration (OpenWeatherMap) — cache in Redis 1h
 - [ ] Backend: Horoscope service (12 zodiac signs daily) — cache in Redis 24h
 - [ ] Backend: Feng shui / lunar calendar calculation (Python `lunardate` lib)
@@ -29,6 +31,7 @@ Full Calendar experience, Love Map, AI Mascot Ari, Gamification (Quiz & Quests),
 ## Sprint 9: Love Map (Week 17-18)
 
 ### Tasks
+
 - [ ] Backend: Location aggregation endpoints
 - [ ] Backend: Heatmap data generation
 - [ ] Backend: Journey (chronological waypoints)
@@ -49,6 +52,7 @@ Full Calendar experience, Love Map, AI Mascot Ari, Gamification (Quiz & Quests),
 ## Sprint 10: Mascot Ari — AI Chatbot (Week 19-20)
 
 ### Tasks
+
 - [ ] Backend: Claude API integration service
 - [ ] Backend: Ari system prompt engineering
   - Personality: cute pink-purple cat, warm, non-judgmental
@@ -71,6 +75,7 @@ Full Calendar experience, Love Map, AI Mascot Ari, Gamification (Quiz & Quests),
 ## Sprint 11: Ari Virtual Pet (Week 21-22)
 
 ### Tasks
+
 - [ ] Backend: Pet state management (happiness, health)
   - Happiness increases: send messages, add events, do quests
   - Happiness decreases: low interaction days
@@ -95,6 +100,7 @@ Full Calendar experience, Love Map, AI Mascot Ari, Gamification (Quiz & Quests),
 ## Sprint 12: Daily Quiz & Weekly Quests (Week 23-24)
 
 ### Tasks
+
 - [ ] Backend: Quiz system
   - Seed 200+ questions (memories, preferences, dreams, fun)
   - Daily quiz selection (never repeat for same couple in 30 days)
@@ -124,6 +130,7 @@ Full Calendar experience, Love Map, AI Mascot Ari, Gamification (Quiz & Quests),
 ## Sprint 13: Time Capsule & Polish (Week 25-26)
 
 ### Tasks
+
 - [ ] Backend: Time capsule CRUD
 - [ ] Backend: Time capsule unlock scheduler (check daily, send notification)
 - [ ] Frontend: Create time capsule (text, photo, video)
@@ -144,21 +151,21 @@ Full Calendar experience, Love Map, AI Mascot Ari, Gamification (Quiz & Quests),
 
 ## Phase 2 Feature Summary
 
-| Feature | Sprint |
-|---|---|
-| Calendar Header Widget (weather, horoscope, feng shui) | Sprint 8 |
-| Calendar Year View & Search | Sprint 8 |
-| Love Map (Mapbox, pins, heatmap, journey) | Sprint 9 |
-| Live Location Sharing | Sprint 9 |
-| Travel Statistics & Badges | Sprint 9 |
-| AI Ari Chatbot (Claude API) | Sprint 10 |
-| Ari Daily Check-in | Sprint 10 |
-| Ari Weekly Love Report | Sprint 10 |
-| Ari Virtual Pet | Sprint 11 |
-| AI Sentiment Analysis | Sprint 11 |
-| Accessory Shop | Sprint 11 |
-| Daily Love Quiz | Sprint 12 |
-| Weekly Love Quests | Sprint 12 |
-| Love Coins System | Sprint 12 |
-| Time Capsule | Sprint 13 |
-| Voice & Video Call (basic) | Sprint 13 |
+| Feature                                                | Sprint    |
+| ------------------------------------------------------ | --------- |
+| Calendar Header Widget (weather, horoscope, feng shui) | Sprint 8  |
+| Calendar Year View & Search                            | Sprint 8  |
+| Love Map (Mapbox, pins, heatmap, journey)              | Sprint 9  |
+| Live Location Sharing                                  | Sprint 9  |
+| Travel Statistics & Badges                             | Sprint 9  |
+| AI Ari Chatbot (Claude API)                            | Sprint 10 |
+| Ari Daily Check-in                                     | Sprint 10 |
+| Ari Weekly Love Report                                 | Sprint 10 |
+| Ari Virtual Pet                                        | Sprint 11 |
+| AI Sentiment Analysis                                  | Sprint 11 |
+| Accessory Shop                                         | Sprint 11 |
+| Daily Love Quiz                                        | Sprint 12 |
+| Weekly Love Quests                                     | Sprint 12 |
+| Love Coins System                                      | Sprint 12 |
+| Time Capsule                                           | Sprint 13 |
+| Voice & Video Call (basic)                             | Sprint 13 |

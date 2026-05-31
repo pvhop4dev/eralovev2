@@ -15,12 +15,27 @@ export interface UserPublic {
 export type CoupleStatus = "active" | "paused" | "broken_up";
 
 /** Match request status. */
-export type MatchRequestStatus = "pending" | "accepted" | "declined" | "expired";
+export type MatchRequestStatus =
+  | "pending"
+  | "accepted"
+  | "declined"
+  | "expired";
 
 /** Message status. */
 export type MessageStatus = "sent" | "delivered" | "read";
 
 /** Mood emoji set. */
-export const MOOD_EMOJIS = ["😊", "😍", "🥰", "😢", "😤", "😴", "🤗", "😎", "🥺", "😈"] as const;
+export const MOOD_EMOJIS = [
+  "😊",
+  "😍",
+  "🥰",
+  "😢",
+  "😤",
+  "😴",
+  "🤗",
+  "😎",
+  "🥺",
+  "😈",
+] as const;
 
 export type MoodEmoji = (typeof MOOD_EMOJIS)[number];

@@ -50,9 +50,7 @@ def _error_code(exc_type: type) -> str:
     return "".join(result)
 
 
-async def domain_exception_handler(
-    request: Request, exc: DomainError
-) -> JSONResponse:
+async def domain_exception_handler(request: Request, exc: DomainError) -> JSONResponse:
     """Handle domain exceptions → JSON error response."""
     status = _EXCEPTION_STATUS_MAP.get(type(exc).__mro__[0], 500)
 
@@ -82,10 +80,12 @@ async def validation_exception_handler(
     details = []
     for error in exc.errors():
         field = ".".join(str(loc) for loc in error["loc"] if loc != "body")
-        details.append({
-            "field": field,
-            "message": error["msg"],
-        })
+        details.append(
+            {
+                "field": field,
+                "message": error["msg"],
+            }
+        )
 
     return JSONResponse(
         status_code=400,

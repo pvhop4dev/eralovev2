@@ -36,8 +36,12 @@ class TestAcceptMatchRequestUseCase:
         req = self._make_request()
         self.match_repo.get_by_id.return_value = req
         self.couple_repo.create.return_value = MagicMock(
-            id=uuid4(), user1_id=self.sender_id, user2_id=self.receiver_id,
-            start_date=date.today(), status="active", theme_color="rose",
+            id=uuid4(),
+            user1_id=self.sender_id,
+            user2_id=self.receiver_id,
+            start_date=date.today(),
+            status="active",
+            theme_color="rose",
             days_together=0,
         )
         dto = AcceptMatchRequestDTO(start_date=date.today())

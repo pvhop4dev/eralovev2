@@ -7,15 +7,27 @@ import hashlib
 from datetime import date
 
 LOVE_QUOTES: list[dict[str, str]] = [
-    {"text": "Yêu không phải là nhìn nhau, mà là cùng nhìn về một hướng.", "author": "Antoine de Saint-Exupéry"},
+    {
+        "text": "Yêu không phải là nhìn nhau, mà là cùng nhìn về một hướng.",
+        "author": "Antoine de Saint-Exupéry",
+    },
     {"text": "Nơi nào có tình yêu, nơi đó có sự sống.", "author": "Mahatma Gandhi"},
-    {"text": "Tình yêu là khi hạnh phúc của người khác quan trọng hơn hạnh phúc của chính mình.", "author": "H. Jackson Brown Jr."},
+    {
+        "text": "Tình yêu là khi hạnh phúc của người khác quan trọng hơn hạnh phúc của chính mình.",
+        "author": "H. Jackson Brown Jr.",
+    },
     {"text": "Em là giấc mơ đẹp nhất mà anh không muốn tỉnh dậy.", "author": "Eralove"},
     {"text": "Khoảng cách không là gì nếu trái tim luôn gần nhau.", "author": "Eralove"},
     {"text": "Mỗi ngày bên em là một ngày anh thêm yêu cuộc sống.", "author": "Eralove"},
     {"text": "Tình yêu không cần hoàn hảo, chỉ cần chân thành.", "author": "Eralove"},
-    {"text": "Anh yêu em không phải vì em là ai, mà vì anh là ai khi ở bên em.", "author": "Roy Croft"},
-    {"text": "Tình yêu bắt đầu từ một nụ cười, lớn lên bằng nụ hôn, và kết thúc bằng giọt nước mắt.", "author": "Khuyết danh"},
+    {
+        "text": "Anh yêu em không phải vì em là ai, mà vì anh là ai khi ở bên em.",
+        "author": "Roy Croft",
+    },
+    {
+        "text": "Tình yêu bắt đầu từ một nụ cười, lớn lên bằng nụ hôn, và kết thúc bằng giọt nước mắt.",
+        "author": "Khuyết danh",
+    },
     {"text": "Yêu là cho đi mà không cần nhận lại.", "author": "Khuyết danh"},
     {"text": "Trái tim biết yêu là trái tim đẹp nhất.", "author": "Eralove"},
     {"text": "Em là lý do anh tin vào tình yêu.", "author": "Eralove"},

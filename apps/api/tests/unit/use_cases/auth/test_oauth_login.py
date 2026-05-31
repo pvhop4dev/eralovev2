@@ -36,7 +36,7 @@ class TestOAuthLoginUseCase:
             "sub": "google_id_123",
             "email": "test@example.com",
             "name": "Google User",
-            "picture": "https://example.com/avatar.jpg"
+            "picture": "https://example.com/avatar.jpg",
         }
         mock_get.return_value = mock_response
 
@@ -51,7 +51,7 @@ class TestOAuthLoginUseCase:
             user_id=user.id,
             provider="google",
             provider_id="google_id_123",
-            email="test@example.com"
+            email="test@example.com",
         )
         oauth_repo = AsyncMock()
         oauth_repo.get_by_provider.return_value = oauth_account
@@ -59,9 +59,7 @@ class TestOAuthLoginUseCase:
         token_repo = AsyncMock()
 
         use_case = OAuthLoginUseCase(
-            user_repo=user_repo,
-            oauth_repo=oauth_repo,
-            token_repo=token_repo
+            user_repo=user_repo, oauth_repo=oauth_repo, token_repo=token_repo
         )
 
         auth_response, refresh_token = await use_case.execute("google", "valid_google_token")
@@ -88,7 +86,7 @@ class TestOAuthLoginUseCase:
             "sub": "google_id_123",
             "email": "test@example.com",
             "name": "Google User",
-            "picture": "https://example.com/avatar.jpg"
+            "picture": "https://example.com/avatar.jpg",
         }
         mock_get.return_value = mock_response
 
@@ -104,9 +102,7 @@ class TestOAuthLoginUseCase:
         token_repo = AsyncMock()
 
         use_case = OAuthLoginUseCase(
-            user_repo=user_repo,
-            oauth_repo=oauth_repo,
-            token_repo=token_repo
+            user_repo=user_repo, oauth_repo=oauth_repo, token_repo=token_repo
         )
 
         auth_response, refresh_token = await use_case.execute("google", "valid_google_token")
@@ -134,14 +130,14 @@ class TestOAuthLoginUseCase:
             "sub": "google_id_123",
             "email": "newuser@example.com",
             "name": "New Google User",
-            "picture": "https://example.com/new_avatar.jpg"
+            "picture": "https://example.com/new_avatar.jpg",
         }
         mock_get.return_value = mock_response
 
         user_repo = AsyncMock()
         user_repo.get_by_email.return_value = None  # No user exists
         user_repo.username_exists.return_value = False  # 'newuser' username available
-        
+
         # Mock user creation
         new_user = User(
             id=uuid4(),
@@ -162,9 +158,7 @@ class TestOAuthLoginUseCase:
         token_repo = AsyncMock()
 
         use_case = OAuthLoginUseCase(
-            user_repo=user_repo,
-            oauth_repo=oauth_repo,
-            token_repo=token_repo
+            user_repo=user_repo, oauth_repo=oauth_repo, token_repo=token_repo
         )
 
         auth_response, refresh_token = await use_case.execute("google", "valid_google_token")
@@ -177,7 +171,7 @@ class TestOAuthLoginUseCase:
         # Verify user created and linked
         user_repo.create.assert_called_once()
         oauth_repo.create.assert_called_once()
-        
+
         created_user = user_repo.create.call_args[0][0]
         assert created_user.email == "newuser@example.com"
         assert created_user.username == "newuser"
@@ -197,9 +191,7 @@ class TestOAuthLoginUseCase:
         token_repo = AsyncMock()
 
         use_case = OAuthLoginUseCase(
-            user_repo=user_repo,
-            oauth_repo=oauth_repo,
-            token_repo=token_repo
+            user_repo=user_repo, oauth_repo=oauth_repo, token_repo=token_repo
         )
 
         with pytest.raises(InvalidTokenError, match="Invalid Google ID token"):
@@ -216,9 +208,7 @@ class TestOAuthLoginUseCase:
         token_repo = AsyncMock()
 
         use_case = OAuthLoginUseCase(
-            user_repo=user_repo,
-            oauth_repo=oauth_repo,
-            token_repo=token_repo
+            user_repo=user_repo, oauth_repo=oauth_repo, token_repo=token_repo
         )
 
         with pytest.raises(InvalidTokenError, match="Unsupported OAuth provider"):

@@ -8,6 +8,7 @@ description: Debug a backend API issue in the FastAPI application
 When debugging a backend issue, follow this systematic approach:
 
 ## 1. Identify the Problem
+
 - What endpoint is affected? Check `apps/api/src/presentation/api/v1/`
 - What error is returned? (status code, error message)
 - **Get the `X-Trace-Id`** from the response header or `meta.trace_id` in error body
@@ -27,11 +28,13 @@ grep "trace_id=abc123" logs/app.log
 ```
 
 **Key files:**
+
 - `infrastructure/trace_context.py` — `get_trace_id()` / `set_trace_id()`
 - `presentation/middleware/trace_middleware.py` — generates + binds trace_id
 - `presentation/middleware/error_handler.py` — includes trace_id in error responses
 
 ## 3. Trace the Request Flow (Clean Architecture)
+
 Follow the request through layers:
 
 ```
@@ -47,26 +50,31 @@ TraceMiddleware (sets trace_id) → Route (presentation/) → Use Case (applicat
 ## 4. Common Issues
 
 ### Database
+
 - Check SQLAlchemy query: enable `echo=True` on engine temporarily
 - Check migration status: `alembic current` and `alembic history`
 - Check connection pool: `pool_size`, `max_overflow` in connection config
 
 ### Auth
+
 - Check JWT expiry: decode token at jwt.io
 - Check refresh token flow
 - Check middleware order in `main.py`
 
 ### Redis
+
 - Check connection: `redis-cli ping`
 - Check key patterns: `redis-cli keys "pattern*"`
 - Check TTL on cached items (mood: 24h)
 
 ### Trace ID Issues
+
 - If `X-Trace-Id` header is missing: check `TraceMiddleware` is registered in `main.py`
 - If `meta.trace_id` is null in errors: check `get_trace_id()` import in error_handler
 - If frontend can't read header: check `expose_headers=["X-Trace-Id"]` in CORS config
 
 ## 5. Debugging Tools
+
 ```bash
 # Check API logs (trace_id auto-included in structlog output)
 cd apps/api && python -m uvicorn src.presentation.main:app --reload --log-level debug
@@ -85,6 +93,7 @@ docker exec -it eralove-redis redis-cli
 ```
 
 ## 6. Fix Approach
+
 - Fix in the correct architectural layer
 - Domain errors → fix entity/value object
 - Validation errors → fix DTO/use case

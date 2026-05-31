@@ -38,4 +38,6 @@ async def handle_love_touch(sid: str, data: dict) -> None:
         room=couple_room,
         skip_sid=sid,
     )
-    logger.info("ws_love_touch_broadcasted", user_id=user_id, couple_id=couple_id, intensity=intensity)
+    logger.info(
+        "ws_love_touch_broadcasted", user_id=user_id, couple_id=couple_id, intensity=intensity
+    )

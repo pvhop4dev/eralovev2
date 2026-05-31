@@ -25,7 +25,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             refetchOnWindowFocus: false,
           },
         },
-      })
+      }),
   );
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     if (saved && saved in WALLPAPERS) {
       document.documentElement.style.setProperty(
         "--gradient-bg",
-        WALLPAPERS[saved as keyof typeof WALLPAPERS]
+        WALLPAPERS[saved as keyof typeof WALLPAPERS],
       );
     }
   }, []);
@@ -59,4 +59,3 @@ export function Providers({ children }: { children: React.ReactNode }) {
     </QueryClientProvider>
   );
 }
-

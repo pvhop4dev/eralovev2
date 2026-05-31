@@ -66,7 +66,7 @@ function VerifyEmailContent() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, otp: code }),
-        }
+        },
       );
       const data = await res.json();
       if (!res.ok) {
@@ -152,7 +152,9 @@ function VerifyEmailContent() {
           {otp.map((digit, i) => (
             <input
               key={i}
-              ref={(el) => { inputRefs.current[i] = el; }}
+              ref={(el) => {
+                inputRefs.current[i] = el;
+              }}
               type="text"
               inputMode="numeric"
               maxLength={1}
@@ -210,7 +212,11 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div style={{ textAlign: "center", padding: "2rem" }}>Đang tải...</div>}>
+    <Suspense
+      fallback={
+        <div style={{ textAlign: "center", padding: "2rem" }}>Đang tải...</div>
+      }
+    >
       <VerifyEmailContent />
     </Suspense>
   );

@@ -12,16 +12,17 @@ FastAPI (Producer) → Redis (Broker) → Celery Worker (Consumer) → Result Ba
 ```
 
 ### When to Use Celery vs Inline
-| Use Celery | Keep Inline (async) |
-|---|---|
-| Image/video processing (resize, compress) | Simple DB queries |
-| Sending emails (welcome, reminders) | JWT validation |
-| AI processing (sentiment analysis, Ari) | Reading from Redis cache |
-| Push notifications (FCM batch) | Presigned URL generation |
-| Scheduled cleanup (permanent delete) | WebSocket message broadcast |
-| Data export (ZIP generation) | Simple CRUD operations |
-| Photobook layout generation | Real-time status updates |
-| Weather/horoscope batch fetch | |
+
+| Use Celery                                | Keep Inline (async)         |
+| ----------------------------------------- | --------------------------- |
+| Image/video processing (resize, compress) | Simple DB queries           |
+| Sending emails (welcome, reminders)       | JWT validation              |
+| AI processing (sentiment analysis, Ari)   | Reading from Redis cache    |
+| Push notifications (FCM batch)            | Presigned URL generation    |
+| Scheduled cleanup (permanent delete)      | WebSocket message broadcast |
+| Data export (ZIP generation)              | Simple CRUD operations      |
+| Photobook layout generation               | Real-time status updates    |
+| Weather/horoscope batch fetch             |                             |
 
 ## Configuration
 
@@ -93,6 +94,7 @@ celery_app.conf.update(
 ## Task Patterns
 
 ### Basic Task
+
 ```python
 # apps/api/src/infrastructure/celery/tasks/notifications.py
 from infrastructure.celery.config import celery_app
@@ -118,6 +120,7 @@ def send_push_notification(self, user_id: str, title: str, body: str, data: dict
 ```
 
 ### Task with Exponential Backoff
+
 ```python
 @celery_app.task(
     name="tasks.ai.analyze_sentiment",
@@ -147,6 +150,7 @@ def analyze_chat_sentiment(self, couple_id: str, message_ids: list[str]):
 ```
 
 ### Chained Tasks (Pipeline)
+
 ```python
 from celery import chain
 
@@ -161,6 +165,7 @@ photo_pipeline.apply_async()
 ```
 
 ### Group Tasks (Parallel)
+
 ```python
 from celery import group
 
@@ -175,6 +180,7 @@ result = reminder_group.apply_async()
 ## Calling Tasks from FastAPI
 
 ### In Use Cases (Application Layer)
+
 ```python
 # apps/api/src/application/use_cases/chat/send_message.py
 class SendMessageUseCase:
@@ -205,6 +211,7 @@ class SendMessageUseCase:
 ```
 
 ### Task Dispatcher Interface (Clean Architecture)
+
 ```python
 # apps/api/src/application/interfaces/task_dispatcher.py
 from abc import ABC, abstractmethod
@@ -234,6 +241,7 @@ class CeleryTaskDispatcher(TaskDispatcher):
 ## Scheduled Tasks (Celery Beat)
 
 ### Permanent Deletion (30-day policy)
+
 ```python
 @celery_app.task(name="tasks.scheduled.permanent_delete_expired")
 def permanent_delete_expired():
@@ -273,6 +281,7 @@ celery -A infrastructure.celery.config inspect active
 ```
 
 ## Docker Setup
+
 ```yaml
 # docker-compose.yml
 celery-worker:
@@ -295,6 +304,7 @@ celery-beat:
 ## Rules
 
 ### MUST
+
 - All tasks MUST be idempotent (safe to retry)
 - All task arguments MUST be JSON-serializable (str, int, list, dict — NO UUID, datetime objects)
 - Use `bind=True` for tasks that need retry logic
@@ -303,12 +313,14 @@ celery-beat:
 - Use task dispatcher interface in application layer (not import Celery directly)
 
 ### MUST NOT
+
 - Never pass ORM model objects as task arguments (use IDs, strings)
 - Never use `task.get()` synchronously inside FastAPI async routes (it blocks!)
 - Never run database sessions inside Celery tasks without proper cleanup
 - Never store large payloads in task arguments (use S3/DB reference instead)
 
 ### SHOULD
+
 - Use separate queues for different task types (notifications, media, ai)
 - Use exponential backoff with jitter for external API calls
 - Log task start, completion, and failure with structured logging

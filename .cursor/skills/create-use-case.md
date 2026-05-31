@@ -9,11 +9,11 @@ When asked to implement a business operation, follow this pattern:
 
 ## 1. Identify the Use Case Type
 
-| Type | Pattern | Example |
-|---|---|---|
-| **Query** (Read) | Returns data | GetEventByIdUseCase, ListEventsUseCase |
-| **Command** (Write) | Modifies state | CreateEventUseCase, DeleteEventUseCase |
-| **Action** (Trigger) | Side effects | SendLoveTouchUseCase, AnalyzeSentimentUseCase |
+| Type                 | Pattern        | Example                                       |
+| -------------------- | -------------- | --------------------------------------------- |
+| **Query** (Read)     | Returns data   | GetEventByIdUseCase, ListEventsUseCase        |
+| **Command** (Write)  | Modifies state | CreateEventUseCase, DeleteEventUseCase        |
+| **Action** (Trigger) | Side effects   | SendLoveTouchUseCase, AnalyzeSentimentUseCase |
 
 ## 2. Create the Use Case File
 
@@ -212,6 +212,7 @@ class TestCreate{Feature}:
 ```
 
 ## Checklist
+
 - [ ] Use case has single `execute()` method
 - [ ] All dependencies injected via constructor
 - [ ] Authorization check (user belongs to couple)

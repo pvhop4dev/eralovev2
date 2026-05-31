@@ -13,10 +13,107 @@ from domain.entities.love_event import EVENT_TYPES, LoveEvent
 from domain.exceptions import CoupleNotFoundError, ForbiddenError, NotFoundError
 from infrastructure.database.repositories.couple_repository import PostgresCoupleRepository
 from infrastructure.database.repositories.event_repository import PostgresLoveEventRepository
+from infrastructure.database.repositories.user_repository import PostgresUserRepository
+from infrastructure.quotes.love_quotes import get_daily_quote
+from infrastructure.services.calendar_helper import (
+    get_current_weather,
+    get_daily_feng_shui,
+    get_lunar_date,
+    get_zodiac_love_horoscope,
+)
 from presentation.deps import DbSession
 from presentation.middleware.auth_middleware import CurrentUser
 
 router = APIRouter(prefix="/events", tags=["Events"])
+
+
+@router.get("/header")
+async def get_calendar_header(
+    current_user: CurrentUser,
+    session: DbSession,
+    latitude: float | None = Query(None),
+    longitude: float | None = Query(None),
+) -> dict:
+    """Get aggregated data for the Calendar Header Widget.
+
+    Includes lunar date, weather, love quote, days together,
+    zodiac horoscope for both partners, and feng shui tips.
+    """
+    today_val = date.today()
+
+    # 1. Base solar date details
+    vietnamese_weekdays = {
+        0: "Thứ Hai",
+        1: "Thứ Ba",
+        2: "Thứ Tư",
+        3: "Thứ Năm",
+        4: "Thứ Sáu",
+        5: "Thứ Bảy",
+        6: "Chủ Nhật",
+    }
+    weekday_idx = today_val.weekday()
+    day_name = vietnamese_weekdays[weekday_idx]
+    solar_formatted = f"{day_name}, {today_val.day} Tháng {today_val.month}, {today_val.year}"
+
+    lunar_str = get_lunar_date(today_val)
+
+    # 2. Fetch weather info
+    weather_info = await get_current_weather(latitude, longitude)
+
+    # 3. Fetch couple specific info
+    couple_repo = PostgresCoupleRepository(session)
+    couple = await couple_repo.get_active_for_user(current_user.id)
+
+    days_together = 0
+    quote = get_daily_quote()
+    partner_sign = None
+    partner_name = "Người ấy"
+
+    if couple:
+        days_together = couple.days_together
+        quote = get_daily_quote(str(couple.id))
+
+        # Get partner info
+        user_repo = PostgresUserRepository(session)
+        partner_id = couple.get_partner_id(current_user.id)
+        partner = await user_repo.get_by_id(partner_id)
+        if partner:
+            partner_sign = partner.zodiac_sign
+            partner_name = partner.display_name
+
+    # 4. Horoscopes
+    user_horoscope = get_zodiac_love_horoscope(current_user.zodiac_sign, today_val)
+    partner_horoscope = get_zodiac_love_horoscope(partner_sign, today_val) if partner_sign else None
+
+    # 5. Feng Shui
+    feng_shui_info = get_daily_feng_shui(today_val)
+
+    return {
+        "data": {
+            "solar_date": {
+                "iso": today_val.isoformat(),
+                "day_name": day_name,
+                "formatted": solar_formatted,
+            },
+            "lunar_date": lunar_str,
+            "weather": weather_info,
+            "daily_quote": quote,
+            "days_together": days_together,
+            "horoscope": {
+                "user": {"sign": current_user.zodiac_sign, "prediction": user_horoscope},
+                "partner": {
+                    "name": partner_name,
+                    "sign": partner_sign,
+                    "prediction": partner_horoscope,
+                }
+                if partner_sign
+                else None,
+            },
+            "feng_shui": feng_shui_info,
+        },
+        "meta": None,
+        "error": None,
+    }
 
 
 class CreateEventRequest(BaseModel):
@@ -64,6 +161,7 @@ async def create_event(
         raise CoupleNotFoundError()
 
     from datetime import time as time_cls
+
     event_time = None
     if body.event_time:
         parts = body.event_time.split(":")
@@ -176,6 +274,7 @@ async def update_event(
         raise ForbiddenError("You don't have access to this event")
 
     from datetime import time as time_cls
+
     event_time = None
     if body.event_time:
         parts = body.event_time.split(":")

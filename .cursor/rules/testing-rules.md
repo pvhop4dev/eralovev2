@@ -8,6 +8,7 @@ description: Testing strategy overview — references unit-testing.md for detail
 > Detailed unit testing patterns, factories, mocking rules → see `unit-testing.md`
 
 ## Test Pyramid
+
 ```
         /  E2E (Playwright)  \         — Few, critical flows only
        / Integration (httpx)  \        — API endpoints with real DB
@@ -15,6 +16,7 @@ description: Testing strategy overview — references unit-testing.md for detail
 ```
 
 ## Backend Test Commands
+
 ```bash
 # Unit tests (fast, mocked)
 cd apps/api && pytest tests/unit -v
@@ -27,6 +29,7 @@ cd apps/api && pytest --cov=src --cov-report=html --cov-fail-under=80
 ```
 
 ## Frontend Test Commands
+
 ```bash
 # Component + hook tests
 cd apps/web && npx vitest run
@@ -39,6 +42,7 @@ cd apps/web && npx vitest run --coverage
 ```
 
 ## E2E (Playwright)
+
 ```bash
 # Run all E2E tests
 cd apps/web && npx playwright test
@@ -51,6 +55,7 @@ cd apps/web && npx playwright test --ui
 ```
 
 ## Critical E2E Flows
+
 - Register → Verify Email → Login
 - Onboarding wizard (4 steps)
 - Search user → Send match → Accept match
@@ -59,6 +64,7 @@ cd apps/web && npx playwright test --ui
 - Chat with Ari AI
 
 ## Integration Test Setup
+
 ```python
 # tests/integration/conftest.py
 import pytest
@@ -91,6 +97,7 @@ async def auth_headers(client):
 ```
 
 ## CI Pipeline (GitHub Actions)
+
 ```yaml
 test:
   steps:
@@ -102,6 +109,7 @@ test:
 ```
 
 ## Test Naming
+
 - Python: `test_{what}_{scenario}_{expected}` (e.g. `test_login_with_wrong_password_returns_401`)
 - TypeScript: descriptive string (e.g. `"disables submit when form is empty"`)
 - Files: `test_{module}.py` (Python), `{component}.test.tsx` (TypeScript)

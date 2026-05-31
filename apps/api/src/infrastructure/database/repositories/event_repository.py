@@ -93,6 +93,7 @@ class PostgresLoveEventRepository(LoveEventRepository):
         model = result.scalar_one_or_none()
         if model is None:
             from domain.exceptions import NotFoundError
+
             raise NotFoundError("Event not found")
 
         model.title = event.title
@@ -136,7 +137,6 @@ class PostgresLoveEventRepository(LoveEventRepository):
         )
         result = await self.session.execute(stmt)
         return [self._to_entity(m) for m in result.scalars().all()]
-
 
     @staticmethod
     def _to_entity(model: LoveEventModel) -> LoveEvent:

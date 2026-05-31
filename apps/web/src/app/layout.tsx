@@ -23,12 +23,21 @@ export const metadata: Metadata = {
   },
   description:
     "Ứng dụng dành riêng cho các cặp đôi — lưu giữ ký ức, kết nối mỗi ngày, và nhận gợi ý yêu thương từ AI.",
-  keywords: ["couples app", "love", "dating", "memories", "eralove", "cặp đôi", "yêu thương"],
+  keywords: [
+    "couples app",
+    "love",
+    "dating",
+    "memories",
+    "eralove",
+    "cặp đôi",
+    "yêu thương",
+  ],
   authors: [{ name: "Eralove Team" }],
   robots: { index: true, follow: true },
   openGraph: {
     title: "Eralove — Nơi lưu giữ mọi khoảnh khắc yêu thương 💗",
-    description: "Ứng dụng dành riêng cho các cặp đôi — lưu giữ ký ức, kết nối mỗi ngày.",
+    description:
+      "Ứng dụng dành riêng cho các cặp đôi — lưu giữ ký ức, kết nối mỗi ngày.",
     type: "website",
     locale: "vi_VN",
     siteName: "Eralove",
@@ -36,7 +45,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Eralove — Nơi lưu giữ mọi khoảnh khắc yêu thương 💗",
-    description: "Ứng dụng dành riêng cho các cặp đôi — lưu giữ ký ức, kết nối mỗi ngày.",
+    description:
+      "Ứng dụng dành riêng cho các cặp đôi — lưu giữ ký ức, kết nối mỗi ngày.",
   },
 };
 

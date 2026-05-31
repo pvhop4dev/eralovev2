@@ -12,12 +12,14 @@ Presentation → Application → Domain ← Infrastructure
 ```
 
 ### Domain Layer (Innermost)
+
 - **MUST NOT** import from application, infrastructure, or presentation
 - **MUST NOT** import SQLAlchemy, FastAPI, Redis, boto3, or any framework
 - Contains: Entities, Value Objects, Repository Interfaces (ABC), Domain Events, Domain Services
 - Pure Python only — no external dependencies
 
 ### Application Layer
+
 - **CAN** import from Domain
 - **MUST NOT** import from Infrastructure or Presentation
 - **MUST NOT** import SQLAlchemy models or FastAPI directly
@@ -25,12 +27,14 @@ Presentation → Application → Domain ← Infrastructure
 - Each Use Case is a single class with one `execute()` method
 
 ### Infrastructure Layer
+
 - **CAN** import from Domain and Application (to implement interfaces)
 - **MUST NOT** import from Presentation
 - Contains: PostgreSQL repositories, Redis client, S3 client, external API clients
 - Implements abstract interfaces from Domain and Application layers
 
 ### Presentation Layer
+
 - **CAN** import from Application (use cases, DTOs)
 - **SHOULD NOT** import from Domain directly (use DTOs as boundary)
 - **MUST NOT** import from Infrastructure directly
@@ -62,6 +66,7 @@ async def register(
 ```
 
 ## File Naming Convention
+
 - One entity per file: `user.py`, `couple.py`
 - One use case per file: `register.py`, `login.py`
 - One router per feature: `auth.py`, `events.py`

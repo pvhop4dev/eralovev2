@@ -8,10 +8,12 @@ description: Deploy Eralove application (frontend and/or backend)
 ## Frontend (Next.js → Vercel)
 
 ### Prerequisites
+
 - Vercel CLI installed: `npm i -g vercel`
 - Project linked: `vercel link`
 
 ### Deploy
+
 ```bash
 # Preview deployment
 cd apps/web && vercel
@@ -21,6 +23,7 @@ cd apps/web && vercel --prod
 ```
 
 ### Environment Variables (Vercel Dashboard)
+
 ```
 NEXT_PUBLIC_API_URL=https://api-love.eraquix.com
 NEXT_PUBLIC_WS_URL=wss://api-love.eraquix.com
@@ -32,11 +35,13 @@ NEXT_PUBLIC_S3_BUCKET_URL=https://cdn-love.eraquix.com
 ## Backend (Python FastAPI)
 
 ### Docker Build
+
 ```bash
 cd apps/api && docker build -t eralove-api -f Dockerfile .
 ```
 
 ### Railway/Render Deployment
+
 ```bash
 # Railway
 railway up
@@ -45,6 +50,7 @@ railway up
 ```
 
 ### Environment Variables (Backend)
+
 ```
 DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/eralove
 REDIS_URL=redis://host:6379/0
@@ -58,12 +64,14 @@ CORS_ORIGINS=https://love.eraquix.com
 ```
 
 ## Database Migration (Production)
+
 ```bash
 # SSH into server or use Railway CLI
 cd apps/api && alembic upgrade head
 ```
 
 ## Pre-deploy Checklist
+
 - [ ] All tests passing: `turbo test`
 - [ ] No lint errors: `turbo lint`
 - [ ] Build succeeds: `turbo build`

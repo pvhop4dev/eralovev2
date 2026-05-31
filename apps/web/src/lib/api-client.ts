@@ -94,7 +94,7 @@ class ApiClient {
       // Clear token and logout
       const { useAuthStore } = await import("../stores/auth-store");
       useAuthStore.getState().logout();
-      
+
       // Redirect to login if on client-side
       if (typeof window !== "undefined") {
         window.location.href = "/login";
@@ -114,7 +114,7 @@ class ApiClient {
       body?: unknown;
       params?: Record<string, string>;
       headers?: Record<string, string>;
-    }
+    },
   ): Promise<T> {
     const url = new URL(`${this.baseUrl}${path}`);
 
@@ -151,7 +151,9 @@ class ApiClient {
 
     // Handle errors
     if (!response.ok || json.error) {
-      const error = new Error(json.error?.message || "An error occurred") as Error & {
+      const error = new Error(
+        json.error?.message || "An error occurred",
+      ) as Error & {
         code: string;
         status: number;
         details?: Record<string, unknown>[];
@@ -174,7 +176,7 @@ class ApiClient {
             ...options,
             headers: {
               ...options?.headers,
-              "Authorization": `Bearer ${newToken}`,
+              Authorization: `Bearer ${newToken}`,
             },
           };
           return this.request<T>(method, path, updatedOptions);
@@ -189,7 +191,10 @@ class ApiClient {
     return json.data as T;
   }
 
-  async get<T>(path: string, options?: { params?: Record<string, string> }): Promise<T> {
+  async get<T>(
+    path: string,
+    options?: { params?: Record<string, string> },
+  ): Promise<T> {
     return this.request<T>("GET", path, options);
   }
 

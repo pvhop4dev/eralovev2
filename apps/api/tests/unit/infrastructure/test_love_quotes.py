@@ -35,8 +35,5 @@ class TestLoveQuotes:
 
     def test_all_quotes_are_vietnamese(self):
         """At least some quotes should contain Vietnamese characters."""
-        has_vietnamese = any(
-            any(c in q["text"] for c in "àáảãạăắằẵặâấầẩ")
-            for q in LOVE_QUOTES
-        )
+        has_vietnamese = any(any(c in q["text"] for c in "àáảãạăắằẵặâấầẩ") for q in LOVE_QUOTES)
         assert has_vietnamese

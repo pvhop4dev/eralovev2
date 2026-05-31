@@ -1,6 +1,7 @@
 # Eralove - Database Schema Design
 
 ## Conventions
+
 - All IDs: UUID v7 (time-sortable)
 - All tables: `created_at TIMESTAMPTZ DEFAULT now()`, `updated_at TIMESTAMPTZ`
 - Soft delete: `deleted_at TIMESTAMPTZ NULL`
@@ -11,6 +12,7 @@
 ## Core Tables
 
 ### users
+
 ```sql
 CREATE TABLE users (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -39,6 +41,7 @@ CREATE INDEX idx_users_username ON users(username);
 ```
 
 ### oauth_accounts
+
 ```sql
 CREATE TABLE oauth_accounts (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -55,6 +58,7 @@ CREATE INDEX idx_oauth_user ON oauth_accounts(user_id);
 ```
 
 ### refresh_tokens
+
 ```sql
 CREATE TABLE refresh_tokens (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -74,6 +78,7 @@ CREATE INDEX idx_refresh_expires ON refresh_tokens(expires_at);
 ## Couple & Match Tables
 
 ### couples
+
 ```sql
 CREATE TABLE couples (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -99,6 +104,7 @@ CREATE INDEX idx_couples_status ON couples(status);
 ```
 
 ### match_requests
+
 ```sql
 CREATE TABLE match_requests (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -122,6 +128,7 @@ CREATE INDEX idx_match_status ON match_requests(status);
 ## Calendar & Events
 
 ### love_events
+
 ```sql
 CREATE TABLE love_events (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -156,6 +163,7 @@ CREATE INDEX idx_events_location ON love_events USING GIST (
 ```
 
 ### photos
+
 ```sql
 CREATE TABLE photos (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -186,6 +194,7 @@ CREATE INDEX idx_photos_date ON photos(photo_date);
 ```
 
 ### time_capsules
+
 ```sql
 CREATE TABLE time_capsules (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -209,6 +218,7 @@ CREATE INDEX idx_capsules_unlock ON time_capsules(unlock_at);
 ## Chat & Messaging
 
 ### messages
+
 ```sql
 CREATE TABLE messages (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -236,6 +246,7 @@ CREATE INDEX idx_messages_pinned ON messages(couple_id) WHERE is_pinned = TRUE;
 ```
 
 ### message_reactions
+
 ```sql
 CREATE TABLE message_reactions (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -248,6 +259,7 @@ CREATE TABLE message_reactions (
 ```
 
 ### call_logs
+
 ```sql
 CREATE TABLE call_logs (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -269,6 +281,7 @@ CREATE INDEX idx_calls_couple ON call_logs(couple_id);
 ## AI Mascot Ari
 
 ### ari_conversations
+
 ```sql
 CREATE TABLE ari_conversations (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -279,6 +292,7 @@ CREATE TABLE ari_conversations (
 ```
 
 ### ari_messages
+
 ```sql
 CREATE TABLE ari_messages (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -293,6 +307,7 @@ CREATE INDEX idx_ari_messages_conv ON ari_messages(conversation_id, created_at);
 ```
 
 ### ari_pet_state
+
 ```sql
 CREATE TABLE ari_pet_state (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -311,6 +326,7 @@ CREATE TABLE ari_pet_state (
 ## Gamification
 
 ### daily_quizzes
+
 ```sql
 CREATE TABLE daily_quizzes (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -322,6 +338,7 @@ CREATE TABLE daily_quizzes (
 ```
 
 ### quiz_answers
+
 ```sql
 CREATE TABLE quiz_answers (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -338,6 +355,7 @@ CREATE INDEX idx_quiz_answers_couple ON quiz_answers(couple_id, quiz_date);
 ```
 
 ### love_quests
+
 ```sql
 CREATE TABLE love_quests (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -352,6 +370,7 @@ CREATE TABLE love_quests (
 ```
 
 ### couple_quests
+
 ```sql
 CREATE TABLE couple_quests (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -367,6 +386,7 @@ CREATE INDEX idx_couple_quests ON couple_quests(couple_id, status);
 ```
 
 ### love_coins
+
 ```sql
 CREATE TABLE love_coins (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -379,6 +399,7 @@ CREATE TABLE love_coins (
 ```
 
 ### coin_transactions
+
 ```sql
 CREATE TABLE coin_transactions (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -397,6 +418,7 @@ CREATE INDEX idx_coin_tx_couple ON coin_transactions(couple_id);
 ## Shared Space
 
 ### shared_notes
+
 ```sql
 CREATE TABLE shared_notes (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -413,6 +435,7 @@ CREATE TABLE shared_notes (
 ```
 
 ### shared_todos
+
 ```sql
 CREATE TABLE shared_todos (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -426,6 +449,7 @@ CREATE TABLE shared_todos (
 ```
 
 ### shared_todo_items
+
 ```sql
 CREATE TABLE shared_todo_items (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -439,6 +463,7 @@ CREATE TABLE shared_todo_items (
 ```
 
 ### date_fund_transactions
+
 ```sql
 CREATE TABLE date_fund_transactions (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -461,6 +486,7 @@ CREATE INDEX idx_fund_date ON date_fund_transactions(transaction_date);
 ## Mood & Daily Check-in
 
 ### mood_checkins
+
 ```sql
 CREATE TABLE mood_checkins (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -481,6 +507,7 @@ CREATE INDEX idx_mood_couple ON mood_checkins(couple_id, checkin_date);
 ## Notifications
 
 ### notifications
+
 ```sql
 CREATE TABLE notifications (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -499,6 +526,7 @@ CREATE INDEX idx_notifications_unread ON notifications(user_id) WHERE is_read = 
 ```
 
 ### push_tokens
+
 ```sql
 CREATE TABLE push_tokens (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -516,6 +544,7 @@ CREATE TABLE push_tokens (
 ## Settings
 
 ### user_settings
+
 ```sql
 CREATE TABLE user_settings (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -535,6 +564,7 @@ CREATE TABLE user_settings (
 ```
 
 ### login_history
+
 ```sql
 CREATE TABLE login_history (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -552,14 +582,14 @@ CREATE INDEX idx_login_user ON login_history(user_id, created_at DESC);
 
 ## Redis Data Structures
 
-| Key Pattern | Type | TTL | Purpose |
-|---|---|---|---|
-| `session:{user_id}` | Hash | 24h | Active session data |
-| `couple:{couple_id}:online` | Set | - | Online user IDs in couple |
-| `chat:{couple_id}:typing` | String | 5s | Typing indicator |
-| `weather:{lat}:{lon}` | Hash | 1h | Cached weather data |
-| `horoscope:{sign}:{date}` | String | 24h | Daily horoscope cache |
-| `daily_quote:{date}` | String | 24h | Daily love quote |
-| `rate_limit:{user_id}:{endpoint}` | Counter | 1min | API rate limiting |
-| `ws:connections:{user_id}` | String | - | WebSocket connection mapping |
-| `couple:{couple_id}:unread:{user_id}` | Counter | - | Unread message count |
+| Key Pattern                           | Type    | TTL  | Purpose                      |
+| ------------------------------------- | ------- | ---- | ---------------------------- |
+| `session:{user_id}`                   | Hash    | 24h  | Active session data          |
+| `couple:{couple_id}:online`           | Set     | -    | Online user IDs in couple    |
+| `chat:{couple_id}:typing`             | String  | 5s   | Typing indicator             |
+| `weather:{lat}:{lon}`                 | Hash    | 1h   | Cached weather data          |
+| `horoscope:{sign}:{date}`             | String  | 24h  | Daily horoscope cache        |
+| `daily_quote:{date}`                  | String  | 24h  | Daily love quote             |
+| `rate_limit:{user_id}:{endpoint}`     | Counter | 1min | API rate limiting            |
+| `ws:connections:{user_id}`            | String  | -    | WebSocket connection mapping |
+| `couple:{couple_id}:unread:{user_id}` | Counter | -    | Unread message count         |

@@ -14,9 +14,7 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return (
-      <div style={{ width: "40px", height: "40px" }} />
-    );
+    return <div style={{ width: "40px", height: "40px" }} />;
   }
 
   const isDark = theme === "dark";

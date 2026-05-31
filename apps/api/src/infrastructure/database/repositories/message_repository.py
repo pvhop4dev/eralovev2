@@ -57,7 +57,11 @@ class PostgresMessageRepository(MessageRepository):
         )
         if before_id:
             # Cursor-based pagination
-            subq = select(MessageModel.created_at).where(MessageModel.id == before_id).scalar_subquery()
+            subq = (
+                select(MessageModel.created_at)
+                .where(MessageModel.id == before_id)
+                .scalar_subquery()
+            )
             stmt = stmt.where(MessageModel.created_at < subq)
 
         result = await self.session.execute(stmt)
@@ -84,6 +88,7 @@ class PostgresMessageRepository(MessageRepository):
         model = result.scalar_one_or_none()
         if model is None:
             from domain.exceptions import NotFoundError
+
             raise NotFoundError("Message not found")
 
         model.is_pinned = message.is_pinned

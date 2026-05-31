@@ -20,10 +20,10 @@ export function getSocket(): Socket {
 
   if (!socket) {
     currentToken = token;
-    
+
     // In next.js client-side, NEXT_PUBLIC_WS_URL might be wss://api-love... or http://localhost:8000
     const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "http://localhost:8000";
-    
+
     console.log("Connecting to WebSocket server at:", wsUrl);
 
     socket = io(wsUrl, {

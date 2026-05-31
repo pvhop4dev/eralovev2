@@ -99,7 +99,7 @@ export const useThemeStore = create<ThemeState>()(
         setAccentColor: (color) => set({ accentColor: color }),
       }),
       {
-        name: "eralove-theme",  // localStorage key
+        name: "eralove-theme", // localStorage key
         partialize: (state) => ({
           theme: state.theme,
           accentColor: state.accentColor,
@@ -169,15 +169,15 @@ export function {Domain}List() {
 
 ## When to Use What
 
-| State Type | Solution | Example |
-|---|---|---|
-| Server data (API responses) | TanStack Query | Events, messages, user profile |
-| UI state (modals, selections) | Zustand | Selected tab, sidebar open, modal state |
-| Form state | React Hook Form | Create event form, settings form |
-| Auth state | Zustand (persist) | User session, access token |
-| Theme/preferences | Zustand (persist) | Dark mode, accent color, language |
-| Real-time data | Zustand + Socket.IO | Online status, typing indicator |
-| URL state | Next.js searchParams | Filters, pagination, sort |
+| State Type                    | Solution             | Example                                 |
+| ----------------------------- | -------------------- | --------------------------------------- |
+| Server data (API responses)   | TanStack Query       | Events, messages, user profile          |
+| UI state (modals, selections) | Zustand              | Selected tab, sidebar open, modal state |
+| Form state                    | React Hook Form      | Create event form, settings form        |
+| Auth state                    | Zustand (persist)    | User session, access token              |
+| Theme/preferences             | Zustand (persist)    | Dark mode, accent color, language       |
+| Real-time data                | Zustand + Socket.IO  | Online status, typing indicator         |
+| URL state                     | Next.js searchParams | Filters, pagination, sort               |
 
 ## Eralove Stores
 
@@ -193,6 +193,7 @@ stores/
 ```
 
 ## Rules
+
 - **NEVER** store server data in Zustand — use TanStack Query
 - **ALWAYS** use selectors to prevent unnecessary re-renders
 - **ALWAYS** use `immer` middleware for complex state updates

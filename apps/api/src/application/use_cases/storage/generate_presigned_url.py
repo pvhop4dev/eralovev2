@@ -28,7 +28,6 @@ mimetypes.add_type("image/png", ".png")
 mimetypes.add_type("image/gif", ".gif")
 
 
-
 class GeneratePresignedUrlUseCase:
     """Generate a secure S3 presigned upload URL for direct file upload."""
 
@@ -62,9 +61,7 @@ class GeneratePresignedUrlUseCase:
         key = f"{folder}/{unique_id}{ext}"
 
         # Generate URLs
-        urls = self.s3_service.generate_presigned_upload_url(
-            key=key, content_type=content_type
-        )
+        urls = self.s3_service.generate_presigned_upload_url(key=key, content_type=content_type)
 
         return PresignedUrlResponse(
             upload_url=urls["upload_url"],

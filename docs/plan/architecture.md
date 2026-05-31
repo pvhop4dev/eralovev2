@@ -285,14 +285,16 @@ eralove/
 ## 3. Data Flow Patterns
 
 ### Authentication Flow
+
 ```
-Client → POST /api/v1/auth/login → Validate credentials → 
+Client → POST /api/v1/auth/login → Validate credentials →
 Issue JWT (access: 15min) + Refresh Token (httpOnly cookie: 7d) →
 Client stores access token in memory (Zustand) →
 All subsequent requests: Authorization: Bearer <token>
 ```
 
 ### Photo Upload Flow (Presigned URL)
+
 ```
 Client → POST /api/v1/photos/presign → Backend generates S3 presigned URL →
 Client uploads directly to S3 → Client confirms: POST /api/v1/photos/confirm →
@@ -300,6 +302,7 @@ Backend saves metadata to PostgreSQL → Returns photo record
 ```
 
 ### Realtime Chat Flow
+
 ```
 Client connects → WebSocket /ws/chat?token=<jwt> →
 Backend authenticates → Joins couple's Redis channel →
@@ -308,6 +311,7 @@ Partner's WebSocket receives → Delivered
 ```
 
 ### AI Ari Chat Flow
+
 ```
 Client → POST /api/v1/ari/chat → Use Case loads couple context →
 Builds prompt with couple data (events, mood, days together) →
@@ -317,28 +321,30 @@ Saves conversation to DB
 
 ## 4. Key Technical Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Monorepo tool | Turborepo | Fast, simple config, good Next.js integration |
-| Python framework | FastAPI | Async-first, auto OpenAPI docs, fast performance |
-| ORM | SQLAlchemy 2.0 | Mature, async support, clean mapped_column syntax |
-| Frontend state | Zustand + TanStack Query | Zustand for UI state, TQ for server cache |
-| Auth tokens | JWT in memory + Refresh in httpOnly cookie | Secure against XSS, CSRF protection |
-| File uploads | S3 presigned URLs | No backend bottleneck, direct client→S3 |
-| Realtime | FastAPI WebSocket + Redis Pub/Sub | Scalable, supports multiple backend instances |
-| AI | Claude API direct | Best Vietnamese support, conversation context |
-| Image processing | S3 + Lambda/CloudFront Functions | On-the-fly resize/WebP conversion |
-| Task queue | Celery + Redis | Background jobs: notifications, weekly reports |
+| Decision         | Choice                                     | Rationale                                         |
+| ---------------- | ------------------------------------------ | ------------------------------------------------- |
+| Monorepo tool    | Turborepo                                  | Fast, simple config, good Next.js integration     |
+| Python framework | FastAPI                                    | Async-first, auto OpenAPI docs, fast performance  |
+| ORM              | SQLAlchemy 2.0                             | Mature, async support, clean mapped_column syntax |
+| Frontend state   | Zustand + TanStack Query                   | Zustand for UI state, TQ for server cache         |
+| Auth tokens      | JWT in memory + Refresh in httpOnly cookie | Secure against XSS, CSRF protection               |
+| File uploads     | S3 presigned URLs                          | No backend bottleneck, direct client→S3           |
+| Realtime         | FastAPI WebSocket + Redis Pub/Sub          | Scalable, supports multiple backend instances     |
+| AI               | Claude API direct                          | Best Vietnamese support, conversation context     |
+| Image processing | S3 + Lambda/CloudFront Functions           | On-the-fly resize/WebP conversion                 |
+| Task queue       | Celery + Redis                             | Background jobs: notifications, weekly reports    |
 
 ## 5. Infrastructure (Development)
 
 ### docker-compose.yml services:
+
 - `postgres`: PostgreSQL 16 on port 5432
 - `redis`: Redis 7 on port 6379
 - `minio`: S3-compatible storage on port 9000 (local dev)
 - `mailpit`: Email testing on port 1025/8025
 
 ### Environment Variables:
+
 - `DATABASE_URL`: PostgreSQL connection string
 - `REDIS_URL`: Redis connection string
 - `AWS_S3_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`

@@ -8,6 +8,7 @@ description: Setup Python development environment — virtual env, dependencies,
 ## 1. Initial Setup
 
 ### Create Virtual Environment
+
 ```bash
 cd apps/api
 python -m venv .venv
@@ -20,6 +21,7 @@ source .venv/bin/activate
 ```
 
 ### Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 # or with uv (faster)
@@ -27,6 +29,7 @@ uv pip install -r requirements.txt
 ```
 
 ### Install Dev Dependencies
+
 ```bash
 pip install -r requirements-dev.txt
 # Includes: pytest, pytest-asyncio, ruff, mypy, httpx, factory-boy
@@ -35,6 +38,7 @@ pip install -r requirements-dev.txt
 ## 2. Docker Development Environment
 
 ### Start All Services
+
 ```bash
 # From project root
 docker compose up -d
@@ -46,6 +50,7 @@ docker compose up -d
 ```
 
 ### Docker Compose Configuration
+
 ```yaml
 # infra/docker-compose.dev.yml
 services:
@@ -185,11 +190,11 @@ cd apps/api && python scripts/seed.py
 
 ## Common Issues
 
-| Issue | Solution |
-|---|---|
-| `ModuleNotFoundError` | Check `.venv` is activated and deps installed |
-| Database connection refused | Run `docker compose up -d postgres` |
-| Redis connection refused | Run `docker compose up -d redis` |
-| Alembic migration error | Check `alembic.ini` has correct `sqlalchemy.url` |
-| Port 8000 in use | Kill process: `lsof -i :8000` or change port |
-| Celery not finding tasks | Check task imports in `celery_app.autodiscover_tasks()` |
+| Issue                       | Solution                                                |
+| --------------------------- | ------------------------------------------------------- |
+| `ModuleNotFoundError`       | Check `.venv` is activated and deps installed           |
+| Database connection refused | Run `docker compose up -d postgres`                     |
+| Redis connection refused    | Run `docker compose up -d redis`                        |
+| Alembic migration error     | Check `alembic.ini` has correct `sqlalchemy.url`        |
+| Port 8000 in use            | Kill process: `lsof -i :8000` or change port            |
+| Celery not finding tasks    | Check task imports in `celery_app.autodiscover_tasks()` |

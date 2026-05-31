@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
-        }
+        },
       );
       if (res.ok) {
         setSent(true);
@@ -53,8 +53,15 @@ export default function ForgotPasswordPage() {
         >
           Kiểm tra email
         </h1>
-        <p style={{ color: "var(--muted-foreground)", fontSize: "0.875rem", marginBottom: "1.5rem" }}>
-          Nếu email <strong>{email}</strong> tồn tại, bạn sẽ nhận được link đặt lại mật khẩu.
+        <p
+          style={{
+            color: "var(--muted-foreground)",
+            fontSize: "0.875rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          Nếu email <strong>{email}</strong> tồn tại, bạn sẽ nhận được link đặt
+          lại mật khẩu.
         </p>
         <Link
           href="/login"
@@ -104,7 +111,10 @@ export default function ForgotPasswordPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      >
         <FormField
           label="Email"
           name="email"
@@ -129,7 +139,10 @@ export default function ForgotPasswordPage() {
       >
         <Link
           href="/login"
-          style={{ color: "var(--color-lavender-dream)", textDecoration: "none" }}
+          style={{
+            color: "var(--color-lavender-dream)",
+            textDecoration: "none",
+          }}
         >
           ← Quay lại đăng nhập
         </Link>

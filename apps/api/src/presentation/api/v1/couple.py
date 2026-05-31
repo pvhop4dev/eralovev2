@@ -54,7 +54,9 @@ async def get_couple(
                 "username": partner.username,
                 "avatar_url": partner.avatar_url,
                 "zodiac_sign": partner.zodiac_sign,
-            } if partner else None,
+            }
+            if partner
+            else None,
         },
         "meta": None,
         "error": None,

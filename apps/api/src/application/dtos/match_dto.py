@@ -63,5 +63,6 @@ class OnboardingRequest(BaseModel):
 
 
 class UnmatchRequest(BaseModel):
-    confirmation_code: str | None = Field(None, max_length=100, description="Optional confirmation string")
-
+    confirmation_code: str | None = Field(
+        None, max_length=100, description="Optional confirmation string"
+    )

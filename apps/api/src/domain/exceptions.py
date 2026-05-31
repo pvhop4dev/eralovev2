@@ -57,6 +57,7 @@ class ValidationError(DomainError):
 
 # ── Specific Domain Errors ───────────────────────────────────
 
+
 class UserNotFoundError(NotFoundError):
     """User not found."""
 

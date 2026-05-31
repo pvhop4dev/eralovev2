@@ -61,35 +61,39 @@ async def get_match_requests(
     sent_responses = []
     for req in sent:
         receiver = await user_repo.get_by_id(req.receiver_id)
-        sent_responses.append(MatchRequestResponse(
-            id=str(req.id),
-            sender_id=str(req.sender_id),
-            receiver_id=str(req.receiver_id),
-            message=req.message,
-            status=req.status,
-            proposed_start_date=req.proposed_start_date,
-            expires_at=req.expires_at.isoformat() if req.expires_at else None,
-            created_at=req.created_at.isoformat() if req.created_at else None,
-            receiver_name=receiver.display_name if receiver else None,
-            receiver_username=receiver.username if receiver else None,
-        ))
+        sent_responses.append(
+            MatchRequestResponse(
+                id=str(req.id),
+                sender_id=str(req.sender_id),
+                receiver_id=str(req.receiver_id),
+                message=req.message,
+                status=req.status,
+                proposed_start_date=req.proposed_start_date,
+                expires_at=req.expires_at.isoformat() if req.expires_at else None,
+                created_at=req.created_at.isoformat() if req.created_at else None,
+                receiver_name=receiver.display_name if receiver else None,
+                receiver_username=receiver.username if receiver else None,
+            )
+        )
 
     received_responses = []
     for req in received:
         sender = await user_repo.get_by_id(req.sender_id)
-        received_responses.append(MatchRequestResponse(
-            id=str(req.id),
-            sender_id=str(req.sender_id),
-            receiver_id=str(req.receiver_id),
-            message=req.message,
-            status=req.status,
-            proposed_start_date=req.proposed_start_date,
-            expires_at=req.expires_at.isoformat() if req.expires_at else None,
-            created_at=req.created_at.isoformat() if req.created_at else None,
-            sender_name=sender.display_name if sender else None,
-            sender_username=sender.username if sender else None,
-            sender_avatar=sender.avatar_url if sender else None,
-        ))
+        received_responses.append(
+            MatchRequestResponse(
+                id=str(req.id),
+                sender_id=str(req.sender_id),
+                receiver_id=str(req.receiver_id),
+                message=req.message,
+                status=req.status,
+                proposed_start_date=req.proposed_start_date,
+                expires_at=req.expires_at.isoformat() if req.expires_at else None,
+                created_at=req.created_at.isoformat() if req.created_at else None,
+                sender_name=sender.display_name if sender else None,
+                sender_username=sender.username if sender else None,
+                sender_avatar=sender.avatar_url if sender else None,
+            )
+        )
 
     return {
         "data": {
@@ -145,4 +149,3 @@ async def unmatch_couple(
         "meta": None,
         "error": None,
     }
-

@@ -58,7 +58,7 @@ class RefreshTokenUseCase:
         """
         # 1. Decode refresh token (raises TokenExpiredError/InvalidTokenError if invalid)
         payload = decode_token(refresh_token, expected_type="refresh")
-        
+
         try:
             user_id = UUID(payload["sub"])
         except (ValueError, KeyError) as e:
@@ -78,7 +78,7 @@ class RefreshTokenUseCase:
             logger.warning(
                 "refresh_token_replay_detected",
                 user_id=str(user_id),
-                token_hash_prefix=old_hash[:8]
+                token_hash_prefix=old_hash[:8],
             )
             raise InvalidTokenError("Session has been revoked or refresh token reused")
 
@@ -86,9 +86,7 @@ class RefreshTokenUseCase:
         if token_entity.is_expired():
             await self.token_repo.delete_by_hash(old_hash)
             logger.warning(
-                "refresh_token_expired_in_db",
-                user_id=str(user_id),
-                token_hash_prefix=old_hash[:8]
+                "refresh_token_expired_in_db", user_id=str(user_id), token_hash_prefix=old_hash[:8]
             )
             raise TokenExpiredError("Refresh token expired")
 
@@ -123,7 +121,7 @@ class RefreshTokenUseCase:
             "refresh_token_rotated",
             user_id=str(user_id),
             old_hash_prefix=old_hash[:8],
-            new_hash_prefix=new_token_hash[:8]
+            new_hash_prefix=new_token_hash[:8],
         )
 
         # 10. Return new tokens

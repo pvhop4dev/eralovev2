@@ -8,6 +8,7 @@ description: Python and FastAPI specific coding patterns, async rules, middlewar
 ## Project Setup
 
 ### Python Version & Dependencies
+
 - Python 3.12+ required
 - Use `pyproject.toml` (PEP 621) for dependency management
 - Use `uv` or `pip-tools` for locking dependencies
@@ -16,6 +17,7 @@ description: Python and FastAPI specific coding patterns, async rules, middlewar
 - Type checking: `mypy` with strict mode
 
 ### Ruff Configuration
+
 ```toml
 # pyproject.toml
 [tool.ruff]
@@ -33,6 +35,7 @@ quote-style = "double"
 ## Async/Await Rules
 
 ### ALWAYS async for I/O
+
 ```python
 # CORRECT — async for all I/O
 async def get_user(user_id: UUID) -> User:
@@ -47,6 +50,7 @@ def get_user(user_id: UUID) -> User:
 ```
 
 ### Use `asyncio.gather` for Parallel I/O
+
 ```python
 # CORRECT — parallel requests
 async def get_dashboard_data(couple_id: UUID) -> DashboardData:
@@ -65,6 +69,7 @@ async def get_dashboard_data(couple_id: UUID) -> DashboardData:
 ```
 
 ### Never Block the Event Loop
+
 ```python
 # WRONG — CPU-heavy task blocks event loop
 async def process_image(image: bytes) -> bytes:
@@ -80,6 +85,7 @@ async def process_image(image: bytes) -> bytes:
 ## FastAPI Application Setup
 
 ### Lifespan Pattern (NOT @app.on_event)
+
 ```python
 # CORRECT — modern lifespan pattern
 from contextlib import asynccontextmanager
@@ -110,6 +116,7 @@ async def startup():
 ```
 
 ### Middleware Order (matters!)
+
 ```python
 # Register in REVERSE order (last registered = first executed)
 # TraceMiddleware must run BEFORE CORS to set trace_id for all requests.
@@ -126,6 +133,7 @@ app.add_middleware(RateLimitMiddleware)
 ```
 
 ### Dependency Injection — Deep Pattern
+
 ```python
 # deps.py — shared dependencies
 from typing import Annotated
@@ -169,6 +177,7 @@ DbSession = Annotated[AsyncSession, Depends(get_session)]
 ## Configuration Management
 
 ### Settings Pattern (Pydantic Settings)
+
 ```python
 # apps/api/src/infrastructure/config.py
 from pydantic_settings import BaseSettings
@@ -215,6 +224,7 @@ def get_settings() -> Settings:
 ## Logging
 
 ### Structured Logging (structlog)
+
 ```python
 import structlog
 
@@ -237,6 +247,7 @@ trace_id = get_trace_id()  # available in any layer during request
 ```
 
 ### Logging Rules
+
 - **NEVER** log sensitive data: passwords, tokens, API keys, personal messages
 - **ALWAYS** log: user_id, couple_id, action, result (success/failure)
 - Use structured key-value pairs, not f-strings
@@ -245,6 +256,7 @@ trace_id = get_trace_id()  # available in any layer during request
 ## Pydantic V2 Patterns
 
 ### Request/Response Schema
+
 ```python
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from datetime import datetime, date
@@ -276,6 +288,7 @@ class EventResponse(BaseModel):
 ```
 
 ### Common Validators
+
 ```python
 # Reusable validators
 from pydantic import field_validator

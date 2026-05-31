@@ -157,10 +157,12 @@ export function {Domain}View() {
 ```
 
 ## Event Naming Convention
+
 - Format: `{domain}:{action}` (lowercase, colon separator)
 - Examples: `chat:message`, `chat:typing`, `love:touch`, `status:mood`, `ari:quest_complete`
 
 ## Checklist
+
 - [ ] Event payload validated with Pydantic
 - [ ] User context from Socket.IO session (not client data)
 - [ ] Business logic in use case (not in handler)

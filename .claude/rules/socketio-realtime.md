@@ -18,6 +18,7 @@ Celery Worker → Redis Pub/Sub → Socket.IO Server → Client
 ## Server Setup
 
 ### FastAPI + Socket.IO Integration
+
 ```python
 # apps/api/src/presentation/socketio/server.py
 import socketio
@@ -42,6 +43,7 @@ socket_app = socketio.ASGIApp(sio, other_app=fastapi_app)
 ```
 
 ### Mount in FastAPI
+
 ```python
 # apps/api/src/presentation/main.py
 from presentation.socketio.server import socket_app
@@ -53,6 +55,7 @@ from presentation.socketio.server import socket_app
 ## Authentication
 
 ### Connection Authentication (Middleware)
+
 ```python
 # apps/api/src/presentation/socketio/middleware.py
 
@@ -115,6 +118,7 @@ async def disconnect(sid):
 ## Event Naming Convention
 
 ### Pattern: `{domain}:{action}`
+
 ```
 # Chat events
 chat:message          → New message sent
@@ -150,6 +154,7 @@ disconnect            → Client disconnected
 ## Event Handlers
 
 ### Chat Events
+
 ```python
 # apps/api/src/presentation/socketio/handlers/chat.py
 
@@ -215,6 +220,7 @@ async def handle_read(sid, data):
 ```
 
 ### Love Touch Event
+
 ```python
 # apps/api/src/presentation/socketio/handlers/love.py
 
@@ -252,6 +258,7 @@ f"user:{user_id}"        # Personal room for direct notifications
 ```
 
 ### Rules
+
 - **NEVER** use global broadcast (`sio.emit("event", data)`) — always specify room
 - Each couple has ONE room: `couple:{couple_id}`
 - Users join their couple room on `connect`, leave on `disconnect`
@@ -261,6 +268,7 @@ f"user:{user_id}"        # Personal room for direct notifications
 ## Emitting from Celery Tasks
 
 ### Via Redis Pub/Sub (Cross-process)
+
 ```python
 # From Celery worker — emit through Redis manager
 import socketio
@@ -277,6 +285,7 @@ def emit_from_celery(event: str, data: dict, room: str):
 ```
 
 ### Common Pattern: Celery → WebSocket Notification
+
 ```python
 @celery_app.task(name="tasks.notifications.send_event_reminder")
 def send_event_reminder(couple_id: str, event_title: str, event_date: str):
@@ -297,6 +306,7 @@ def send_event_reminder(couple_id: str, event_title: str, event_date: str):
 ## Frontend Client (Next.js)
 
 ### Socket.IO Client Setup
+
 ```typescript
 // apps/web/src/lib/socket.ts
 import { io, Socket } from "socket.io-client";
@@ -339,6 +349,7 @@ export function disconnectSocket() {
 ```
 
 ### React Hook Pattern
+
 ```typescript
 // apps/web/src/hooks/use-socket-event.ts
 import { useEffect } from "react";
@@ -374,6 +385,7 @@ function ChatView() {
 ## Rules
 
 ### MUST
+
 - Authenticate WebSocket connections using JWT (on `connect` event)
 - Store user session data (user_id, couple_id) in Socket.IO session
 - Always emit to specific rooms, never broadcast globally
@@ -382,12 +394,14 @@ function ChatView() {
 - Handle reconnection gracefully on frontend
 
 ### MUST NOT
+
 - Never trust client-provided user_id/couple_id in events (use session)
 - Never send sensitive data (passwords, tokens) via WebSocket events
 - Never use WebSocket for large file transfers (use S3 presigned URLs)
 - Never keep WebSocket connections without heartbeat/ping
 
 ### SHOULD
+
 - Use `skip_sid=sid` when broadcasting to avoid echo back to sender
 - Implement typing indicators with debounce (300ms)
 - Send push notification as fallback when partner is offline

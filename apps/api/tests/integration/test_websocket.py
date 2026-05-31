@@ -45,9 +45,12 @@ async def test_connect_success(mock_sio, mock_db_session_maker, mock_get_user_id
     mock_db_session_maker.return_value = mock_db_session
     mock_db_session.__aenter__.return_value = mock_db_session
 
-    with patch("presentation.socketio.server.PostgresUserRepository", return_value=mock_user_repo), \
-         patch("presentation.socketio.server.PostgresCoupleRepository", return_value=mock_couple_repo):
-        
+    with (
+        patch("presentation.socketio.server.PostgresUserRepository", return_value=mock_user_repo),
+        patch(
+            "presentation.socketio.server.PostgresCoupleRepository", return_value=mock_couple_repo
+        ),
+    ):
         # Call connection handler
         await connect("sid_123", {}, {"token": "valid_token"})
 
@@ -63,7 +66,7 @@ async def test_connect_success(mock_sio, mock_db_session_maker, mock_get_user_id
             "partner_online",
             {"user_id": str(user_id), "display_name": "User A"},
             room=f"couple:{couple_id}",
-            skip_sid="sid_123"
+            skip_sid="sid_123",
         )
 
 
@@ -82,7 +85,7 @@ async def test_connect_missing_auth():
 async def test_connect_invalid_token(mock_get_user_id):
     """Test connect fails when JWT token is invalid."""
     mock_get_user_id.side_effect = InvalidTokenError("Invalid token")
-    
+
     with pytest.raises(socketio.exceptions.ConnectionRefusedError, match="Invalid token"):
         await connect("sid_123", {}, {"token": "bad_token"})
 
@@ -96,7 +99,7 @@ async def test_disconnect_emits_offline(mock_sio):
 
     # Setup mock session storage
     mock_session = {"user_id": "user_id_123", "couple_id": "couple_id_456"}
-    
+
     # Mock context manager for session
     mock_ctx = AsyncMock()
     mock_ctx.__aenter__.return_value = mock_session
@@ -108,7 +111,7 @@ async def test_disconnect_emits_offline(mock_sio):
         "partner_offline",
         {"user_id": "user_id_123"},
         room="couple:couple_id_456",
-        skip_sid="sid_123"
+        skip_sid="sid_123",
     )
 
 
@@ -122,7 +125,7 @@ async def test_chat_message_success(mock_db_session_maker, mock_sio):
 
     user_id = uuid4()
     couple_id = uuid4()
-    
+
     # Mock session
     mock_session = {"user_id": str(user_id), "couple_id": str(couple_id), "display_name": "User A"}
     mock_ctx = AsyncMock()
@@ -139,13 +142,15 @@ async def test_chat_message_success(mock_db_session_maker, mock_sio):
         "id": "msg_uuid",
         "content": "hello world",
         "message_type": "text",
-        "sender_id": str(user_id)
+        "sender_id": str(user_id),
     }
 
     mock_msg_repo = AsyncMock()
     mock_msg_repo.create.return_value = mock_message_entity
 
-    with patch("presentation.socketio.handlers.chat.PostgresMessageRepository", return_value=mock_msg_repo):
+    with patch(
+        "presentation.socketio.handlers.chat.PostgresMessageRepository", return_value=mock_msg_repo
+    ):
         await handle_message("sid_123", {"content": "hello world", "message_type": "text"})
 
         # Assert saved
@@ -159,9 +164,9 @@ async def test_chat_message_success(mock_db_session_maker, mock_sio):
                 "id": "msg_uuid",
                 "content": "hello world",
                 "message_type": "text",
-                "sender_id": str(user_id)
+                "sender_id": str(user_id),
             },
-            room=f"couple:{couple_id}"
+            room=f"couple:{couple_id}",
         )
 
 
@@ -183,7 +188,7 @@ async def test_chat_typing_broadcast(mock_sio):
         "chat:typing",
         {"user_id": "user_id_123", "is_typing": True},
         room="couple:couple_id_456",
-        skip_sid="sid_123"
+        skip_sid="sid_123",
     )
 
 
@@ -197,7 +202,7 @@ async def test_chat_read_success(mock_db_session_maker, mock_sio):
 
     user_id = uuid4()
     couple_id = uuid4()
-    
+
     mock_session = {"user_id": str(user_id), "couple_id": str(couple_id)}
     mock_ctx = AsyncMock()
     mock_ctx.__aenter__.return_value = mock_session
@@ -210,7 +215,9 @@ async def test_chat_read_success(mock_db_session_maker, mock_sio):
     mock_msg_repo = AsyncMock()
     mock_msg_repo.mark_read_for_user.return_value = 5
 
-    with patch("presentation.socketio.handlers.chat.PostgresMessageRepository", return_value=mock_msg_repo):
+    with patch(
+        "presentation.socketio.handlers.chat.PostgresMessageRepository", return_value=mock_msg_repo
+    ):
         await handle_read("sid_123")
 
         # Assert DB updated
@@ -222,7 +229,7 @@ async def test_chat_read_success(mock_db_session_maker, mock_sio):
             "chat:read",
             {"reader_id": str(user_id), "marked_read": 5},
             room=f"couple:{couple_id}",
-            skip_sid="sid_123"
+            skip_sid="sid_123",
         )
 
 
@@ -233,7 +240,11 @@ async def test_love_touch_broadcast(mock_sio):
     # Configure sio async mock methods
     mock_sio.emit = AsyncMock()
 
-    mock_session = {"user_id": "user_id_123", "couple_id": "couple_id_456", "display_name": "User A"}
+    mock_session = {
+        "user_id": "user_id_123",
+        "couple_id": "couple_id_456",
+        "display_name": "User A",
+    }
     mock_ctx = AsyncMock()
     mock_ctx.__aenter__.return_value = mock_session
     mock_sio.session.return_value = mock_ctx
@@ -245,7 +256,7 @@ async def test_love_touch_broadcast(mock_sio):
     assert called_args[0][0] == "love:touch"
     assert called_args[1]["room"] == "couple:couple_id_456"
     assert called_args[1]["skip_sid"] == "sid_123"
-    
+
     payload = called_args[0][1]
     assert payload["sender_id"] == "user_id_123"
     assert payload["sender_name"] == "User A"

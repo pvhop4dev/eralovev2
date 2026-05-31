@@ -34,7 +34,7 @@ async def add_photo(
 
     photo_repo = PostgresPhotoRepository(session)
     event_repo = PostgresLoveEventRepository(session)
-    
+
     use_case = AddPhotoUseCase(photo_repo, event_repo)
     response = await use_case.execute(body, current_user.id, couple.id)
 
@@ -56,9 +56,9 @@ async def get_photos(
 
     photo_repo = PostgresPhotoRepository(session)
     before_id = UUID(before) if before else None
-    
+
     photos = await photo_repo.get_by_couple(couple.id, limit, before_id)
-    
+
     # We want to return PhotoResponse serialization
     photo_responses = []
     for p in photos:
@@ -104,7 +104,7 @@ async def get_event_photos(
 ) -> dict:
     """Get all photos attached to a specific event."""
     event_uuid = UUID(event_id)
-    
+
     # Verify event exists and belongs to the couple
     event_repo = PostgresLoveEventRepository(session)
     event = await event_repo.get_by_id(event_uuid)

@@ -37,9 +37,8 @@ class MatchRequest:
     @property
     def is_expired(self) -> bool:
         """Check if request has expired."""
-        return (
-            self.status == "expired"
-            or (self.expires_at is not None and datetime.now(UTC) > self.expires_at)
+        return self.status == "expired" or (
+            self.expires_at is not None and datetime.now(UTC) > self.expires_at
         )
 
     def accept(self, start_date: date | None = None) -> None:
@@ -87,7 +86,9 @@ class MatchRequest:
             "receiver_id": str(self.receiver_id),
             "message": self.message,
             "status": self.status,
-            "proposed_start_date": self.proposed_start_date.isoformat() if self.proposed_start_date else None,
+            "proposed_start_date": self.proposed_start_date.isoformat()
+            if self.proposed_start_date
+            else None,
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
             "responded_at": self.responded_at.isoformat() if self.responded_at else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,

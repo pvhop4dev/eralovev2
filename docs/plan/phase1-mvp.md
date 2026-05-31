@@ -1,6 +1,7 @@
 # Eralove - Phase 1: MVP Implementation Plan
 
 ## Goal
+
 Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat with Love Touch.
 
 ## Timeline: Sprint-based (2-week sprints)
@@ -12,12 +13,14 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 1.1 Monorepo Setup
+
 - [x] Initialize Turborepo with `apps/web`, `apps/api`, `packages/`
 - [x] Configure `turbo.json` with build/dev/lint/test pipelines
 - [x] Root `package.json` with workspace scripts
 - [x] Root `pyproject.toml` for Python workspace
 
 #### 1.2 Frontend Scaffolding (Next.js)
+
 - [x] `npx create-next-app@latest` with App Router, TypeScript, Tailwind
 - [x] Configure Tailwind with Eralove design tokens (colors, fonts, spacing)
 - [x] Install & configure: Zustand, TanStack Query, Framer Motion, next-intl
@@ -27,6 +30,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Setup ESLint + Prettier configs
 
 #### 1.3 Backend Scaffolding (Python FastAPI)
+
 - [x] Initialize FastAPI project with `pyproject.toml`
 - [x] Setup project structure (domain/application/infrastructure/presentation)
 - [x] Configure SQLAlchemy 2.0 async engine + session
@@ -39,6 +43,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Dockerfile for development
 
 #### 1.4 Infrastructure
+
 - [x] `docker-compose.yml` with PostgreSQL, Redis, MinIO (local S3), Mailpit
 - [x] Create initial Alembic migration (users table)
 - [ ] Seed script for development data
@@ -46,6 +51,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] `.gitignore` for both Python and Node.js
 
 #### Deliverable
+
 - `turbo dev` starts both frontend (port 3000) and backend (port 8000)
 - PostgreSQL, Redis, MinIO running in Docker
 - Health check endpoint: `GET /api/v1/health`
@@ -57,6 +63,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 2.1 Backend: Auth Domain & Use Cases
+
 - [x] Domain: `User` entity, `Email` and `Password` value objects
 - [x] Use Cases: `RegisterUser` [x], `LoginUser` [x], `RefreshToken` [x], `OAuthLogin` [x]
 - [x] Infrastructure: `UserRepository` (PostgreSQL) [x], `JWTHandler` [x], `OAuthProviders` [x]
@@ -67,6 +74,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Rate limiting on auth endpoints (10 req/min) (via Redis Sliding Window dependency)
 
 #### 2.2 Frontend: Auth Pages
+
 - [ ] Welcome/Landing page with hero animation, feature highlights, CTA
 - [ ] Register page (email, password, display_name, DOB, gender)
 - [ ] Login page (email/password + social login buttons)
@@ -77,6 +85,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Google OAuth integration (frontend + backend)
 
 #### 2.3 Shared UI Components
+
 - [ ] Button (variants: primary, secondary, outline, ghost)
 - [ ] Input (text, email, password with show/hide, date)
 - [ ] Form field with label + error message
@@ -85,6 +94,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Avatar component
 
 #### Deliverable
+
 - User can register, verify email, login, logout
 - [x] Google OAuth login works
 - Protected routes redirect to login
@@ -97,11 +107,13 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 3.1 Backend: Onboarding
+
 - [ ] Use Case: `CompleteOnboarding` (save profile, love language, avatar)
 - [x] S3 presigned URL for avatar upload
 - [ ] Update user `is_onboarded` flag
 
 #### 3.2 Backend: Match System
+
 - [ ] Domain: `MatchRequest` entity, `Couple` entity
 - [x] Use Cases: `SendMatchRequest`, `AcceptMatch`, `DeclineMatch`, `Unmatch`
 - [ ] Domain rule: one active match per user at a time
@@ -110,6 +122,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Soft unmatch (hide data, don't delete)
 
 #### 3.3 Frontend: Onboarding Flow
+
 - [x] Step 1: Welcome + display name
 - [x] Step 2: Avatar upload + DOB (for zodiac)
 - [x] Step 3: Mini love language quiz (3 questions)
@@ -118,6 +131,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Framer Motion page transitions
 
 #### 3.4 Frontend: Match System
+
 - [x] Search user page (by username/email)
 - [ ] User profile preview card
 - [x] Send match request with custom message
@@ -127,6 +141,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] QR code generation & scanner for quick match
 
 #### Deliverable
+
 - New user goes through onboarding wizard
 - Can search and send match request
 - Partner can accept with start date
@@ -139,6 +154,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 4.1 Backend: Dashboard API
+
 - [x] Aggregated `GET /dashboard` endpoint
 - [x] Days together calculation from `couples.start_date`
 - [x] Daily love quote (cached in Redis, 500+ quotes seeded)
@@ -147,6 +163,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Mood check-in endpoints
 
 #### 4.2 Frontend: Dashboard
+
 - [x] Couple photo + names + days counter ("365 ngay")
 - [x] Quick shortcut grid (Calendar, Map, Chat, Ari)
 - [x] Daily love card with quote
@@ -156,6 +173,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Responsive layout (desktop sidebar + mobile bottom nav)
 
 #### 4.3 Navigation & Layout
+
 - [x] Desktop: Sidebar navigation with icons
 - [x] Mobile: Bottom tab navigation
 - [ ] Header with couple avatar + notification bell
@@ -163,6 +181,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Dark mode toggle
 
 #### Deliverable
+
 - [x] Dashboard shows couple info, daily quote, mood check-in
 - [x] Navigation works on desktop and mobile
 - [x] Dark mode works throughout app
@@ -174,6 +193,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 5.1 Backend: Events & Photos
+
 - [ ] Domain: `LoveEvent` entity, `Photo` entity
 - [ ] Use Cases: CRUD events, upload photos, attach photos to events
 - [ ] S3 presigned URL flow for photo upload
@@ -182,6 +202,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Soft delete with 30-day recovery
 
 #### 5.2 Frontend: Calendar View
+
 - [ ] Month view with event indicators (icons by type)
 - [ ] Week view
 - [ ] Swipe/click to navigate months
@@ -189,6 +210,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Event icons: camera (photos), heart (event), cake (birthday), ring (anniversary)
 
 #### 5.3 Frontend: Event Management
+
 - [ ] Create event form (title, type, date, time, location, description)
 - [ ] Location picker (text input + optional map pin)
 - [ ] Photo upload (drag & drop / file picker, max 20 per event)
@@ -198,6 +220,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Reminder settings (1 day, 1 week before)
 
 #### Deliverable
+
 - Calendar shows events with type-specific icons
 - Create/edit/delete events with photos
 - Events linked to locations (text-based for now)
@@ -209,6 +232,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 6.1 Backend: Realtime Chat
+
 - [x] Domain: `Message` entity
 - [x] WebSocket handler with JWT auth
 - [x] Redis Pub/Sub for message broadcasting
@@ -221,10 +245,12 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Reactions (emoji)
 
 #### 6.2 Backend: Love Touch
+
 - [x] WebSocket event: `love_touch`
 - [ ] Push notification when partner offline
 
 #### 6.3 Frontend: Chat Interface
+
 - [x] Chat bubble layout (pink/purple theme)
 - [x] Text input with send button
 - [ ] Image upload in chat
@@ -240,12 +266,14 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [x] Scroll to bottom, load more on scroll up
 
 #### 6.4 Frontend: Real-time
+
 - [x] WebSocket connection manager
 - [x] Auto-reconnect on disconnect
 - [ ] Online/offline status indicator
 - [ ] Unread message count badge
 
 #### Deliverable
+
 - Real-time chat between couple
 - Send text, images, voice messages
 - Love Touch sends vibration to partner
@@ -258,6 +286,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 7.1 Testing
+
 - [ ] Backend: Unit tests for all use cases (>80% coverage)
 - [ ] Backend: Integration tests for auth flow
 - [ ] Frontend: Component tests for key UI components
@@ -265,6 +294,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
   - Register → Onboard → Match → Dashboard → Create Event → Chat
 
 #### 7.2 Performance & Security
+
 - [ ] API response compression (gzip)
 - [ ] Image optimization (WebP, lazy loading)
 - [ ] SQL query optimization (check N+1)
@@ -273,6 +303,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Error handling & logging (structured logs)
 
 #### 7.3 Polish
+
 - [ ] Loading states & skeletons for all pages
 - [ ] Error boundaries & fallback UI
 - [ ] Empty states (no events, no messages)
@@ -282,6 +313,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Responsive design QA (375px, 768px, 1440px)
 
 #### 7.4 Deployment Setup
+
 - [ ] Vercel deployment for frontend
 - [ ] Backend deployment (Railway/Render/Fly.io)
 - [ ] PostgreSQL hosted (Supabase/Neon)
@@ -292,6 +324,7 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 - [ ] Domain setup (love.eraquix.com + api-love.eraquix.com)
 
 #### Deliverable
+
 - MVP deployed and accessible
 - Core flows working end-to-end
 - Automated tests passing in CI
@@ -300,23 +333,24 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 
 ## MVP Feature Summary
 
-| Feature | Status |
-|---|---|
-| Welcome & Landing Page | Phase 1 |
-| Email & Google Auth | Phase 1 |
-| Onboarding Wizard | Phase 1 |
+| Feature                                | Status  |
+| -------------------------------------- | ------- |
+| Welcome & Landing Page                 | Phase 1 |
+| Email & Google Auth                    | Phase 1 |
+| Onboarding Wizard                      | Phase 1 |
 | Match System (search, request, accept) | Phase 1 |
-| Home Dashboard | Phase 1 |
-| Love Calendar (basic CRUD) | Phase 1 |
-| Photo Upload to Events | Phase 1 |
-| Real-time Chat | Phase 1 |
-| Love Touch | Phase 1 |
-| Message Reactions & Replies | Phase 1 |
-| Mood Check-in | Phase 1 |
-| Dark Mode | Phase 1 |
-| Responsive Design | Phase 1 |
+| Home Dashboard                         | Phase 1 |
+| Love Calendar (basic CRUD)             | Phase 1 |
+| Photo Upload to Events                 | Phase 1 |
+| Real-time Chat                         | Phase 1 |
+| Love Touch                             | Phase 1 |
+| Message Reactions & Replies            | Phase 1 |
+| Mood Check-in                          | Phase 1 |
+| Dark Mode                              | Phase 1 |
+| Responsive Design                      | Phase 1 |
 
 ## Deferred to Phase 2
+
 - Calendar header widget (weather, horoscope, feng shui)
 - Love Map
 - Voice & Video Call

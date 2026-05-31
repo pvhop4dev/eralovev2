@@ -61,9 +61,9 @@ class RateLimiter:
                 pipe.zadd(key, {member: now})
                 # 4. Set expiration on key to clean up Redis memory
                 pipe.expire(key, self.window_seconds)
-                
+
                 results = await pipe.execute()
-                
+
             # results[1] is the result of ZCARD before we added the new request
             request_count = results[1]
 
@@ -73,7 +73,7 @@ class RateLimiter:
                     ip=ip,
                     path=path,
                     requests=self.requests,
-                    count=request_count + 1
+                    count=request_count + 1,
                 )
                 raise TooManyRequestsError(
                     f"Rate limit exceeded. Maximum {self.requests} requests per {self.window_seconds} seconds."

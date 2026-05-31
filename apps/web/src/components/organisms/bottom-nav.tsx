@@ -45,7 +45,9 @@ export function BottomNav() {
               textDecoration: "none",
               fontSize: "0.7rem",
               fontWeight: isActive ? 600 : 400,
-              color: isActive ? "var(--color-rose-petal)" : "var(--muted-foreground)",
+              color: isActive
+                ? "var(--color-rose-petal)"
+                : "var(--muted-foreground)",
               transition: "all 0.2s ease",
             }}
           >

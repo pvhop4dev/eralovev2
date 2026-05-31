@@ -47,9 +47,7 @@ class TestMatchRequestEntity:
             req.accept()
 
     def test_accept_expired_raises(self):
-        req = self._make_request(
-            expires_at=datetime.now(UTC) - timedelta(hours=1)
-        )
+        req = self._make_request(expires_at=datetime.now(UTC) - timedelta(hours=1))
         with pytest.raises(BusinessRuleError, match="expired"):
             req.accept()
 
@@ -66,9 +64,7 @@ class TestMatchRequestEntity:
             req.decline()
 
     def test_is_expired(self):
-        req = self._make_request(
-            expires_at=datetime.now(UTC) - timedelta(hours=1)
-        )
+        req = self._make_request(expires_at=datetime.now(UTC) - timedelta(hours=1))
         assert req.is_expired is True
         assert req.is_pending is False
 

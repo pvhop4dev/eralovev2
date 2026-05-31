@@ -6,6 +6,7 @@ description: Comprehensive unit testing rules for backend (pytest) and frontend 
 # Unit Testing Rules
 
 ## Core Principles
+
 - Every use case MUST have unit tests
 - Tests are isolated — mock ALL external dependencies (DB, Redis, S3, APIs)
 - One assertion per test when possible, multiple related assertions OK
@@ -15,6 +16,7 @@ description: Comprehensive unit testing rules for backend (pytest) and frontend 
 ## Backend (pytest + pytest-asyncio)
 
 ### Test Structure
+
 ```
 apps/api/tests/
 ├── conftest.py                    # Shared fixtures
@@ -42,6 +44,7 @@ apps/api/tests/
 ```
 
 ### Test File Naming
+
 - File: `test_{module_name}.py`
 - Function: `test_{action}_{scenario}_{expected_result}`
 - Examples:
@@ -51,6 +54,7 @@ apps/api/tests/
   - `test_create_event_by_non_couple_member_raises_forbidden`
 
 ### Test Pattern: Arrange-Act-Assert (AAA)
+
 ```python
 @pytest.mark.asyncio
 async def test_create_event_with_valid_data_returns_event():
@@ -81,6 +85,7 @@ async def test_create_event_with_valid_data_returns_event():
 ```
 
 ### Test Pattern: Exception Tests
+
 ```python
 @pytest.mark.asyncio
 async def test_create_event_without_couple_raises_not_found():
@@ -97,6 +102,7 @@ async def test_create_event_without_couple_raises_not_found():
 ```
 
 ### Factory Pattern for Test Data
+
 ```python
 # tests/factories/user_factory.py
 from uuid import uuid4
@@ -125,6 +131,7 @@ class UserFactory:
 ### What to Test per Layer
 
 #### Domain Entities & Value Objects
+
 - Validation rules (Email format, Password strength)
 - Business logic methods
 - State transitions
@@ -146,6 +153,7 @@ def test_couple_days_together_calculates_correctly():
 ```
 
 #### Use Cases
+
 - Happy path (valid input → expected output)
 - Authorization checks (user belongs to couple)
 - Validation errors (invalid input → domain exception)
@@ -154,12 +162,14 @@ def test_couple_days_together_calculates_correctly():
 - Side effects verified (repo methods called with correct args)
 
 #### NEVER Test in Unit Tests
+
 - Database queries (that's integration tests)
 - HTTP endpoints (that's integration tests)
 - External API calls (that's integration tests)
 - File I/O
 
 ### Fixtures (conftest.py)
+
 ```python
 # tests/conftest.py
 import pytest
@@ -180,6 +190,7 @@ def fake_couple(fake_user, fake_partner):
 ```
 
 ### Mocking Rules
+
 - Use `AsyncMock(spec=InterfaceClass)` to enforce interface contract
 - Mock at the boundary (repository interfaces, service interfaces)
 - NEVER mock domain entities or value objects — use factories
@@ -191,6 +202,7 @@ def fake_couple(fake_user, fake_partner):
 ## Frontend (Vitest + React Testing Library)
 
 ### Test Structure
+
 ```
 apps/web/src/
 ├── features/calendar/
@@ -207,6 +219,7 @@ apps/web/src/
 ```
 
 ### Component Test Rules
+
 - Test behavior, NOT implementation details
 - Query by role/text/label, NOT by class/id/test-id
 - Prefer `getByRole` > `getByText` > `getByLabelText` > `getByTestId`
@@ -232,17 +245,19 @@ test("calls onSubmit with form data when filled and submitted", async () => {
   await user.click(screen.getByRole("button", { name: /tao su kien/i }));
 
   expect(onSubmit).toHaveBeenCalledWith(
-    expect.objectContaining({ title: "Date Night" })
+    expect.objectContaining({ title: "Date Night" }),
   );
 });
 ```
 
 ### Hook Test Rules
+
 - Wrap hooks that use context in test providers
 - Use `renderHook` from `@testing-library/react`
 - Mock API client for hooks using TanStack Query
 
 ### What NOT to Test
+
 - Third-party libraries (Framer Motion animations, TanStack Query internals)
 - CSS/styling (use visual regression tests if needed)
 - Next.js routing internals
@@ -250,16 +265,18 @@ test("calls onSubmit with form data when filled and submitted", async () => {
 ---
 
 ## Coverage Requirements
-| Layer | Target | Enforced |
-|---|---|---|
-| Domain entities & value objects | >90% | Yes (CI blocks below) |
-| Application use cases | >80% | Yes (CI blocks below) |
-| Infrastructure repos | >60% | Integration tests |
-| Presentation routes | >60% | Integration tests |
-| Frontend components | Key interactions | No hard target |
-| Frontend hooks | Data flow tested | No hard target |
+
+| Layer                           | Target           | Enforced              |
+| ------------------------------- | ---------------- | --------------------- |
+| Domain entities & value objects | >90%             | Yes (CI blocks below) |
+| Application use cases           | >80%             | Yes (CI blocks below) |
+| Infrastructure repos            | >60%             | Integration tests     |
+| Presentation routes             | >60%             | Integration tests     |
+| Frontend components             | Key interactions | No hard target        |
+| Frontend hooks                  | Data flow tested | No hard target        |
 
 ## Running Tests
+
 ```bash
 # Backend unit tests only
 cd apps/api && pytest tests/unit -v

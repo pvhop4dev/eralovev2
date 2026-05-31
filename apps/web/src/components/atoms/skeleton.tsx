@@ -60,19 +60,41 @@ export function DashboardSkeleton() {
   return (
     <div style={{ padding: "1.5rem", maxWidth: "800px", margin: "0 auto" }}>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "1.5rem",
+        }}
+      >
         <Skeleton width="200px" height="2rem" />
         <Skeleton width="40px" height="40px" borderRadius="50%" />
       </div>
 
       {/* Hero card */}
-      <Skeleton width="100%" height="180px" borderRadius="var(--radius-xl)" style={{ marginBottom: "1rem" }} />
+      <Skeleton
+        width="100%"
+        height="180px"
+        borderRadius="var(--radius-xl)"
+        style={{ marginBottom: "1rem" }}
+      />
 
       {/* Quote card */}
-      <Skeleton width="100%" height="100px" borderRadius="var(--radius-xl)" style={{ marginBottom: "1rem" }} />
+      <Skeleton
+        width="100%"
+        height="100px"
+        borderRadius="var(--radius-xl)"
+        style={{ marginBottom: "1rem" }}
+      />
 
       {/* Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "0.75rem",
+        }}
+      >
         <Skeleton width="100%" height="120px" borderRadius="var(--radius-xl)" />
         <Skeleton width="100%" height="120px" borderRadius="var(--radius-xl)" />
         <Skeleton width="100%" height="120px" borderRadius="var(--radius-xl)" />
@@ -87,18 +109,42 @@ export function DashboardSkeleton() {
  */
 export function ChatSkeleton() {
   return (
-    <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+    <div
+      style={{
+        padding: "1rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.75rem",
+      }}
+    >
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.5rem 0" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.75rem",
+          padding: "0.5rem 0",
+        }}
+      >
         <Skeleton width="44px" height="44px" borderRadius="50%" />
         <div>
-          <Skeleton width="120px" height="1rem" style={{ marginBottom: "0.25rem" }} />
+          <Skeleton
+            width="120px"
+            height="1rem"
+            style={{ marginBottom: "0.25rem" }}
+          />
           <Skeleton width="80px" height="0.75rem" />
         </div>
       </div>
 
       {/* Messages */}
-      <div style={{ display: "flex", justifyContent: "flex-start", marginTop: "1rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          marginTop: "1rem",
+        }}
+      >
         <Skeleton width="60%" height="48px" borderRadius="1rem" />
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end" }}>

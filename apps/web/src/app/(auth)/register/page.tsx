@@ -20,7 +20,9 @@ export default function RegisterPage() {
     gender: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error on change
@@ -37,10 +39,12 @@ export default function RegisterPage() {
     const newErrors: Record<string, string> = {};
     if (!formData.email) newErrors.email = "Email là bắt buộc";
     if (!formData.password) newErrors.password = "Mật khẩu là bắt buộc";
-    else if (formData.password.length < 8) newErrors.password = "Mật khẩu cần ít nhất 8 ký tự";
+    else if (formData.password.length < 8)
+      newErrors.password = "Mật khẩu cần ít nhất 8 ký tự";
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
-    if (!formData.display_name) newErrors.display_name = "Tên hiển thị là bắt buộc";
+    if (!formData.display_name)
+      newErrors.display_name = "Tên hiển thị là bắt buộc";
     if (!formData.username) newErrors.username = "Username là bắt buộc";
     else if (!/^[a-zA-Z0-9_]+$/.test(formData.username))
       newErrors.username = "Username chỉ được chứa chữ, số và _";
@@ -68,7 +72,7 @@ export default function RegisterPage() {
             date_of_birth: formData.date_of_birth || undefined,
             gender: formData.gender || undefined,
           }),
-        }
+        },
       );
       const data = await res.json();
       if (!res.ok) {
@@ -119,7 +123,10 @@ export default function RegisterPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      >
         <FormField
           label="Email"
           name="email"
@@ -151,7 +158,13 @@ export default function RegisterPage() {
           hint="Chữ, số và dấu gạch dưới"
           required
         />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "0.75rem",
+          }}
+        >
           <FormField
             label="Ngày sinh"
             name="date_of_birth"
@@ -160,7 +173,10 @@ export default function RegisterPage() {
             onChange={handleChange}
           />
           <div className="space-y-1.5">
-            <label htmlFor="gender" className="block text-sm font-medium text-[var(--foreground)]">
+            <label
+              htmlFor="gender"
+              className="block text-sm font-medium text-[var(--foreground)]"
+            >
               Giới tính
             </label>
             <select

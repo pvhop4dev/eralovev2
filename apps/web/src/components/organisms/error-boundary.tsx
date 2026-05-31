@@ -74,7 +74,8 @@ export class ErrorBoundary extends Component<Props, State> {
               maxWidth: "400px",
             }}
           >
-            Đừng lo, hãy thử tải lại trang. Nếu lỗi vẫn tiếp tục, hãy liên hệ chúng mình nhé 💕
+            Đừng lo, hãy thử tải lại trang. Nếu lỗi vẫn tiếp tục, hãy liên hệ
+            chúng mình nhé 💕
           </p>
           <div style={{ display: "flex", gap: "0.75rem" }}>
             <Button variant="ghost" onClick={this.handleReset}>

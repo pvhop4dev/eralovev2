@@ -6,6 +6,7 @@ description: Security requirements for Eralove application
 # Security Rules
 
 ## Authentication
+
 - JWT access tokens: 15 minute expiry, stored in memory (Zustand), never localStorage
 - Refresh tokens: 7 day expiry, httpOnly + Secure + SameSite=Lax cookie
 - Password hashing: bcrypt with cost factor 12
@@ -13,12 +14,14 @@ description: Security requirements for Eralove application
 - Rate limit auth endpoints: 10 requests/minute per IP
 
 ## Authorization
+
 - Every API endpoint that accesses couple data MUST verify the user belongs to that couple
 - Use middleware to extract and validate JWT on every request
 - Couple-scoped queries: always filter by `couple_id` derived from authenticated user
 - Never trust client-provided `couple_id` or `user_id` — derive from JWT
 
 ## Data Privacy
+
 - Couples can only see their own data (events, photos, messages, etc.)
 - User search returns minimal info (id, username, display_name, avatar)
 - Soft-deleted data is invisible to users but retained for recovery
@@ -26,6 +29,7 @@ description: Security requirements for Eralove application
 - S3 presigned URLs expire in 1 hour
 
 ## Input Validation
+
 - All inputs validated with Pydantic (backend) and Zod (frontend)
 - Sanitize HTML in user-generated content (messages, notes, bios)
 - File upload: validate MIME type and file size (max 10MB images, 100MB videos)
@@ -33,6 +37,7 @@ description: Security requirements for Eralove application
 - XSS: React escapes by default, never use `dangerouslySetInnerHTML`
 
 ## API Security
+
 - CORS: whitelist specific origins only
 - Rate limiting: 100 req/min general, 10 req/min auth, 5 req/min AI
 - Request size limit: 10MB
@@ -41,6 +46,7 @@ description: Security requirements for Eralove application
 - Disable OpenAPI docs in production (`docs_url=None` when not dev)
 
 ## Secrets
+
 - Never commit `.env` files, API keys, or credentials
 - Use environment variables for all secrets
 - Rotate JWT secret periodically

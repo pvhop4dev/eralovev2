@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>()(
         set(
           { user, accessToken: token, isAuthenticated: true },
           undefined,
-          "auth/setAuth"
+          "auth/setAuth",
         ),
 
       setToken: (token) =>
@@ -50,9 +50,9 @@ export const useAuthStore = create<AuthState>()(
         set(
           { user: null, accessToken: null, isAuthenticated: false },
           undefined,
-          "auth/logout"
+          "auth/logout",
         ),
     }),
-    { name: "auth-store" }
-  )
+    { name: "auth-store" },
+  ),
 );

@@ -66,11 +66,13 @@ async def create_{feature}(
 ## 4. Register the Router
 
 Add to `apps/api/src/presentation/main.py`:
+
 ```python
 app.include_router({feature}_router, prefix="/api/v1")
 ```
 
 ## Rules
+
 - Always use `Annotated[..., Depends()]` pattern
 - Always validate input with Pydantic
 - Return proper HTTP status codes (201 for create, 204 for delete)

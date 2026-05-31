@@ -55,6 +55,7 @@ async def update_current_user_profile(
     # Recalculate zodiac if DOB changed
     if "date_of_birth" in update_data and current_user.date_of_birth:
         from domain.entities.user import _calculate_zodiac
+
         current_user.zodiac_sign = _calculate_zodiac(current_user.date_of_birth)
 
     user_repo = PostgresUserRepository(session)

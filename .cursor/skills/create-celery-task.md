@@ -120,6 +120,7 @@ def test_{action}_{resource}_retries_on_failure():
 ```
 
 ## Checklist
+
 - [ ] Task arguments are JSON-serializable (str, int, list, dict only)
 - [ ] Task is idempotent (safe to retry)
 - [ ] `max_retries` and `time_limit` set

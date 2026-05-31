@@ -77,6 +77,7 @@ class PostgresUserRepository(UserRepository):
         model = result.scalar_one_or_none()
         if model is None:
             from domain.exceptions import UserNotFoundError
+
             raise UserNotFoundError()
 
         # Update fields
@@ -117,9 +118,7 @@ class PostgresUserRepository(UserRepository):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none() is not None
 
-    async def search(
-        self, query: str, limit: int = 20, offset: int = 0
-    ) -> list[User]:
+    async def search(self, query: str, limit: int = 20, offset: int = 0) -> list[User]:
         """Search users by username or display_name."""
         search_pattern = f"%{query}%"
         stmt = (

@@ -42,9 +42,14 @@ apps/web/src/app/
 ## Route Groups
 
 ### `(auth)` — Unauthenticated Pages
+
 ```tsx
 // app/(auth)/layout.tsx
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-950 dark:to-purple-950">
       {children}
@@ -54,12 +59,17 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 ```
 
 ### `(main)` — Authenticated Pages
+
 ```tsx
 // app/(main)/layout.tsx
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth-server";
 
-export default async function MainLayout({ children }: { children: React.ReactNode }) {
+export default async function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getServerSession();
   if (!session) redirect("/login");
 
@@ -79,6 +89,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
 ## Page Patterns
 
 ### Server Component Page (Default)
+
 ```tsx
 // app/(main)/calendar/page.tsx
 import { Suspense } from "react";
@@ -105,6 +116,7 @@ export default function CalendarPage() {
 ```
 
 ### Client Component Page (Interactive)
+
 ```tsx
 // app/(main)/chat/page.tsx
 "use client";
@@ -117,6 +129,7 @@ export default function ChatPage() {
 ```
 
 ### Dynamic Route Page
+
 ```tsx
 // app/(main)/calendar/[eventId]/page.tsx
 import { notFound } from "next/navigation";
@@ -207,13 +220,20 @@ export const metadata = {
     template: "%s | Eralove",
     default: "Eralove — Nơi lưu giữ mọi khoảnh khắc yêu thương",
   },
-  description: "Ứng dụng dành riêng cho các cặp đôi — lưu giữ ký ức, kết nối mỗi ngày.",
+  description:
+    "Ứng dụng dành riêng cho các cặp đôi — lưu giữ ký ức, kết nối mỗi ngày.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body className={`${nunito.variable} ${inter.variable} font-sans antialiased`}>
+      <body
+        className={`${nunito.variable} ${inter.variable} font-sans antialiased`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
@@ -222,6 +242,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```
 
 ### Providers Wrapper
+
 ```tsx
 // app/providers.tsx
 "use client";
@@ -233,7 +254,7 @@ import { Toaster } from "sonner";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,       // 5 minutes
+      staleTime: 5 * 60 * 1000, // 5 minutes
       retry: 2,
       refetchOnWindowFocus: false,
     },
@@ -255,6 +276,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 ## Loading & Error States
 
 ### Loading UI (Skeleton)
+
 ```tsx
 // app/(main)/calendar/loading.tsx
 import { CalendarSkeleton } from "@/features/calendar/components/calendar-skeleton";
@@ -265,6 +287,7 @@ export default function CalendarLoading() {
 ```
 
 ### Error Boundary
+
 ```tsx
 // app/(main)/calendar/error.tsx
 "use client";
@@ -280,7 +303,10 @@ export default function CalendarError({
     <div className="flex flex-col items-center justify-center p-8">
       <h2 className="text-xl font-heading text-rose-500">Đã xảy ra lỗi</h2>
       <p className="text-gray-500 mt-2">{error.message}</p>
-      <button onClick={reset} className="mt-4 px-4 py-2 bg-rose-500 text-white rounded-full">
+      <button
+        onClick={reset}
+        className="mt-4 px-4 py-2 bg-rose-500 text-white rounded-full"
+      >
         Thử lại
       </button>
     </div>
@@ -304,7 +330,7 @@ import Image from "next/image";
   placeholder="blur"
   blurDataURL={photo.blur_hash}
   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-/>
+/>;
 
 // next.config.ts — allow S3 domain
 const nextConfig = {
@@ -333,7 +359,7 @@ const MapView = dynamic(
   () => import("@/features/map/components/map-view").then((m) => m.MapView),
   {
     loading: () => <MapSkeleton />,
-    ssr: false,  // Mapbox doesn't support SSR
+    ssr: false, // Mapbox doesn't support SSR
   },
 );
 
@@ -341,7 +367,7 @@ const ChatView = dynamic(
   () => import("@/features/chat/components/chat-view").then((m) => m.ChatView),
   {
     loading: () => <ChatSkeleton />,
-    ssr: false,  // WebSocket client-only
+    ssr: false, // WebSocket client-only
   },
 );
 
@@ -356,7 +382,7 @@ const EmojiPicker = dynamic(
 ```tsx
 // Per-page metadata
 export const metadata = {
-  title: "Lịch Tình Yêu",  // Template from root: "Lịch Tình Yêu | Eralove"
+  title: "Lịch Tình Yêu", // Template from root: "Lịch Tình Yêu | Eralove"
   description: "Quản lý sự kiện, kỷ niệm và những ngày đặc biệt của hai bạn.",
   openGraph: {
     title: "Eralove — Lịch Tình Yêu",
@@ -369,6 +395,7 @@ export const metadata = {
 ## Rules
 
 ### MUST
+
 - Use App Router (not Pages Router)
 - Server Components by default, `"use client"` only when needed
 - Use `next/image` for all images (never `<img>`)
@@ -380,6 +407,7 @@ export const metadata = {
 - Use `error.tsx` for error boundaries on feature routes
 
 ### MUST NOT
+
 - Never use `useEffect` for data fetching in Server Components
 - Never expose server-only code (DB queries, secrets) in Client Components
 - Never use `window`, `document`, `localStorage` in Server Components
@@ -387,6 +415,7 @@ export const metadata = {
 - Never use `router.push()` for programmatic navigation in Server Components (use `redirect()`)
 
 ### SHOULD
+
 - Use `Suspense` boundaries for parallel data loading
 - Use `generateStaticParams` for known dynamic routes
 - Implement proper `not-found.tsx` for user-friendly 404

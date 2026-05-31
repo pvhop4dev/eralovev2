@@ -239,6 +239,7 @@ async def forgot_password(
 
         # Send email
         import contextlib
+
         with contextlib.suppress(Exception):
             await send_reset_password_email(user.email, reset_token)
 

@@ -16,19 +16,23 @@ class PhotoModel(Base, TimestampMixin):
 
     __tablename__ = "photos"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     couple_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("couples.id", ondelete="CASCADE"),
-        nullable=False, index=True,
+        UUID(as_uuid=True),
+        ForeignKey("couples.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     uploaded_by: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False,
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False,
     )
     event_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("love_events.id", ondelete="SET NULL"),
-        nullable=True, index=True,
+        UUID(as_uuid=True),
+        ForeignKey("love_events.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
     s3_key: Mapped[str] = mapped_column(String(500), nullable=False)
     thumbnail_key: Mapped[str | None] = mapped_column(String(500), nullable=True)
@@ -44,9 +48,7 @@ class PhotoModel(Base, TimestampMixin):
     file_size: Mapped[int | None] = mapped_column(Integer, nullable=True)
     mime_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
     exif_data: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
-    deleted_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     def __repr__(self) -> str:
         return f"<PhotoModel(id={self.id}, original_url={self.original_url})>"

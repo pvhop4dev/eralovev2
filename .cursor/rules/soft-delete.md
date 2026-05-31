@@ -8,6 +8,7 @@ description: Soft delete pattern rules — when to use, how to implement, and ho
 ## When to Use Soft Delete
 
 ### MUST soft delete (user-facing data that may need recovery):
+
 - `love_events` — events can be restored within 30 days
 - `photos` — photos can be recovered
 - `messages` — deleted messages hidden but retained for compliance
@@ -16,6 +17,7 @@ description: Soft delete pattern rules — when to use, how to implement, and ho
 - `couples` — relationship data preserved on unmatch (hidden, not destroyed)
 
 ### MUST hard delete (no recovery needed):
+
 - `refresh_tokens` — expired tokens, no value in keeping
 - `push_tokens` — device tokens, replace on re-register
 - `message_reactions` — reactions can just be re-added
@@ -25,6 +27,7 @@ description: Soft delete pattern rules — when to use, how to implement, and ho
 - `mood_checkins` — immutable records, never delete
 
 ### NEVER delete (immutable audit trail):
+
 - `coin_transactions`
 - `login_history`
 - `call_logs`
@@ -35,6 +38,7 @@ description: Soft delete pattern rules — when to use, how to implement, and ho
 ## Implementation
 
 ### SQLAlchemy Model Mixin
+
 ```python
 # apps/api/src/infrastructure/database/mixins.py
 from sqlalchemy import DateTime
@@ -55,6 +59,7 @@ class SoftDeleteMixin:
 ```
 
 ### Model Usage
+
 ```python
 class EventModel(Base, SoftDeleteMixin):
     __tablename__ = "love_events"
@@ -63,6 +68,7 @@ class EventModel(Base, SoftDeleteMixin):
 ```
 
 ### Domain Entity
+
 ```python
 # apps/api/src/domain/entities/event.py
 @dataclass
@@ -91,6 +97,7 @@ class Event:
 ## Repository Query Rules
 
 ### CRITICAL: Always Filter Out Deleted Records
+
 Every SELECT query on a soft-deletable table MUST include `WHERE deleted_at IS NULL` unless explicitly querying deleted records.
 
 ```python
@@ -136,6 +143,7 @@ class PostgresEventRepository(EventRepository):
 ```
 
 ### WRONG — Missing filter
+
 ```python
 # WRONG! This returns deleted records too
 async def get_by_id(self, event_id: UUID) -> Event | None:
@@ -146,6 +154,7 @@ async def get_by_id(self, event_id: UUID) -> Event | None:
 ---
 
 ## Soft Delete Use Case Pattern
+
 ```python
 # apps/api/src/application/use_cases/calendar/delete_event.py
 class DeleteEventUseCase:
@@ -174,6 +183,7 @@ class DeleteEventUseCase:
 ```
 
 ## Restore Use Case Pattern
+
 ```python
 class RestoreEventUseCase:
     RESTORE_WINDOW_DAYS = 30
@@ -210,6 +220,7 @@ class RestoreEventUseCase:
 ---
 
 ## API Response Rules
+
 - `DELETE /events/{id}` → returns `204 No Content` (soft delete)
 - `POST /events/{id}/restore` → returns `200` with restored event
 - `GET /events` → NEVER returns soft-deleted records
@@ -217,23 +228,29 @@ class RestoreEventUseCase:
 - Soft-deleted records excluded from search, calendar view, map pins, statistics
 
 ## Permanent Deletion
+
 - Background job runs daily: permanently delete records where `deleted_at < now() - 30 days`
 - S3 objects (photos/files) deleted only during permanent deletion, not soft delete
 - Use case: `PermanentDeleteExpiredUseCase` (Celery task)
 
 ## Cascade Rules
+
 - When a `couple` is soft-deleted (unmatch): all related events, photos, messages get soft-deleted too
 - When an `event` is soft-deleted: associated photos remain (they can exist standalone)
 - When a `user` requests account deletion: soft-delete first, schedule permanent deletion after 30 days
 
 ## Database Index
+
 Always index `deleted_at` for efficient filtering:
+
 ```sql
 CREATE INDEX idx_events_deleted ON love_events(deleted_at) WHERE deleted_at IS NULL;
 ```
+
 This partial index speeds up the most common query (active records only).
 
 ## Testing Soft Delete
+
 ```python
 @pytest.mark.asyncio
 async def test_delete_event_sets_deleted_at():

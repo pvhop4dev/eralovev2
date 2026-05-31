@@ -57,9 +57,7 @@ class PostgresMatchRequestRepository(MatchRequestRepository):
         result = await self.session.execute(stmt)
         return [self._to_entity(m) for m in result.scalars().all()]
 
-    async def get_pending_between(
-        self, sender_id: UUID, receiver_id: UUID
-    ) -> MatchRequest | None:
+    async def get_pending_between(self, sender_id: UUID, receiver_id: UUID) -> MatchRequest | None:
         stmt = select(MatchRequestModel).where(
             and_(
                 MatchRequestModel.sender_id == sender_id,
@@ -72,13 +70,12 @@ class PostgresMatchRequestRepository(MatchRequestRepository):
         return self._to_entity(model) if model else None
 
     async def update(self, match_request: MatchRequest) -> MatchRequest:
-        stmt = select(MatchRequestModel).where(
-            MatchRequestModel.id == match_request.id
-        )
+        stmt = select(MatchRequestModel).where(MatchRequestModel.id == match_request.id)
         result = await self.session.execute(stmt)
         model = result.scalar_one_or_none()
         if model is None:
             from domain.exceptions import NotFoundError
+
             raise NotFoundError("Match request not found")
 
         model.status = match_request.status

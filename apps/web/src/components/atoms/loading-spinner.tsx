@@ -10,7 +10,9 @@ export function LoadingSpinner({ size = "md", text }: LoadingSpinnerProps) {
 
   return (
     <div className="flex flex-col items-center justify-center gap-3">
-      <div className={`${sizeMap[size]} animate-[heartbeat_1.2s_ease-in-out_infinite]`}>
+      <div
+        className={`${sizeMap[size]} animate-[heartbeat_1.2s_ease-in-out_infinite]`}
+      >
         💗
       </div>
       {text && (

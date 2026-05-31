@@ -30,7 +30,7 @@ class TestRefreshTokenUseCase:
             expires_at = datetime.now(UTC) - timedelta(days=1)
         else:
             expires_at = datetime.now(UTC) + timedelta(days=7)
-            
+
         return RefreshToken(
             id=uuid4(),
             user_id=user_id,
@@ -41,6 +41,7 @@ class TestRefreshTokenUseCase:
     @pytest.mark.asyncio
     async def test_refresh_success(self):
         import asyncio
+
         user = self._make_user()
         old_refresh_token = create_refresh_token(user.id)
         old_hash = hash_token(old_refresh_token)

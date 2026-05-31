@@ -8,24 +8,26 @@ description: Redis caching strategies, TTL policies, cache invalidation, and per
 ## Redis Caching Strategy
 
 ### Key Naming Convention
+
 ```
 eralove:{domain}:{identifier}:{sub-key}
 ```
 
-| Key Pattern | TTL | Description |
-|---|---|---|
-| `eralove:user:{user_id}:profile` | 30 min | User profile data |
-| `eralove:couple:{couple_id}:dashboard` | 5 min | Dashboard summary |
-| `eralove:couple:{couple_id}:days_count` | 24 hr | Days together count |
-| `eralove:weather:{lat}:{lon}` | 1 hr | Weather data by location |
-| `eralove:horoscope:{sign}:{date}` | 24 hr | Daily horoscope |
-| `eralove:quote:daily:{date}` | 24 hr | Daily love quote |
-| `eralove:session:{user_id}:online` | 5 min | Online status (refreshed by heartbeat) |
-| `eralove:rate_limit:{ip}:{endpoint}` | 1 min | Rate limiter counter |
+| Key Pattern                             | TTL    | Description                            |
+| --------------------------------------- | ------ | -------------------------------------- |
+| `eralove:user:{user_id}:profile`        | 30 min | User profile data                      |
+| `eralove:couple:{couple_id}:dashboard`  | 5 min  | Dashboard summary                      |
+| `eralove:couple:{couple_id}:days_count` | 24 hr  | Days together count                    |
+| `eralove:weather:{lat}:{lon}`           | 1 hr   | Weather data by location               |
+| `eralove:horoscope:{sign}:{date}`       | 24 hr  | Daily horoscope                        |
+| `eralove:quote:daily:{date}`            | 24 hr  | Daily love quote                       |
+| `eralove:session:{user_id}:online`      | 5 min  | Online status (refreshed by heartbeat) |
+| `eralove:rate_limit:{ip}:{endpoint}`    | 1 min  | Rate limiter counter                   |
 
 ### Caching Patterns
 
 #### Cache-Aside (Read-Through)
+
 ```python
 # apps/api/src/infrastructure/redis/cache.py
 import json
@@ -65,6 +67,7 @@ class CacheService:
 ```
 
 #### Write-Through (Invalidate on Write)
+
 ```python
 # In use case: invalidate cache when data changes
 class UpdateEventUseCase:
@@ -82,6 +85,7 @@ class UpdateEventUseCase:
 ```
 
 ### Cache Invalidation Rules
+
 - **Create**: Invalidate list/collection caches
 - **Update**: Invalidate item cache + list caches
 - **Delete**: Invalidate item cache + list caches
@@ -91,6 +95,7 @@ class UpdateEventUseCase:
 ## Backend Performance
 
 ### Database
+
 - Connection pooling: `pool_size=20`, `max_overflow=10`
 - Use `selectinload()` for relationships to prevent N+1
 - Partial indexes on `deleted_at IS NULL` for soft-delete tables
@@ -98,6 +103,7 @@ class UpdateEventUseCase:
 - Batch inserts for bulk operations (photos, quiz answers)
 
 ### API Response
+
 - Enable gzip/brotli compression via middleware
 - Pagination: max 100 items per page
 - Select only needed columns: `select(User.id, User.display_name)` not `select(User)`
@@ -106,27 +112,32 @@ class UpdateEventUseCase:
 ## Frontend Performance
 
 ### Code Splitting
+
 ```tsx
 // Dynamic import for heavy components
 const MapView = dynamic(() => import("@/features/map"), { ssr: false });
 const ChatView = dynamic(() => import("@/features/chat"), { ssr: false });
-const EmojiPicker = dynamic(() => import("@/components/emoji-picker"), { ssr: false });
+const EmojiPicker = dynamic(() => import("@/components/emoji-picker"), {
+  ssr: false,
+});
 ```
 
 ### Image Optimization
+
 - Format: WebP (via next/image automatic)
 - Lazy loading: `loading="lazy"` (default in next/image)
 - Responsive: always set `sizes` prop
 - Blur placeholder: generate blur hash on upload (backend)
 
 ### TanStack Query Cache
+
 ```typescript
 // Stale time configuration per data type
 const STALE_TIMES = {
-  user: 30 * 60 * 1000,      // 30 min — user rarely changes
-  events: 5 * 60 * 1000,     // 5 min — events change occasionally
-  messages: 0,                // Always fresh — real-time via WebSocket
-  weather: 60 * 60 * 1000,   // 1 hour
+  user: 30 * 60 * 1000, // 30 min — user rarely changes
+  events: 5 * 60 * 1000, // 5 min — events change occasionally
+  messages: 0, // Always fresh — real-time via WebSocket
+  weather: 60 * 60 * 1000, // 1 hour
   horoscope: 24 * 60 * 60 * 1000, // 24 hours
 };
 
@@ -139,6 +150,7 @@ useQuery({
 ```
 
 ### Optimistic Updates
+
 ```typescript
 // Optimistic update for instant UI feedback
 const mutation = useMutation({
@@ -165,6 +177,7 @@ const mutation = useMutation({
 ## Rules Summary
 
 ### MUST
+
 - Cache all external API responses (weather, horoscope, quotes)
 - Invalidate cache on every write operation
 - Use connection pooling for database
@@ -172,12 +185,14 @@ const mutation = useMutation({
 - Use dynamic imports for Mapbox, Socket.IO, and heavy components
 
 ### MUST NOT
+
 - Never cache authentication/authorization data in Redis (use JWT)
 - Never use `KEYS *` in production Redis (use `SCAN`)
 - Never fetch all records without pagination
 - Never load full-resolution images without responsive `sizes`
 
 ### SHOULD
+
 - Implement optimistic updates for all mutations in TanStack Query
 - Use `Suspense` boundaries for parallel data loading
 - Monitor cache hit rates and adjust TTLs accordingly

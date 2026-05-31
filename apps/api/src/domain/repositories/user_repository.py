@@ -98,9 +98,7 @@ class UserRepository(ABC):
         ...
 
     @abstractmethod
-    async def search(
-        self, query: str, limit: int = 20, offset: int = 0
-    ) -> list[User]:
+    async def search(self, query: str, limit: int = 20, offset: int = 0) -> list[User]:
         """Search users by username or display_name.
 
         Args:

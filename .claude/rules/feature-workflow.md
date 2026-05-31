@@ -36,6 +36,7 @@ Triển khai theo đúng Clean Architecture, thứ tự từ trong ra ngoài:
 6. **Frontend** — Components, pages, stores, hooks
 
 **Rules khi implement:**
+
 - Mỗi file PHẢI có docstring/comment mô tả mục đích
 - Mỗi Use Case PHẢI có single `execute()` method
 - Mỗi route PHẢI dùng `Annotated[Depends()]` pattern
@@ -49,6 +50,7 @@ Triển khai theo đúng Clean Architecture, thứ tự từ trong ra ngoài:
 SAU KHI implement xong, PHẢI viết và chạy test:
 
 #### Backend tests (bắt buộc):
+
 - [ ] Unit test cho mỗi domain entity mới/sửa
 - [ ] Unit test cho mỗi use case (happy path + error cases)
 - [ ] Unit test cho mỗi value object mới
@@ -64,10 +66,12 @@ python -m pytest tests/ -v
 ```
 
 #### Frontend tests (khuyến khích, bắt buộc cho components phức tạp):
+
 - [ ] Component test cho UI components chính (Vitest + React Testing Library)
 - [ ] Chạy `npm run test` và xác nhận PASS
 
 #### Tiêu chí PASS:
+
 - Tất cả test hiện tại vẫn pass (không regression)
 - Test mới cover ≥80% logic của use case
 - Edge cases được test (null input, unauthorized, not found, duplicate)
@@ -77,10 +81,12 @@ python -m pytest tests/ -v
 SAU KHI test pass, PHẢI cập nhật các file tài liệu sau:
 
 #### Bắt buộc cập nhật:
+
 - [ ] **`FEATURES.md`** — Đánh dấu ✅ cho các task đã hoàn thành, cập nhật % completion
 - [ ] **`docs/plan/phase*.md`** — Check `[x]` cho các task đã xong trong plan tương ứng
 
 #### Cập nhật nếu liên quan:
+
 - [ ] **`docs/plan/api-design.md`** — Nếu thêm/sửa API endpoint
 - [ ] **`docs/plan/database-schema.md`** — Nếu thêm/sửa model hoặc migration
 - [ ] **`CLAUDE.md`** (= `AGENTS.md` = `.cursorrules`) — Nếu thay đổi conventions hoặc architecture
@@ -91,12 +97,14 @@ SAU KHI test pass, PHẢI cập nhật các file tài liệu sau:
 ## Feature: [Tên tính năng]
 
 ### Plan
+
 - [ ] Scope defined
 - [ ] Files identified (new/modified)
 - [ ] API design documented
 - [ ] Plan approved by user
 
 ### Implement
+
 - [ ] Domain layer (entities, VOs, repo interfaces)
 - [ ] Application layer (use cases, DTOs)
 - [ ] Infrastructure layer (repo implementations)
@@ -106,6 +114,7 @@ SAU KHI test pass, PHẢI cập nhật các file tài liệu sau:
 - [ ] Code follows Clean Architecture rules
 
 ### Test
+
 - [ ] Unit tests written for use cases
 - [ ] Unit tests written for domain entities
 - [ ] All existing tests still pass
@@ -113,6 +122,7 @@ SAU KHI test pass, PHẢI cập nhật các file tài liệu sau:
 - [ ] Frontend tests (if applicable)
 
 ### Docs
+
 - [ ] FEATURES.md updated
 - [ ] Phase plan updated
 - [ ] API docs updated (if applicable)

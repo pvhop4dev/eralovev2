@@ -58,6 +58,6 @@ class TestUnmatchUseCase:
             start_date=date(2026, 1, 1),
             status="broken_up",
         )
-        
+
         with pytest.raises(BusinessRuleError, match="Already broken up"):
             couple.break_up()

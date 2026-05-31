@@ -10,6 +10,7 @@ When asked to create a new page/route, follow this pattern:
 ## 1. Create the Page
 
 ### Server Component Page (Default — data fetching)
+
 ```tsx
 // apps/web/src/app/(main)/{feature}/page.tsx
 import { Suspense } from "react";
@@ -43,6 +44,7 @@ export default function {Feature}Page() {
 ```
 
 ### Client Component Page (Interactive — WebSocket, real-time)
+
 ```tsx
 // apps/web/src/app/(main)/{feature}/page.tsx
 "use client";
@@ -102,6 +104,7 @@ export default function {Feature}Error({ error, reset }: ErrorProps) {
 ## 4. Create Feature Module
 
 ### Components
+
 ```tsx
 // apps/web/src/features/{feature}/components/{feature}-view.tsx
 "use client";
@@ -126,6 +129,7 @@ export function {Feature}View() {
 ```
 
 ### API Functions
+
 ```typescript
 // apps/web/src/features/{feature}/api.ts
 import { apiClient } from "@/lib/api-client";
@@ -146,6 +150,7 @@ export const {feature}sApi = {
 ```
 
 ### Hooks
+
 ```typescript
 // apps/web/src/features/{feature}/hooks/use-{feature}s.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -175,6 +180,7 @@ export function useCreate{Feature}() {
 ```
 
 ### Types
+
 ```typescript
 // apps/web/src/features/{feature}/types.ts
 export interface {Feature} {
@@ -208,6 +214,7 @@ export function {Feature}Skeleton() {
 ```
 
 ## Checklist
+
 - [ ] Page uses Server Component by default
 - [ ] `metadata` defined for SEO
 - [ ] `loading.tsx` created for Suspense fallback

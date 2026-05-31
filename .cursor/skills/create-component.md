@@ -14,6 +14,7 @@ apps/web/src/components/{level}/{component-name}.tsx
 ```
 
 Levels:
+
 - `atoms/` — Button, Input, Badge, Avatar, Spinner, Icon
 - `molecules/` — Card, FormField, SearchBar, DatePicker, EmojiPicker
 - `organisms/` — Header, Sidebar, ChatBubble, EventCard, PhotoGrid
@@ -55,6 +56,7 @@ export function {ComponentName}({
 ## Design System Rules
 
 ### Colors (use Tailwind classes)
+
 - Primary: `bg-rose-500` / `text-rose-500` (#FF6B9D)
 - Secondary: `bg-purple-400` / `text-purple-400` (#C084FC)
 - Background: `bg-pink-50` (#FFF0F5)
@@ -63,24 +65,31 @@ export function {ComponentName}({
 - Warning: `text-amber-400` (#FFB347)
 
 ### Dark Mode
+
 Always include `dark:` variants:
+
 ```tsx
-className="bg-pink-50 dark:bg-gray-900 text-purple-900 dark:text-pink-100"
+className = "bg-pink-50 dark:bg-gray-900 text-purple-900 dark:text-pink-100";
 ```
 
 ### Border Radius
+
 - Cards: `rounded-xl` (12px)
 - Buttons: `rounded-full`
 - Inputs: `rounded-lg`
 
 ### Shadows
+
 Use pink-tinted shadows:
+
 ```tsx
-className="shadow-lg shadow-rose-500/10"
+className = "shadow-lg shadow-rose-500/10";
 ```
 
 ### Animations
+
 Use Framer Motion for animations:
+
 ```tsx
 import { motion } from "framer-motion";
 
@@ -92,16 +101,20 @@ import { motion } from "framer-motion";
 ```
 
 ### Typography
+
 - Headings: `font-heading` (Nunito)
 - Body: `font-sans` (Inter)
 
 ### Responsive
+
 Always design mobile-first:
+
 ```tsx
-className="px-4 md:px-6 lg:px-8"
+className = "px-4 md:px-6 lg:px-8";
 ```
 
 ## Checklist
+
 - [ ] TypeScript props interface defined
 - [ ] `cn()` utility used for conditional classes
 - [ ] Dark mode classes included

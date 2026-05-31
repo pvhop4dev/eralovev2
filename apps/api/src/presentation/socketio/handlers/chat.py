@@ -33,7 +33,9 @@ async def handle_message(sid: str, data: dict) -> None:
     reply_to_id_str = data.get("reply_to_id")
 
     if message_type not in MESSAGE_TYPES:
-        await sio.emit("error", {"message": f"Invalid message type. Must be one of: {MESSAGE_TYPES}"}, to=sid)
+        await sio.emit(
+            "error", {"message": f"Invalid message type. Must be one of: {MESSAGE_TYPES}"}, to=sid
+        )
         return
 
     reply_to_id = None

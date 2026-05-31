@@ -41,7 +41,7 @@ export function Avatar({
         "bg-gradient-to-br from-[var(--color-rose-petal)] to-[var(--color-lavender-dream)] text-white",
         "ring-2 ring-white/20",
         sizeMap[size],
-        className
+        className,
       )}
     >
       {src ? (

@@ -20,7 +20,10 @@ interface MatchRequest {
 export default function MatchRequestsPage() {
   const router = useRouter();
   const [tab, setTab] = useState<"received" | "sent">("received");
-  const [requests, setRequests] = useState<{ sent: MatchRequest[]; received: MatchRequest[] }>({
+  const [requests, setRequests] = useState<{
+    sent: MatchRequest[];
+    received: MatchRequest[];
+  }>({
     sent: [],
     received: [],
   });
@@ -35,7 +38,7 @@ export default function MatchRequestsPage() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
           },
-        }
+        },
       );
       const data = await res.json();
       setRequests(data.data || { sent: [], received: [] });
@@ -63,8 +66,10 @@ export default function MatchRequestsPage() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
           },
-          body: JSON.stringify({ start_date: new Date().toISOString().split("T")[0] }),
-        }
+          body: JSON.stringify({
+            start_date: new Date().toISOString().split("T")[0],
+          }),
+        },
       );
       if (res.ok) {
         router.push("/dashboard");
@@ -86,7 +91,7 @@ export default function MatchRequestsPage() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
           },
-        }
+        },
       );
       await fetchRequests();
     } catch {
@@ -146,12 +151,15 @@ export default function MatchRequestsPage() {
                 cursor: "pointer",
                 fontWeight: 600,
                 fontSize: "0.875rem",
-                background: tab === t ? "var(--gradient-primary)" : "transparent",
+                background:
+                  tab === t ? "var(--gradient-primary)" : "transparent",
                 color: tab === t ? "white" : "var(--muted-foreground)",
                 transition: "all 0.2s ease",
               }}
             >
-              {t === "received" ? `📥 Nhận (${requests.received.length})` : `📤 Gửi (${requests.sent.length})`}
+              {t === "received"
+                ? `📥 Nhận (${requests.received.length})`
+                : `📤 Gửi (${requests.sent.length})`}
             </button>
           ))}
         </div>
@@ -159,17 +167,34 @@ export default function MatchRequestsPage() {
         {/* List */}
         {isLoading ? (
           <div style={{ textAlign: "center", padding: "3rem" }}>
-            <div className="animate-[heartbeat_1.2s_ease-in-out_infinite]" style={{ fontSize: "2rem" }}>💗</div>
+            <div
+              className="animate-[heartbeat_1.2s_ease-in-out_infinite]"
+              style={{ fontSize: "2rem" }}
+            >
+              💗
+            </div>
           </div>
         ) : currentList.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "3rem", color: "var(--muted-foreground)" }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "3rem",
+              color: "var(--muted-foreground)",
+            }}
+          >
             <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>
               {tab === "received" ? "📭" : "📮"}
             </div>
-            <p>{tab === "received" ? "Chưa có yêu cầu nào" : "Bạn chưa gửi yêu cầu nào"}</p>
+            <p>
+              {tab === "received"
+                ? "Chưa có yêu cầu nào"
+                : "Bạn chưa gửi yêu cầu nào"}
+            </p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+          >
             {currentList.map((req) => (
               <div
                 key={req.id}
@@ -181,17 +206,36 @@ export default function MatchRequestsPage() {
                   border: "1px solid var(--border)",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    marginBottom: "0.75rem",
+                  }}
+                >
                   <Avatar
-                    fallback={tab === "received" ? req.sender_name : req.receiver_name}
+                    fallback={
+                      tab === "received" ? req.sender_name : req.receiver_name
+                    }
                     size="md"
                   />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, color: "var(--foreground)" }}>
+                    <div
+                      style={{ fontWeight: 600, color: "var(--foreground)" }}
+                    >
                       {tab === "received" ? req.sender_name : req.receiver_name}
                     </div>
-                    <div style={{ fontSize: "0.8rem", color: "var(--muted-foreground)" }}>
-                      @{tab === "received" ? req.sender_username : req.receiver_username}
+                    <div
+                      style={{
+                        fontSize: "0.8rem",
+                        color: "var(--muted-foreground)",
+                      }}
+                    >
+                      @
+                      {tab === "received"
+                        ? req.sender_username
+                        : req.receiver_username}
                     </div>
                   </div>
                   <div
@@ -204,22 +248,33 @@ export default function MatchRequestsPage() {
                         req.status === "pending"
                           ? "rgba(255,107,157,0.1)"
                           : req.status === "accepted"
-                          ? "rgba(52,211,153,0.1)"
-                          : "rgba(156,163,175,0.1)",
+                            ? "rgba(52,211,153,0.1)"
+                            : "rgba(156,163,175,0.1)",
                       color:
                         req.status === "pending"
                           ? "var(--color-rose-petal)"
                           : req.status === "accepted"
-                          ? "#34d399"
-                          : "var(--muted-foreground)",
+                            ? "#34d399"
+                            : "var(--muted-foreground)",
                     }}
                   >
-                    {req.status === "pending" ? "⏳ Chờ" : req.status === "accepted" ? "✅ Đã chấp nhận" : "❌ Từ chối"}
+                    {req.status === "pending"
+                      ? "⏳ Chờ"
+                      : req.status === "accepted"
+                        ? "✅ Đã chấp nhận"
+                        : "❌ Từ chối"}
                   </div>
                 </div>
 
                 {req.message && (
-                  <p style={{ fontSize: "0.875rem", color: "var(--foreground)", marginBottom: "0.75rem", fontStyle: "italic" }}>
+                  <p
+                    style={{
+                      fontSize: "0.875rem",
+                      color: "var(--foreground)",
+                      marginBottom: "0.75rem",
+                      fontStyle: "italic",
+                    }}
+                  >
                     &ldquo;{req.message}&rdquo;
                   </p>
                 )}

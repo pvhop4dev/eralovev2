@@ -29,9 +29,7 @@ def create_access_token(user_id: UUID) -> str:
     Returns:
         Encoded JWT string (exp: 15 minutes by default).
     """
-    expires = datetime.now(UTC) + timedelta(
-        minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    expires = datetime.now(UTC) + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     payload = {
         "sub": str(user_id),
         "exp": expires,
@@ -49,9 +47,7 @@ def create_refresh_token(user_id: UUID) -> str:
     Returns:
         Encoded JWT string (exp: 7 days by default).
     """
-    expires = datetime.now(UTC) + timedelta(
-        days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS
-    )
+    expires = datetime.now(UTC) + timedelta(days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
     payload = {
         "sub": str(user_id),
         "exp": expires,

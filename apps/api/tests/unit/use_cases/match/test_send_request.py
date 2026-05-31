@@ -82,7 +82,9 @@ class TestSendMatchRequestUseCase:
         user_repo.get_by_id.return_value = receiver
         couple_repo = AsyncMock()
         couple_repo.get_active_for_user.side_effect = lambda uid: (
-            Couple(user1_id=sender_id, user2_id=uuid4(), start_date=__import__("datetime").date.today())
+            Couple(
+                user1_id=sender_id, user2_id=uuid4(), start_date=__import__("datetime").date.today()
+            )
             if uid == sender_id
             else None
         )

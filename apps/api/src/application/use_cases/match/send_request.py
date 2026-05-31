@@ -39,9 +39,7 @@ class SendMatchRequestUseCase:
         self.match_repo = match_repo
         self.couple_repo = couple_repo
 
-    async def execute(
-        self, sender_id: UUID, dto: SendMatchRequestDTO
-    ) -> MatchRequestResponse:
+    async def execute(self, sender_id: UUID, dto: SendMatchRequestDTO) -> MatchRequestResponse:
         receiver_id = UUID(dto.receiver_id)
 
         # 1. No self-match

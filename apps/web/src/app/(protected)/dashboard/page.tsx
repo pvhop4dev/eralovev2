@@ -43,7 +43,7 @@ export default function DashboardPage() {
             Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
           },
           body: JSON.stringify({ confirmation_code: confirmText }),
-        }
+        },
       );
       if (res.ok) {
         setShowUnmatchModal(false);
@@ -117,7 +117,15 @@ export default function DashboardPage() {
 
         {couple && partner ? (
           <>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "1rem",
+                marginBottom: "1rem",
+              }}
+            >
               <Avatar fallback={user?.display_name} size="lg" />
               <div style={{ fontSize: "1.5rem" }}>💕</div>
               <Avatar fallback={partner?.display_name} size="lg" />
@@ -144,7 +152,13 @@ export default function DashboardPage() {
             >
               {daysCount}
             </div>
-            <p style={{ color: "var(--muted-foreground)", fontSize: "0.85rem", marginBottom: "1rem" }}>
+            <p
+              style={{
+                color: "var(--muted-foreground)",
+                fontSize: "0.85rem",
+                marginBottom: "1rem",
+              }}
+            >
               ngày yêu thương 💗
             </p>
             <button
@@ -158,8 +172,12 @@ export default function DashboardPage() {
                 cursor: "pointer",
                 transition: "color 0.2s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-rose-petal)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--muted-foreground)")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.color = "var(--color-rose-petal)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = "var(--muted-foreground)")
+              }
             >
               Hủy kết nối 💔
             </button>
@@ -177,7 +195,13 @@ export default function DashboardPage() {
             >
               Xin chào, {user?.display_name || "bạn"} 💕
             </h1>
-            <p style={{ color: "var(--muted-foreground)", fontSize: "0.9rem", marginBottom: "1rem" }}>
+            <p
+              style={{
+                color: "var(--muted-foreground)",
+                fontSize: "0.9rem",
+                marginBottom: "1rem",
+              }}
+            >
               Hãy ghép đôi với người yêu để bắt đầu!
             </p>
             <Link href="/match">
@@ -211,8 +235,16 @@ export default function DashboardPage() {
               transition: "all 0.2s ease",
             }}
           >
-            <div style={{ fontSize: "1.75rem", marginBottom: "0.25rem" }}>{s.icon}</div>
-            <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--muted-foreground)" }}>
+            <div style={{ fontSize: "1.75rem", marginBottom: "0.25rem" }}>
+              {s.icon}
+            </div>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                color: "var(--muted-foreground)",
+              }}
+            >
               {s.label}
             </div>
           </Link>
@@ -251,7 +283,14 @@ export default function DashboardPage() {
             >
               ✨
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                marginBottom: "0.75rem",
+              }}
+            >
               <span style={{ fontSize: "1.25rem" }}>✨</span>
               <h3
                 style={{
@@ -264,7 +303,9 @@ export default function DashboardPage() {
                 Ngày này năm xưa
               </h3>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+            >
               {memoryFlashback.map((event: LoveEvent) => {
                 const eventYear = new Date(event.event_date).getFullYear();
                 const currentYear = new Date().getFullYear();
@@ -292,8 +333,17 @@ export default function DashboardPage() {
                       {event.icon || "❤️"}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem", flexWrap: "wrap" }}>
-                        <h4 style={{ fontWeight: 600, fontSize: "0.95rem" }}>{event.title}</h4>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "baseline",
+                          gap: "0.5rem",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <h4 style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+                          {event.title}
+                        </h4>
                         <span
                           style={{
                             fontSize: "0.75rem",
@@ -308,12 +358,27 @@ export default function DashboardPage() {
                         </span>
                       </div>
                       {event.description && (
-                        <p style={{ color: "var(--muted-foreground)", fontSize: "0.85rem", marginTop: "0.25rem" }}>
+                        <p
+                          style={{
+                            color: "var(--muted-foreground)",
+                            fontSize: "0.85rem",
+                            marginTop: "0.25rem",
+                          }}
+                        >
                           {event.description}
                         </p>
                       )}
                       {event.location_name && (
-                        <p style={{ color: "var(--muted-foreground)", fontSize: "0.75rem", marginTop: "0.25rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                        <p
+                          style={{
+                            color: "var(--muted-foreground)",
+                            fontSize: "0.75rem",
+                            marginTop: "0.25rem",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                          }}
+                        >
                           📍 {event.location_name}
                         </p>
                       )}
@@ -326,7 +391,10 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem" }} className="md:grid-cols-2">
+      <div
+        style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem" }}
+        className="md:grid-cols-2"
+      >
         {/* Daily Quote */}
         <div
           style={{
@@ -349,10 +417,24 @@ export default function DashboardPage() {
           >
             💗
           </div>
-          <p style={{ fontSize: "0.75rem", opacity: 0.8, marginBottom: "0.5rem", fontWeight: 600 }}>
+          <p
+            style={{
+              fontSize: "0.75rem",
+              opacity: 0.8,
+              marginBottom: "0.5rem",
+              fontWeight: 600,
+            }}
+          >
             ✨ Câu nói hôm nay
           </p>
-          <p style={{ fontSize: "1rem", fontWeight: 600, lineHeight: 1.6, marginBottom: "0.75rem" }}>
+          <p
+            style={{
+              fontSize: "1rem",
+              fontWeight: 600,
+              lineHeight: 1.6,
+              marginBottom: "0.75rem",
+            }}
+          >
             &ldquo;{quote?.text || "Yêu nhau là cùng nhìn về một hướng."}&rdquo;
           </p>
           <p style={{ fontSize: "0.75rem", opacity: 0.7 }}>
@@ -370,13 +452,23 @@ export default function DashboardPage() {
             border: "1px solid var(--border)",
           }}
         >
-          <p style={{ fontSize: "0.85rem", fontWeight: 600, marginBottom: "0.75rem" }}>
+          <p
+            style={{
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              marginBottom: "0.75rem",
+            }}
+          >
             Hôm nay bạn cảm thấy thế nào? 💭
           </p>
           {moodSubmitted ? (
             <div style={{ textAlign: "center", padding: "0.5rem 0" }}>
-              <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>{selectedMood}</div>
-              <p style={{ fontSize: "0.8rem", color: "var(--muted-foreground)" }}>
+              <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>
+                {selectedMood}
+              </div>
+              <p
+                style={{ fontSize: "0.8rem", color: "var(--muted-foreground)" }}
+              >
                 Đã ghi nhận tâm trạng! 🎉
               </p>
             </div>
@@ -400,11 +492,15 @@ export default function DashboardPage() {
                       height: "40px",
                       borderRadius: "50%",
                       border: `2px solid ${selectedMood === emoji ? "var(--color-rose-petal)" : "var(--border)"}`,
-                      background: selectedMood === emoji ? "rgba(255,107,157,0.1)" : "transparent",
+                      background:
+                        selectedMood === emoji
+                          ? "rgba(255,107,157,0.1)"
+                          : "transparent",
                       fontSize: "1.25rem",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
-                      transform: selectedMood === emoji ? "scale(1.15)" : "scale(1)",
+                      transform:
+                        selectedMood === emoji ? "scale(1.15)" : "scale(1)",
                     }}
                   >
                     {emoji}
@@ -433,7 +529,14 @@ export default function DashboardPage() {
             marginTop: "1.5rem",
           }}
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
             <h3
               style={{
                 fontFamily: "var(--font-heading)",
@@ -446,99 +549,156 @@ export default function DashboardPage() {
             >
               📅 Sự kiện sắp tới (7 ngày tới)
             </h3>
-            <Link href="/calendar" style={{ fontSize: "0.8rem", color: "var(--color-rose-petal)", fontWeight: 600, textDecoration: "none" }}>
+            <Link
+              href="/calendar"
+              style={{
+                fontSize: "0.8rem",
+                color: "var(--color-rose-petal)",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
               Xem lịch →
             </Link>
           </div>
 
           {upcomingEvents.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {upcomingEvents.map((event: LoveEvent & { days_until: number }) => {
-                const daysUntil = event.days_until;
-                let daysText = "";
-                if (daysUntil === 0) {
-                  daysText = "Hôm nay";
-                } else if (daysUntil === 1) {
-                  daysText = "Ngày mai";
-                } else {
-                  daysText = `Còn ${daysUntil} ngày`;
-                }
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+            >
+              {upcomingEvents.map(
+                (event: LoveEvent & { days_until: number }) => {
+                  const daysUntil = event.days_until;
+                  let daysText = "";
+                  if (daysUntil === 0) {
+                    daysText = "Hôm nay";
+                  } else if (daysUntil === 1) {
+                    daysText = "Ngày mai";
+                  } else {
+                    daysText = `Còn ${daysUntil} ngày`;
+                  }
 
-                // Format date
-                const dateObj = new Date(event.event_date);
-                const dateStr = dateObj.toLocaleDateString("vi-VN", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "numeric",
-                });
+                  // Format date
+                  const dateObj = new Date(event.event_date);
+                  const dateStr = dateObj.toLocaleDateString("vi-VN", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "numeric",
+                  });
 
-                return (
-                  <div
-                    key={event.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "0.75rem",
-                      paddingBottom: "0.75rem",
-                      borderBottom: "1px solid var(--border)",
-                    }}
-                    className="last:border-none last:pb-0"
-                  >
+                  return (
                     <div
+                      key={event.id}
                       style={{
-                        fontSize: "1.25rem",
-                        padding: "0.4rem",
-                        background: "var(--input)",
-                        borderRadius: "var(--radius-md)",
                         display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        alignItems: "flex-start",
+                        gap: "0.75rem",
+                        paddingBottom: "0.75rem",
+                        borderBottom: "1px solid var(--border)",
                       }}
+                      className="last:border-none last:pb-0"
                     >
-                      {event.icon || "📅"}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
-                        <h4 style={{ fontWeight: 600, fontSize: "0.9rem" }}>{event.title}</h4>
-                        <span
+                      <div
+                        style={{
+                          fontSize: "1.25rem",
+                          padding: "0.4rem",
+                          background: "var(--input)",
+                          borderRadius: "var(--radius-md)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {event.icon || "📅"}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div
                           style={{
-                            fontSize: "0.7rem",
-                            fontWeight: 600,
-                            color: daysUntil <= 1 ? "var(--color-rose-petal)" : "var(--muted-foreground)",
-                            background: daysUntil <= 1 ? "rgba(255, 107, 157, 0.1)" : "var(--input)",
-                            padding: "0.15rem 0.5rem",
-                            borderRadius: "var(--radius-full)",
-                            whiteSpace: "nowrap",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            gap: "0.5rem",
                           }}
                         >
-                          {daysText}
-                        </span>
+                          <h4 style={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                            {event.title}
+                          </h4>
+                          <span
+                            style={{
+                              fontSize: "0.7rem",
+                              fontWeight: 600,
+                              color:
+                                daysUntil <= 1
+                                  ? "var(--color-rose-petal)"
+                                  : "var(--muted-foreground)",
+                              background:
+                                daysUntil <= 1
+                                  ? "rgba(255, 107, 157, 0.1)"
+                                  : "var(--input)",
+                              padding: "0.15rem 0.5rem",
+                              borderRadius: "var(--radius-full)",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {daysText}
+                          </span>
+                        </div>
+                        <p
+                          style={{
+                            color: "var(--muted-foreground)",
+                            fontSize: "0.8rem",
+                            marginTop: "0.15rem",
+                          }}
+                        >
+                          {dateStr}{" "}
+                          {event.event_time
+                            ? ` lúc ${event.event_time.slice(0, 5)}`
+                            : ""}
+                        </p>
+                        {event.description && (
+                          <p
+                            style={{
+                              color: "var(--muted-foreground)",
+                              fontSize: "0.8rem",
+                              marginTop: "0.25rem",
+                              fontStyle: "italic",
+                            }}
+                          >
+                            {event.description}
+                          </p>
+                        )}
+                        {event.location_name && (
+                          <p
+                            style={{
+                              color: "var(--muted-foreground)",
+                              fontSize: "0.75rem",
+                              marginTop: "0.25rem",
+                            }}
+                          >
+                            📍 {event.location_name}
+                          </p>
+                        )}
                       </div>
-                      <p style={{ color: "var(--muted-foreground)", fontSize: "0.8rem", marginTop: "0.15rem" }}>
-                        {dateStr} {event.event_time ? ` lúc ${event.event_time.slice(0, 5)}` : ""}
-                      </p>
-                      {event.description && (
-                        <p style={{ color: "var(--muted-foreground)", fontSize: "0.8rem", marginTop: "0.25rem", fontStyle: "italic" }}>
-                          {event.description}
-                        </p>
-                      )}
-                      {event.location_name && (
-                        <p style={{ color: "var(--muted-foreground)", fontSize: "0.75rem", marginTop: "0.25rem" }}>
-                          📍 {event.location_name}
-                        </p>
-                      )}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                },
+              )}
             </div>
           ) : (
-            <div style={{ textAlign: "center", padding: "1.5rem 0", color: "var(--muted-foreground)" }}>
+            <div
+              style={{
+                textAlign: "center",
+                padding: "1.5rem 0",
+                color: "var(--muted-foreground)",
+              }}
+            >
               <p style={{ fontSize: "0.85rem", marginBottom: "1rem" }}>
                 Không có sự kiện nào sắp diễn ra trong 7 ngày tới.
               </p>
               <Link href="/calendar">
-                <Button size="sm" variant="ghost">💕 Tạo sự kiện mới</Button>
+                <Button size="sm" variant="ghost">
+                  💕 Tạo sự kiện mới
+                </Button>
               </Link>
             </div>
           )}
@@ -596,7 +756,10 @@ export default function DashboardPage() {
               }}
             >
               Tất cả các kỷ niệm và tin nhắn sẽ bị ẩn đi. Nhập từ khóa{" "}
-              <strong style={{ color: "var(--color-rose-petal)" }}>UNMATCH</strong> để xác nhận.
+              <strong style={{ color: "var(--color-rose-petal)" }}>
+                UNMATCH
+              </strong>{" "}
+              để xác nhận.
             </p>
             <div style={{ marginBottom: "1.5rem" }}>
               <input
@@ -618,7 +781,13 @@ export default function DashboardPage() {
                 }}
               />
               {unmatchError && (
-                <p style={{ color: "#ef4444", fontSize: "0.75rem", marginTop: "0.5rem" }}>
+                <p
+                  style={{
+                    color: "#ef4444",
+                    fontSize: "0.75rem",
+                    marginTop: "0.5rem",
+                  }}
+                >
                   {unmatchError}
                 </p>
               )}
@@ -642,7 +811,8 @@ export default function DashboardPage() {
                 disabled={confirmText !== "UNMATCH" || isUnmatching}
                 style={{
                   flex: 1,
-                  background: "linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)",
+                  background:
+                    "linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)",
                 }}
               >
                 Xác nhận 💔

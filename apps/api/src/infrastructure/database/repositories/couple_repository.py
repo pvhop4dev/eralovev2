@@ -56,6 +56,7 @@ class PostgresCoupleRepository(CoupleRepository):
         model = result.scalar_one_or_none()
         if model is None:
             from domain.exceptions import CoupleNotFoundError
+
             raise CoupleNotFoundError()
 
         model.couple_photo_url = couple.couple_photo_url

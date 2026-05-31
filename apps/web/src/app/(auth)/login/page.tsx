@@ -34,11 +34,13 @@ export default function LoginPage() {
             provider: "google",
             token: response.credential,
           }),
-        }
+        },
       );
       const data = await res.json();
       if (!res.ok) {
-        setErrors({ form: data.error?.message || "Đăng nhập bằng Google thất bại" });
+        setErrors({
+          form: data.error?.message || "Đăng nhập bằng Google thất bại",
+        });
         return;
       }
 
@@ -64,7 +66,9 @@ export default function LoginPage() {
     if (scriptLoaded || (typeof window !== "undefined" && google)) {
       try {
         google.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "629910543789-fakeclientid.apps.googleusercontent.com",
+          client_id:
+            process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+            "629910543789-fakeclientid.apps.googleusercontent.com",
           callback: handleGoogleCredentialResponse,
         });
         google.accounts.id.renderButton(
@@ -74,7 +78,7 @@ export default function LoginPage() {
             size: "large",
             width: "360",
             shape: "rectangular",
-          }
+          },
         );
       } catch (err) {
         console.error("Failed to initialize Google Sign-In:", err);
@@ -113,7 +117,7 @@ export default function LoginPage() {
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(formData),
-        }
+        },
       );
       const data = await res.json();
       if (!res.ok) {
@@ -165,7 +169,10 @@ export default function LoginPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      >
         <FormField
           label="Email"
           name="email"
@@ -222,7 +229,14 @@ export default function LoginPage() {
       </div>
 
       {/* Google Login button */}
-      <div style={{ display: "flex", justifyContent: "center", width: "100%", minHeight: "40px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+          minHeight: "40px",
+        }}
+      >
         <div id="google-signin-btn" />
       </div>
 

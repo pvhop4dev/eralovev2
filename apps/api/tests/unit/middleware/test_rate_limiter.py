@@ -41,7 +41,7 @@ class TestRateLimiter:
         """Test that requests within limits are allowed."""
         # 5 requests allowed in 60s
         limiter = RateLimiter(requests=5, window_seconds=60)
-        
+
         # Mock request and redis
         request = MagicMock()
         request.client.host = "127.0.0.1"
@@ -54,7 +54,7 @@ class TestRateLimiter:
 
         # Calling the limiter should not raise any exceptions
         await limiter(request, redis)
-        
+
         # Verify pipeline execution
         redis.pipeline.assert_called_once_with(transaction=True)
 
@@ -63,7 +63,7 @@ class TestRateLimiter:
         """Test that requests exceeding limits are blocked."""
         # 5 requests allowed in 60s
         limiter = RateLimiter(requests=5, window_seconds=60)
-        
+
         # Mock request and redis
         request = MagicMock()
         request.client.host = "192.168.1.1"
@@ -76,14 +76,14 @@ class TestRateLimiter:
 
         with pytest.raises(TooManyRequestsError) as exc_info:
             await limiter(request, redis)
-            
+
         assert "Rate limit exceeded" in str(exc_info.value)
 
     @pytest.mark.asyncio
     async def test_rate_limiter_fail_open_on_redis_error(self):
         """Test that rate limiter fails open (allows request) if Redis errors."""
         limiter = RateLimiter(requests=5, window_seconds=60)
-        
+
         request = MagicMock()
         request.client.host = "127.0.0.1"
         request.headers = {}
@@ -95,14 +95,14 @@ class TestRateLimiter:
 
         # Rate limiter should NOT raise TooManyRequestsError when redis fails (fail-open)
         await limiter(request, redis)
-        
+
         redis.pipeline.assert_called_once_with(transaction=True)
 
     @pytest.mark.asyncio
     async def test_rate_limiter_respects_x_forwarded_for(self):
         """Test that rate limiter uses X-Forwarded-For IP if present."""
         limiter = RateLimiter(requests=5, window_seconds=60)
-        
+
         request = MagicMock()
         request.client.host = "127.0.0.1"  # Proxy IP
         # X-Forwarded-For header containing the real client IP
@@ -114,10 +114,10 @@ class TestRateLimiter:
         redis.pipeline.return_value = pipeline
 
         await limiter(request, redis)
-        
+
         # Extract the key used in pipeline commands to verify the IP used is the real client IP
         pipeline_mock_zadd = pipeline.zadd
         called_key = pipeline_mock_zadd.call_args[0][0]
-        
+
         assert "203.0.113.195" in called_key
         assert "127.0.0.1" not in called_key

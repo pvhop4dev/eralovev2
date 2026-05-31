@@ -10,6 +10,7 @@ description: Create a new Alembic database migration
 1. **Define/Update SQLAlchemy model** in `apps/api/src/infrastructure/database/models/`
 
 Model template:
+
 ```python
 from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import UUID, JSONB
@@ -31,6 +32,7 @@ class {TableName}Model(Base):
 ```
 
 2. **Generate migration:**
+
 ```bash
 cd apps/api && alembic revision --autogenerate -m "description_of_change"
 ```
@@ -42,11 +44,13 @@ cd apps/api && alembic revision --autogenerate -m "description_of_change"
    - No unwanted changes to existing tables
 
 4. **Run migration:**
+
 ```bash
 cd apps/api && alembic upgrade head
 ```
 
 ## Conventions
+
 - Table names: snake_case, plural (`users`, `love_events`)
 - Primary keys: UUID v7
 - All tables: `created_at`, `updated_at`

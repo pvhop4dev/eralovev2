@@ -75,7 +75,7 @@ class LoginUserUseCase:
         payload = decode_token(refresh_token, expected_type="refresh")
         expires_at = datetime.fromtimestamp(payload["exp"], tz=UTC)
         token_hash = hash_token(refresh_token)
-        
+
         token_entity = RefreshToken(
             id=None,
             user_id=user.id,
@@ -103,4 +103,3 @@ class LoginUserUseCase:
         )
         auth_response = AuthResponse(user=user_response, access_token=access_token)
         return auth_response, refresh_token
-

@@ -50,10 +50,10 @@ async def send_message(
 
     msg_repo = PostgresMessageRepository(session)
     created = await msg_repo.create(message)
-    
+
     # Broadcast to couple room via WebSocket
     await sio.emit("chat:message", created.to_dict(), room=f"couple:{couple.id}")
-    
+
     return {"data": created.to_dict(), "meta": None, "error": None}
 
 

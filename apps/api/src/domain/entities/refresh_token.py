@@ -29,7 +29,7 @@ class RefreshToken:
         exp = self.expires_at
         if exp.tzinfo is None:
             exp = exp.replace(tzinfo=UTC)
-            
+
         now = datetime.now(UTC)
         return now > exp
 

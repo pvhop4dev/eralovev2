@@ -36,16 +36,12 @@ class TestMessageEntity:
             self._make_msg(message_type="image", content=None, media_url=None)
 
     def test_image_with_media_ok(self):
-        msg = self._make_msg(
-            message_type="image", content=None, media_url="https://s3/photo.jpg"
-        )
+        msg = self._make_msg(message_type="image", content=None, media_url="https://s3/photo.jpg")
         assert msg.message_type == "image"
         assert msg.media_url == "https://s3/photo.jpg"
 
     def test_voice_with_media_ok(self):
-        msg = self._make_msg(
-            message_type="voice", content=None, media_url="https://s3/voice.ogg"
-        )
+        msg = self._make_msg(message_type="voice", content=None, media_url="https://s3/voice.ogg")
         assert msg.message_type == "voice"
 
     def test_love_message(self):

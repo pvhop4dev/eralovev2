@@ -26,9 +26,7 @@ class MatchRequestRepository(ABC):
         """Get requests sent by user."""
 
     @abstractmethod
-    async def get_pending_between(
-        self, sender_id: UUID, receiver_id: UUID
-    ) -> MatchRequest | None:
+    async def get_pending_between(self, sender_id: UUID, receiver_id: UUID) -> MatchRequest | None:
         """Get pending request between two specific users."""
 
     @abstractmethod

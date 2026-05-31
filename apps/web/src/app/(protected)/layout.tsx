@@ -17,10 +17,7 @@ export default function ProtectedLayout({
       </div>
 
       {/* Main Content */}
-      <main
-        style={{ paddingBottom: "80px" }}
-        className="md:ml-[240px] md:pb-0"
-      >
+      <main style={{ paddingBottom: "80px" }} className="md:ml-[240px] md:pb-0">
         <ErrorBoundary>{children}</ErrorBoundary>
       </main>
 

@@ -19,5 +19,3 @@ __all__ = [
     "RefreshTokenModel",
     "UserModel",
 ]
-
-

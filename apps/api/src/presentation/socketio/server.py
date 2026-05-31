@@ -3,7 +3,6 @@
 Sets up the AsyncServer and registers connection and lifecycle events.
 """
 
-
 import socketio
 import structlog
 
@@ -55,12 +54,16 @@ async def connect(sid: str, environ: dict, auth: dict | None) -> None:
 
         user = await user_repo.get_by_id(user_id)
         if not user:
-            logger.warn("ws_connect_rejected", sid=sid, reason="User not found", user_id=str(user_id))
+            logger.warn(
+                "ws_connect_rejected", sid=sid, reason="User not found", user_id=str(user_id)
+            )
             raise socketio.exceptions.ConnectionRefusedError("Unauthorized")
 
         couple = await couple_repo.get_active_for_user(user_id)
         if not couple:
-            logger.warn("ws_connect_rejected", sid=sid, reason="No active couple", user_id=str(user_id))
+            logger.warn(
+                "ws_connect_rejected", sid=sid, reason="No active couple", user_id=str(user_id)
+            )
             raise socketio.exceptions.ConnectionRefusedError("No active couple")
 
     # Store user context in session
@@ -113,4 +116,3 @@ async def disconnect(sid: str) -> None:
 # Import handlers to register events
 import presentation.socketio.handlers.chat  # noqa: E402
 import presentation.socketio.handlers.love  # noqa: F401, E402
-

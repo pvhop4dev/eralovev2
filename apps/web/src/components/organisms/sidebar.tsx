@@ -60,7 +60,14 @@ export function Sidebar() {
       </Link>
 
       {/* Nav */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: 1 }}>
+      <nav
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.25rem",
+          flex: 1,
+        }}
+      >
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -76,7 +83,9 @@ export function Sidebar() {
                 textDecoration: "none",
                 fontWeight: isActive ? 600 : 400,
                 fontSize: "0.9rem",
-                color: isActive ? "var(--foreground)" : "var(--muted-foreground)",
+                color: isActive
+                  ? "var(--foreground)"
+                  : "var(--muted-foreground)",
                 background: isActive ? "rgba(255,107,157,0.1)" : "transparent",
                 transition: "all 0.2s ease",
               }}

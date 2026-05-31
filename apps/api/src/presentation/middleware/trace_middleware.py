@@ -29,9 +29,7 @@ TRACE_HEADER = "X-Trace-Id"
 class TraceMiddleware(BaseHTTPMiddleware):
     """ASGI middleware that assigns a trace_id to every request."""
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # 1. Get or generate trace_id
         incoming_trace = request.headers.get(TRACE_HEADER)
         trace_id = set_trace_id(incoming_trace)

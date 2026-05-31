@@ -53,33 +53,33 @@ Thực hiện thay đổi code theo yêu cầu.
 
 ### Bước 3: Cập Nhật Tests (BẮT BUỘC)
 
-| Loại thay đổi code | Hành động test bắt buộc |
-|---|---|
-| **Thêm function/method mới** | Viết test mới cho function đó |
-| **Sửa logic trong function** | Cập nhật test hiện tại + thêm test cho case mới |
-| **Đổi signature (params, return)** | Cập nhật TẤT CẢ test gọi function đó |
-| **Xóa function/method** | Xóa test tương ứng + kiểm tra không test nào gọi nó |
-| **Thêm API endpoint** | Viết unit test cho use case + integration test cho route |
-| **Sửa DTO/schema** | Cập nhật test data (factories, fixtures) |
-| **Sửa database model** | Cập nhật factory + integration tests |
-| **Sửa frontend component** | Cập nhật component test (render, interaction) |
-| **Sửa hook** | Cập nhật hook test |
-| **Fix bug** | Viết regression test để bug không tái diễn |
+| Loại thay đổi code                 | Hành động test bắt buộc                                  |
+| ---------------------------------- | -------------------------------------------------------- |
+| **Thêm function/method mới**       | Viết test mới cho function đó                            |
+| **Sửa logic trong function**       | Cập nhật test hiện tại + thêm test cho case mới          |
+| **Đổi signature (params, return)** | Cập nhật TẤT CẢ test gọi function đó                     |
+| **Xóa function/method**            | Xóa test tương ứng + kiểm tra không test nào gọi nó      |
+| **Thêm API endpoint**              | Viết unit test cho use case + integration test cho route |
+| **Sửa DTO/schema**                 | Cập nhật test data (factories, fixtures)                 |
+| **Sửa database model**             | Cập nhật factory + integration tests                     |
+| **Sửa frontend component**         | Cập nhật component test (render, interaction)            |
+| **Sửa hook**                       | Cập nhật hook test                                       |
+| **Fix bug**                        | Viết regression test để bug không tái diễn               |
 
 ### Bước 4: Cập Nhật Tài Liệu (BẮT BUỘC)
 
-| Loại thay đổi code | Tài liệu cần cập nhật |
-|---|---|
-| **Thêm/sửa API endpoint** | `docs/plan/api-design.md`, OpenAPI docstring |
-| **Thêm/sửa database table** | `docs/plan/database-schema.md` |
-| **Thay đổi kiến trúc** | `docs/plan/architecture.md`, `CLAUDE.md` |
-| **Thêm tính năng mới** | `docs/plan/phase{N}.md` (roadmap tương ứng) |
-| **Sửa domain logic** | Docstring trong entity/use case |
-| **Thêm config/env var** | `CLAUDE.md` (Tech Stack / Settings) |
-| **Thay đổi quy ước code** | `.claude/rules/` (rule tương ứng) |
-| **Thêm pattern/skill mới** | `.claude/skills/` (skill tương ứng) |
-| **Thay đổi UI component** | Comment/docstring trong component |
-| **Thay đổi deploy process** | `.claude/skills/deploy.md` |
+| Loại thay đổi code          | Tài liệu cần cập nhật                        |
+| --------------------------- | -------------------------------------------- |
+| **Thêm/sửa API endpoint**   | `docs/plan/api-design.md`, OpenAPI docstring |
+| **Thêm/sửa database table** | `docs/plan/database-schema.md`               |
+| **Thay đổi kiến trúc**      | `docs/plan/architecture.md`, `CLAUDE.md`     |
+| **Thêm tính năng mới**      | `docs/plan/phase{N}.md` (roadmap tương ứng)  |
+| **Sửa domain logic**        | Docstring trong entity/use case              |
+| **Thêm config/env var**     | `CLAUDE.md` (Tech Stack / Settings)          |
+| **Thay đổi quy ước code**   | `.claude/rules/` (rule tương ứng)            |
+| **Thêm pattern/skill mới**  | `.claude/skills/` (skill tương ứng)          |
+| **Thay đổi UI component**   | Comment/docstring trong component            |
+| **Thay đổi deploy process** | `.claude/skills/deploy.md`                   |
 
 ---
 
@@ -88,6 +88,7 @@ Thực hiện thay đổi code theo yêu cầu.
 Mỗi code change PHẢI qua checklist này trước khi coi là hoàn thành:
 
 ### ✅ Source Code
+
 - [ ] Code đã sửa đúng yêu cầu
 - [ ] Code tuân thủ Clean Architecture (domain → application → infrastructure → presentation)
 - [ ] Code tuân thủ coding conventions (naming, typing, async/await)
@@ -95,6 +96,7 @@ Mỗi code change PHẢI qua checklist này trước khi coi là hoàn thành:
 - [ ] Import paths đúng layer (không vi phạm dependency rules)
 
 ### ✅ Tests
+
 - [ ] Tất cả test hiện tại vẫn PASS (`pytest` / `vitest run`)
 - [ ] Test mới đã viết cho code mới/sửa
 - [ ] Regression test đã viết nếu đây là bug fix
@@ -103,6 +105,7 @@ Mỗi code change PHẢI qua checklist này trước khi coi là hoàn thành:
 - [ ] Factory/fixture đã cập nhật nếu model/DTO thay đổi
 
 ### ✅ Documentation
+
 - [ ] Docstring cập nhật cho function/class bị sửa
 - [ ] API docs cập nhật nếu endpoint thay đổi
 - [ ] Schema docs cập nhật nếu database thay đổi
@@ -116,6 +119,7 @@ Mỗi code change PHẢI qua checklist này trước khi coi là hoàn thành:
 ### Ví dụ 1: Thêm field `location` vào Event
 
 **Code changes:**
+
 ```python
 # 1. Domain entity — thêm field
 # apps/api/src/domain/entities/event.py
@@ -145,6 +149,7 @@ class EventModel(Base):
 ```
 
 **Test changes (BẮT BUỘC):**
+
 ```python
 # 5. Factory — thêm field
 class EventFactory:
@@ -171,18 +176,22 @@ async def test_get_event_returns_location(client, auth_headers):
 ```
 
 **Doc changes (BẮT BUỘC):**
+
 ```markdown
 # 8. docs/plan/database-schema.md — thêm column description
+
 | location | varchar(500) | nullable | Địa điểm sự kiện |
 
 # 9. docs/plan/api-design.md — thêm field vào request/response
+
 POST /api/v1/events body: { ..., "location": "Café Cộng" }
-GET  /api/v1/events/{id} response.data: { ..., "location": "Café Cộng" }
+GET /api/v1/events/{id} response.data: { ..., "location": "Café Cộng" }
 ```
 
 ### Ví dụ 2: Fix bug — tin nhắn không hiển thị emoji
 
 **Code change:**
+
 ```python
 # Fix: sanitize content was stripping emojis
 def sanitize_content(text: str) -> str:
@@ -192,6 +201,7 @@ def sanitize_content(text: str) -> str:
 ```
 
 **Test change (BẮT BUỘC):**
+
 ```python
 # Regression test — ensure this specific bug never returns
 def test_sanitize_content_preserves_emojis():
@@ -207,6 +217,7 @@ def test_sanitize_content_strips_html():
 ```
 
 **Doc change (BẮT BUỘC):**
+
 ```python
 # Docstring updated
 def sanitize_content(text: str) -> str:
@@ -225,28 +236,33 @@ def sanitize_content(text: str) -> str:
 ## Quy Tắc Đặc Biệt
 
 ### Khi Refactor (không thay đổi behavior)
+
 - Tests PHẢI vẫn pass mà KHÔNG sửa assertions
 - Nếu phải sửa test assertions → đây không phải refactor, đây là behavior change
 - Docs: chỉ cần cập nhật nếu file path/structure thay đổi
 
 ### Khi Xóa Code
+
 - Xóa tests tương ứng
 - Xóa docs tương ứng
 - Kiểm tra không có dead references (imports, links) bị sót
 - `grep -r "{deleted_function}" .` để tìm references còn sót
 
 ### Khi Sửa Bug
+
 - **BẮT BUỘC** viết regression test (test tái hiện bug trước khi fix)
 - Comment trong test mô tả bug gốc
 - Nếu bug do thiếu validation → thêm validation + test cho case đó
 
 ### Khi Thêm Dependency Mới
+
 - Cập nhật `requirements.txt` / `package.json`
 - Cập nhật `CLAUDE.md` Tech Stack nếu là dependency quan trọng
 - Cập nhật `.gitignore` nếu dependency tạo files mới
 - Cập nhật Docker config nếu cần system package
 
 ### Khi Thay Đổi Environment Variables
+
 - Cập nhật `.env.example`
 - Cập nhật `CLAUDE.md` (Domains / Settings)
 - Cập nhật `deploy.md` skill (environment variables section)
@@ -274,11 +290,11 @@ grep -r "TODO" apps/ --include="*.py" --include="*.ts" --include="*.tsx"
 
 ## Tóm Tắt
 
-| ❌ KHÔNG chấp nhận | ✅ BẮT BUỘC |
-|---|---|
-| Sửa code, quên sửa test | Code + Test + Docs luôn đi cùng nhau |
-| Test pass nhưng không cover case mới | Viết test cho mọi case mới |
-| Docs cũ mô tả behavior cũ | Docs luôn phản ánh trạng thái hiện tại |
-| Fix bug mà không có regression test | Mọi bug fix đều kèm regression test |
-| Refactor mà test phải sửa assertion | Refactor = behavior giữ nguyên |
-| Thêm env var mà không ghi docs | Mọi config change đều được document |
+| ❌ KHÔNG chấp nhận                   | ✅ BẮT BUỘC                            |
+| ------------------------------------ | -------------------------------------- |
+| Sửa code, quên sửa test              | Code + Test + Docs luôn đi cùng nhau   |
+| Test pass nhưng không cover case mới | Viết test cho mọi case mới             |
+| Docs cũ mô tả behavior cũ            | Docs luôn phản ánh trạng thái hiện tại |
+| Fix bug mà không có regression test  | Mọi bug fix đều kèm regression test    |
+| Refactor mà test phải sửa assertion  | Refactor = behavior giữ nguyên         |
+| Thêm env var mà không ghi docs       | Mọi config change đều được document    |

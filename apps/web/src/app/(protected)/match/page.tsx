@@ -23,7 +23,7 @@ export default function MatchPage() {
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState<"search" | "qr">("search");
-  
+
   // QR State
   const [qrCodeInput, setQrCodeInput] = useState("");
   const [qrScanError, setQrScanError] = useState("");
@@ -37,7 +37,7 @@ export default function MatchPage() {
     if (username.startsWith("eralove:match:")) {
       username = username.replace("eralove:match:", "");
     }
-    
+
     if (!username) {
       setQrScanError("Mã QR hoặc tên đối phương không hợp lệ.");
       return;
@@ -51,11 +51,13 @@ export default function MatchPage() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
           },
-        }
+        },
       );
       const data = await res.json();
       const users = data.data?.users || [];
-      const foundUser = users.find((u: SearchUser) => u.username.toLowerCase() === username.toLowerCase());
+      const foundUser = users.find(
+        (u: SearchUser) => u.username.toLowerCase() === username.toLowerCase(),
+      );
       if (foundUser) {
         setQrScanResult(foundUser);
       } else {
@@ -75,7 +77,6 @@ export default function MatchPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     setIsSearching(true);
@@ -86,7 +87,7 @@ export default function MatchPage() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
           },
-        }
+        },
       );
       const data = await res.json();
       setSearchResults(data.data?.users || []);
@@ -112,7 +113,7 @@ export default function MatchPage() {
             receiver_id: receiverId,
             message: message || undefined,
           }),
-        }
+        },
       );
       if (res.ok) {
         setSuccess(true);
@@ -139,10 +140,19 @@ export default function MatchPage() {
       >
         <div>
           <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>💌</div>
-          <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+          <h1
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "1.5rem",
+              fontWeight: 700,
+              marginBottom: "0.5rem",
+            }}
+          >
             Đã gửi yêu cầu ghép đôi!
           </h1>
-          <p style={{ color: "var(--muted-foreground)", marginBottom: "1.5rem" }}>
+          <p
+            style={{ color: "var(--muted-foreground)", marginBottom: "1.5rem" }}
+          >
             Đang chờ đối phương chấp nhận... 💕
           </p>
           <Button onClick={() => setSuccess(false)} variant="secondary">
@@ -205,8 +215,12 @@ export default function MatchPage() {
               cursor: "pointer",
               fontWeight: 600,
               fontSize: "0.875rem",
-              background: activeTab === "search" ? "var(--gradient-primary)" : "transparent",
-              color: activeTab === "search" ? "white" : "var(--muted-foreground)",
+              background:
+                activeTab === "search"
+                  ? "var(--gradient-primary)"
+                  : "transparent",
+              color:
+                activeTab === "search" ? "white" : "var(--muted-foreground)",
               transition: "all 0.2s ease",
             }}
           >
@@ -223,7 +237,8 @@ export default function MatchPage() {
               cursor: "pointer",
               fontWeight: 600,
               fontSize: "0.875rem",
-              background: activeTab === "qr" ? "var(--gradient-primary)" : "transparent",
+              background:
+                activeTab === "qr" ? "var(--gradient-primary)" : "transparent",
               color: activeTab === "qr" ? "white" : "var(--muted-foreground)",
               transition: "all 0.2s ease",
             }}
@@ -263,7 +278,13 @@ export default function MatchPage() {
 
             {/* Results */}
             {searchResults.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
                 {searchResults.map((user) => (
                   <div
                     key={user.id}
@@ -280,10 +301,21 @@ export default function MatchPage() {
                   >
                     <Avatar fallback={user.display_name} size="lg" />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: "1rem", color: "var(--foreground)" }}>
+                      <div
+                        style={{
+                          fontWeight: 600,
+                          fontSize: "1rem",
+                          color: "var(--foreground)",
+                        }}
+                      >
                         {user.display_name}
                       </div>
-                      <div style={{ fontSize: "0.8rem", color: "var(--muted-foreground)" }}>
+                      <div
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "var(--muted-foreground)",
+                        }}
+                      >
                         @{user.username}
                         {user.zodiac_sign && ` · ${user.zodiac_sign}`}
                       </div>
@@ -301,14 +333,24 @@ export default function MatchPage() {
             )}
 
             {searchResults.length === 0 && searchQuery && !isSearching && (
-              <div style={{ textAlign: "center", padding: "3rem 1rem", color: "var(--muted-foreground)" }}>
-                <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>🔍</div>
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "3rem 1rem",
+                  color: "var(--muted-foreground)",
+                }}
+              >
+                <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>
+                  🔍
+                </div>
                 <p>Không tìm thấy ai. Thử username khác nhé!</p>
               </div>
             )}
           </>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+          >
             {/* My QR Code Card */}
             <div
               style={{
@@ -331,12 +373,34 @@ export default function MatchPage() {
                   background: "var(--gradient-primary)",
                 }}
               />
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
-                <Avatar fallback={currentUser?.display_name || "Me"} size="md" />
-                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--foreground)" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                <Avatar
+                  fallback={currentUser?.display_name || "Me"}
+                  size="md"
+                />
+                <h3
+                  style={{
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                    color: "var(--foreground)",
+                  }}
+                >
                   {currentUser?.display_name}
                 </h3>
-                <span style={{ fontSize: "0.8rem", color: "var(--muted-foreground)" }}>
+                <span
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "var(--muted-foreground)",
+                  }}
+                >
                   @{currentUser?.username}
                 </span>
               </div>
@@ -355,11 +419,22 @@ export default function MatchPage() {
                   <img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=eralove:match:${currentUser.username}`}
                     alt="My Eralove Match QR Code"
-                    style={{ width: "180px", height: "180px", display: "block" }}
+                    style={{
+                      width: "180px",
+                      height: "180px",
+                      display: "block",
+                    }}
                   />
                 </div>
               ) : (
-                <div style={{ height: "180px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div
+                  style={{
+                    height: "180px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   Đang tải...
                 </div>
               )}
@@ -395,14 +470,31 @@ export default function MatchPage() {
                 border: "1px solid var(--border)",
               }}
             >
-              <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--foreground)", marginBottom: "0.5rem", textAlign: "center" }}>
+              <h3
+                style={{
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  color: "var(--foreground)",
+                  marginBottom: "0.5rem",
+                  textAlign: "center",
+                }}
+              >
                 Quét mã của đối phương 📸
               </h3>
-              <p style={{ color: "var(--muted-foreground)", fontSize: "0.8rem", textAlign: "center", marginBottom: "1.5rem" }}>
+              <p
+                style={{
+                  color: "var(--muted-foreground)",
+                  fontSize: "0.8rem",
+                  textAlign: "center",
+                  marginBottom: "1.5rem",
+                }}
+              >
                 Nhập chuỗi mã QR của người ấy để giả lập quá trình quét camera.
               </p>
 
-              <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+              <div
+                style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}
+              >
                 <div style={{ flex: 1 }}>
                   <Input
                     type="text"
@@ -418,7 +510,14 @@ export default function MatchPage() {
               </div>
 
               {qrScanError && (
-                <p style={{ color: "#ef4444", fontSize: "0.75rem", textAlign: "center", marginBottom: "1rem" }}>
+                <p
+                  style={{
+                    color: "#ef4444",
+                    fontSize: "0.75rem",
+                    textAlign: "center",
+                    marginBottom: "1rem",
+                  }}
+                >
                   {qrScanError}
                 </p>
               )}
@@ -439,10 +538,21 @@ export default function MatchPage() {
                 >
                   <Avatar fallback={qrScanResult.display_name} size="md" />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "0.9rem" }}>
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        color: "var(--foreground)",
+                        fontSize: "0.9rem",
+                      }}
+                    >
                       {qrScanResult.display_name}
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "var(--muted-foreground)" }}>
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "var(--muted-foreground)",
+                      }}
+                    >
                       @{qrScanResult.username}
                     </div>
                   </div>

@@ -38,4 +38,3 @@ class LoveEventRepository(ABC):
     @abstractmethod
     async def get_past_events_on_this_day(self, couple_id: UUID) -> list[LoveEvent]:
         """Get all past events for a couple that happened on this day in previous years."""
-

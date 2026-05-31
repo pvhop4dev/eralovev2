@@ -19,11 +19,7 @@ const PUBLIC_ROUTES = new Set([
   "/reset-password",
 ]);
 
-const AUTH_ROUTES = new Set([
-  "/login",
-  "/register",
-  "/forgot-password",
-]);
+const AUTH_ROUTES = new Set(["/login", "/register", "/forgot-password"]);
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

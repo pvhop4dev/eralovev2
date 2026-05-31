@@ -53,9 +53,7 @@ class CacheService:
             return None
         return json.loads(data)
 
-    async def set_json(
-        self, key: str, value: dict | list, ttl: int = 300
-    ) -> None:
+    async def set_json(self, key: str, value: dict | list, ttl: int = 300) -> None:
         """Set a JSON value in cache.
 
         Args:

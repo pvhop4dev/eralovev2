@@ -9,6 +9,7 @@ import {
   useCreateEvent,
   useUpdateEvent,
   useDeleteEvent,
+  useCalendarHeader,
   LoveEvent,
 } from "@/hooks/use-events";
 import {
@@ -36,8 +37,18 @@ const REMINDER_OPTIONS = [
 
 const DAYS = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 const MONTHS = [
-  "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
-  "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12",
+  "Tháng 1",
+  "Tháng 2",
+  "Tháng 3",
+  "Tháng 4",
+  "Tháng 5",
+  "Tháng 6",
+  "Tháng 7",
+  "Tháng 8",
+  "Tháng 9",
+  "Tháng 10",
+  "Tháng 11",
+  "Tháng 12",
 ];
 
 export default function CalendarPage() {
@@ -46,13 +57,15 @@ export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0-indexed
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
-  
+
   // Modals state
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDayDetail, setShowDayDetail] = useState(false);
-  
-  const [selectedEventIdForPhotos, setSelectedEventIdForPhotos] = useState<string | null>(null);
+
+  const [selectedEventIdForPhotos, setSelectedEventIdForPhotos] = useState<
+    string | null
+  >(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const [formData, setFormData] = useState({
@@ -82,25 +95,57 @@ export default function CalendarPage() {
     reminder_before: "",
   });
 
+  const [coords, setCoords] = useState<{
+    lat: number | null;
+    lng: number | null;
+  }>({ lat: null, lng: null });
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCoords({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        () => {
+          // Fallback handled silently
+        },
+      );
+    }
+  }, []);
+
   // Queries & Mutations
-  const { data: events = [], isLoading: isEventsLoading } = useEvents(currentYear, currentMonth + 1);
+  const { data: headerData } = useCalendarHeader(coords.lat, coords.lng);
+  const { data: events = [], isLoading: isEventsLoading } = useEvents(
+    currentYear,
+    currentMonth + 1,
+  );
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
   const deleteEventMutation = useDeleteEvent();
 
-  const { data: eventPhotos = [] } = useEventPhotos(selectedEventIdForPhotos || "");
+  const { data: eventPhotos = [] } = useEventPhotos(
+    selectedEventIdForPhotos || "",
+  );
   const addPhotoMutation = useAddPhoto();
   const deletePhotoMutation = useDeletePhoto();
 
   // Day detail auto-select
   const selectedEvents = useMemo(() => {
-    return selectedDate ? events.filter((e) => e.event_date === selectedDate) : [];
+    return selectedDate
+      ? events.filter((e) => e.event_date === selectedDate)
+      : [];
   }, [events, selectedDate]);
 
   // Load photos when selectedEvents change or an event is selected
   useEffect(() => {
     if (selectedEvents.length > 0) {
-      if (!selectedEventIdForPhotos || !selectedEvents.some((e) => e.id === selectedEventIdForPhotos)) {
+      if (
+        !selectedEventIdForPhotos ||
+        !selectedEvents.some((e) => e.id === selectedEventIdForPhotos)
+      ) {
         const firstEventId = selectedEvents[0].id;
         setTimeout(() => {
           setSelectedEventIdForPhotos(firstEventId);
@@ -117,7 +162,7 @@ export default function CalendarPage() {
 
   const handleCreateEvent = async () => {
     if (!formData.title || !formData.event_date) return;
-    
+
     try {
       await createEventMutation.mutateAsync({
         title: formData.title,
@@ -127,7 +172,9 @@ export default function CalendarPage() {
         description: formData.description || undefined,
         location_name: formData.location_name || undefined,
         latitude: formData.latitude ? parseFloat(formData.latitude) : undefined,
-        longitude: formData.longitude ? parseFloat(formData.longitude) : undefined,
+        longitude: formData.longitude
+          ? parseFloat(formData.longitude)
+          : undefined,
         is_recurring: formData.is_recurring,
         recurrence_rule: formData.is_recurring ? "YEARLY" : undefined,
         reminder_before: formData.reminder_before || undefined,
@@ -157,7 +204,7 @@ export default function CalendarPage() {
 
   const handleEditEvent = async () => {
     if (!editFormData.title || !editFormData.event_date) return;
-    
+
     try {
       await updateEventMutation.mutateAsync({
         id: editFormData.id,
@@ -167,8 +214,12 @@ export default function CalendarPage() {
         event_time: editFormData.event_time || undefined,
         description: editFormData.description || undefined,
         location_name: editFormData.location_name || undefined,
-        latitude: editFormData.latitude ? parseFloat(editFormData.latitude) : undefined,
-        longitude: editFormData.longitude ? parseFloat(editFormData.longitude) : undefined,
+        latitude: editFormData.latitude
+          ? parseFloat(editFormData.latitude)
+          : undefined,
+        longitude: editFormData.longitude
+          ? parseFloat(editFormData.longitude)
+          : undefined,
         is_recurring: editFormData.is_recurring,
         recurrence_rule: editFormData.is_recurring ? "YEARLY" : undefined,
         reminder_before: editFormData.reminder_before || undefined,
@@ -184,9 +235,14 @@ export default function CalendarPage() {
   const handleDeleteEvent = async (event: LoveEvent) => {
     if (!confirm("Bạn có chắc chắn muốn xóa sự kiện này không?")) return;
     try {
-      await deleteEventMutation.mutateAsync({ id: event.id, eventDate: event.event_date });
+      await deleteEventMutation.mutateAsync({
+        id: event.id,
+        eventDate: event.event_date,
+      });
       toast.success("Xóa sự kiện thành công! 🗑️");
-      const updatedSelectedEvents = events.filter((e) => e.id !== event.id && e.event_date === selectedDate);
+      const updatedSelectedEvents = events.filter(
+        (e) => e.id !== event.id && e.event_date === selectedDate,
+      );
       if (updatedSelectedEvents.length === 0) {
         setShowDayDetail(false);
       }
@@ -196,21 +252,25 @@ export default function CalendarPage() {
   };
 
   // Photo uploading flow
-  const handleFileChange = async (eventId: string, eventDate: string, fileList: FileList | null) => {
+  const handleFileChange = async (
+    eventId: string,
+    eventDate: string,
+    fileList: FileList | null,
+  ) => {
     if (!fileList || fileList.length === 0) return;
     const file = fileList[0];
-    
+
     const toastId = toast.loading("Đang tải ảnh kỷ niệm lên...");
     try {
       // 1. Get presigned upload URL
-      const presignedData = await apiClient.post<{ upload_url: string; file_url: string }>(
-        "/api/v1/storage/presigned-url",
-        {
-          file_name: file.name,
-          content_type: file.type,
-          file_type: "event",
-        }
-      );
+      const presignedData = await apiClient.post<{
+        upload_url: string;
+        file_url: string;
+      }>("/api/v1/storage/presigned-url", {
+        file_name: file.name,
+        content_type: file.type,
+        file_type: "event",
+      });
       const { upload_url, file_url } = presignedData;
 
       // 2. Put file to S3/MinIO
@@ -241,7 +301,9 @@ export default function CalendarPage() {
 
       toast.success("Tải kỷ niệm lên thành công! 📸", { id: toastId });
     } catch (err) {
-      toast.error((err as Error).message || "Đã xảy ra lỗi khi tải ảnh lên", { id: toastId });
+      toast.error((err as Error).message || "Đã xảy ra lỗi khi tải ảnh lên", {
+        id: toastId,
+      });
     }
   };
 
@@ -342,7 +404,9 @@ export default function CalendarPage() {
           <h1 className="font-heading text-2xl md:text-3xl font-bold flex items-center gap-2 text-foreground">
             📅 Lịch Yêu Thương
           </h1>
-          <p className="text-muted-foreground text-xs md:text-sm mt-1">Lưu trữ các cột mốc tình yêu và kỷ niệm đẹp đẽ</p>
+          <p className="text-muted-foreground text-xs md:text-sm mt-1">
+            Lưu trữ các cột mốc tình yêu và kỷ niệm đẹp đẽ
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {/* Month/Week Toggle */}
@@ -373,7 +437,10 @@ export default function CalendarPage() {
             size="sm"
             className="shadow-rose hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             onClick={() => {
-              setFormData((prev) => ({ ...prev, event_date: selectedDate || todayStr }));
+              setFormData((prev) => ({
+                ...prev,
+                event_date: selectedDate || todayStr,
+              }));
               setShowCreate(true);
             }}
           >
@@ -381,6 +448,164 @@ export default function CalendarPage() {
           </Button>
         </div>
       </div>
+
+      {/* Calendar Header Widget */}
+      {headerData && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 animate-fade-in">
+          {/* Card 1: Solar & Lunar Date + Days Together */}
+          <div className="bg-gradient-to-br from-rose-50 to-purple-50 dark:from-rose-950/20 dark:to-purple-950/20 border border-rose-200/50 dark:border-rose-900/30 rounded-2xl p-5 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            <div className="absolute right-[-20px] bottom-[-20px] text-8xl opacity-10 select-none group-hover:scale-110 transition-transform duration-300">
+              💖
+            </div>
+            <div>
+              <span className="text-[10px] uppercase tracking-wider font-extrabold text-rose-500 bg-rose-100/50 dark:bg-rose-950/30 px-2 py-0.5 rounded-full">
+                Thời gian yêu
+              </span>
+              <h2 className="font-heading text-lg font-bold text-foreground mt-3">
+                {headerData.solar_date.day_name}
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {headerData.solar_date.formatted}
+              </p>
+              <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 mt-2 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 px-2.5 py-1 rounded-lg inline-block">
+                🌙 {headerData.lunar_date}
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-rose-100 dark:border-rose-900/20 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Đã bên nhau</span>
+              <span className="text-sm font-heading font-black text-rose-500 flex items-center gap-1">
+                💕 {headerData.days_together} ngày
+              </span>
+            </div>
+          </div>
+
+          {/* Card 2: Love Horoscope */}
+          <div className="bg-card border border-border rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300 overflow-y-auto max-h-[220px]">
+            <div>
+              <span className="text-[10px] uppercase tracking-wider font-extrabold text-purple-500 bg-purple-100/50 dark:bg-purple-950/30 px-2 py-0.5 rounded-full">
+                Tử vi tình duyên
+              </span>
+
+              <div className="mt-3 space-y-3">
+                {/* User Horoscope */}
+                <div className="text-xs">
+                  <div className="font-bold flex items-center gap-1 text-foreground">
+                    <span>
+                      ✨ Của bạn ({headerData.horoscope.user.sign || "Chưa có"})
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground mt-1 leading-relaxed">
+                    {headerData.horoscope.user.prediction}
+                  </p>
+                </div>
+
+                {/* Partner Horoscope */}
+                {headerData.horoscope.partner && (
+                  <div className="text-xs border-t border-border pt-2">
+                    <div className="font-bold flex items-center gap-1 text-foreground">
+                      <span>
+                        💖 {headerData.horoscope.partner.name} (
+                        {headerData.horoscope.partner.sign || "Chưa có"})
+                      </span>
+                    </div>
+                    <p className="text-muted-foreground mt-1 leading-relaxed">
+                      {headerData.horoscope.partner.prediction}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Feng Shui & Weather */}
+          <div className="bg-card border border-border rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300">
+            <div>
+              <div className="flex justify-between items-start">
+                <span className="text-[10px] uppercase tracking-wider font-extrabold text-cyan-500 bg-cyan-100/50 dark:bg-cyan-950/30 px-2 py-0.5 rounded-full">
+                  Phong thủy & Thời tiết
+                </span>
+
+                {/* Weather Badge */}
+                <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                  <span className="text-lg">{headerData.weather.emoji}</span>
+                  <span>{headerData.weather.temp}°C</span>
+                  <span className="text-muted-foreground font-medium">
+                    ({headerData.weather.condition})
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-muted-foreground min-w-[70px]">
+                    Hướng tốt:
+                  </span>
+                  <span className="text-foreground font-semibold">
+                    {headerData.feng_shui.direction}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-muted-foreground min-w-[70px]">
+                    Màu may mắn:
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className="w-3.5 h-3.5 rounded-full border border-border shadow-xs"
+                      style={{
+                        backgroundColor:
+                          headerData.feng_shui.lucky_color === "Hồng cánh sen"
+                            ? "#FF6B9D"
+                            : headerData.feng_shui.lucky_color ===
+                                "Tím oải hương"
+                              ? "#C084FC"
+                              : headerData.feng_shui.lucky_color === "Trắng sữa"
+                                ? "#FFF0F5"
+                                : headerData.feng_shui.lucky_color ===
+                                    "Xanh mint"
+                                  ? "#6EE7B7"
+                                  : "#FFB347",
+                      }}
+                    />
+                    <span className="text-foreground font-semibold">
+                      {headerData.feng_shui.lucky_color}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-2 mt-1 space-y-1">
+                  <p className="text-muted-foreground">
+                    <span className="text-emerald-500 font-bold">✓ Nên:</span>{" "}
+                    {headerData.feng_shui.good_for}
+                  </p>
+                  <p className="text-muted-foreground">
+                    <span className="text-rose-400 font-bold">✗ Tránh:</span>{" "}
+                    {headerData.feng_shui.avoid}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Daily Love Quote */}
+      {headerData && headerData.daily_quote && (
+        <div className="bg-card border border-border rounded-2xl p-4 mb-6 relative overflow-hidden group hover:shadow-md transition-all duration-300">
+          <div className="absolute left-3 top-2 text-5xl font-serif text-rose-200/50 dark:text-rose-950/20 select-none">
+            “
+          </div>
+          <div className="pl-6 pr-4">
+            <p className="text-sm italic text-foreground leading-relaxed font-medium">
+              {headerData.daily_quote.text}
+            </p>
+            <p className="text-xs text-muted-foreground text-right mt-1.5 font-bold">
+              — {headerData.daily_quote.author}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main Calendar Card */}
       <div className="bg-card rounded-2xl p-6 shadow-card border border-border transition-all">
@@ -408,7 +633,9 @@ export default function CalendarPage() {
             <span className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
               📅 Tuần Hiện Tại (Tháng {currentMonth + 1} {currentYear})
             </span>
-            <p className="text-xs text-muted-foreground">Nhấp vào một ngày để xem chi tiết</p>
+            <p className="text-xs text-muted-foreground">
+              Nhấp vào một ngày để xem chi tiết
+            </p>
           </div>
         )}
 
@@ -427,62 +654,70 @@ export default function CalendarPage() {
         {/* Month View Grid */}
         {viewMode === "month" ? (
           <div className="grid grid-cols-7 gap-1">
-            {isEventsLoading ? (
-              Array.from({ length: 35 }).map((_, idx) => (
-                <div
-                  key={idx}
-                  className="min-h-[55px] md:min-h-[75px] bg-muted/20 animate-pulse rounded-xl"
-                />
-              ))
-            ) : (
-              calendarDays.map((day, i) => {
-                if (day === null) return <div key={`empty-${i}`} className="min-h-[50px] md:min-h-[70px]" />;
-                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-                const dayEvents = getEventsForDate(dateStr);
-                const isToday = dateStr === todayStr;
-                const isSelected = dateStr === selectedDate;
+            {isEventsLoading
+              ? Array.from({ length: 35 }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="min-h-[55px] md:min-h-[75px] bg-muted/20 animate-pulse rounded-xl"
+                  />
+                ))
+              : calendarDays.map((day, i) => {
+                  if (day === null)
+                    return (
+                      <div
+                        key={`empty-${i}`}
+                        className="min-h-[50px] md:min-h-[70px]"
+                      />
+                    );
+                  const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                  const dayEvents = getEventsForDate(dateStr);
+                  const isToday = dateStr === todayStr;
+                  const isSelected = dateStr === selectedDate;
 
-                return (
-                  <button
-                    key={day}
-                    type="button"
-                    onClick={() => handleOpenDayDetail(dateStr)}
-                    className={`group relative min-h-[55px] md:min-h-[75px] p-2 text-left flex flex-col justify-between rounded-xl border border-transparent transition-all duration-200 cursor-pointer ${
-                      isSelected
-                        ? "bg-rose-100/30 dark:bg-rose-950/20 border-rose-300 dark:border-rose-900"
-                        : isToday
-                        ? "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/30"
-                        : "hover:bg-muted hover:border-border"
-                    }`}
-                  >
-                    <span
-                      className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full transition-all ${
-                        isToday
-                          ? "bg-gradient-to-r from-rose-400 to-pink-500 text-white shadow-rose"
-                          : "text-foreground group-hover:text-rose-500"
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => handleOpenDayDetail(dateStr)}
+                      className={`group relative min-h-[55px] md:min-h-[75px] p-2 text-left flex flex-col justify-between rounded-xl border border-transparent transition-all duration-200 cursor-pointer ${
+                        isSelected
+                          ? "bg-rose-100/30 dark:bg-rose-950/20 border-rose-300 dark:border-rose-900"
+                          : isToday
+                            ? "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/30"
+                            : "hover:bg-muted hover:border-border"
                       }`}
                     >
-                      {day}
-                    </span>
+                      <span
+                        className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full transition-all ${
+                          isToday
+                            ? "bg-gradient-to-r from-rose-400 to-pink-500 text-white shadow-rose"
+                            : "text-foreground group-hover:text-rose-500"
+                        }`}
+                      >
+                        {day}
+                      </span>
 
-                    {dayEvents.length > 0 && (
-                      <div className="w-full flex flex-wrap gap-1 mt-1">
-                        {dayEvents.slice(0, 3).map((e, j) => (
-                          <span key={j} title={e.title} className="text-sm p-0.5 rounded-md hover:scale-115 transition-transform">
-                            {e.icon}
-                          </span>
-                        ))}
-                        {dayEvents.length > 3 && (
-                          <span className="text-[10px] font-bold text-muted-foreground self-center">
-                            +{dayEvents.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </button>
-                );
-              })
-            )}
+                      {dayEvents.length > 0 && (
+                        <div className="w-full flex flex-wrap gap-1 mt-1">
+                          {dayEvents.slice(0, 3).map((e, j) => (
+                            <span
+                              key={j}
+                              title={e.title}
+                              className="text-sm p-0.5 rounded-md hover:scale-115 transition-transform"
+                            >
+                              {e.icon}
+                            </span>
+                          ))}
+                          {dayEvents.length > 3 && (
+                            <span className="text-[10px] font-bold text-muted-foreground self-center">
+                              +{dayEvents.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
           </div>
         ) : (
           /* Week View Grid */
@@ -502,8 +737,8 @@ export default function CalendarPage() {
                     isSelected
                       ? "bg-rose-100/30 dark:bg-rose-950/20 border-rose-300 dark:border-rose-900"
                       : isToday
-                      ? "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/30"
-                      : "bg-muted/10 border-border hover:bg-muted"
+                        ? "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/30"
+                        : "bg-muted/10 border-border hover:bg-muted"
                   }`}
                 >
                   <span
@@ -518,7 +753,10 @@ export default function CalendarPage() {
 
                   <div className="w-full mt-2 flex flex-col gap-1">
                     {dayEvents.slice(0, 2).map((e, j) => (
-                      <div key={j} className="text-[10px] bg-rose-100/40 dark:bg-rose-950/30 border border-rose-200/50 dark:border-rose-900/30 rounded-md px-1 py-0.5 truncate flex items-center gap-1 text-foreground/80">
+                      <div
+                        key={j}
+                        className="text-[10px] bg-rose-100/40 dark:bg-rose-950/30 border border-rose-200/50 dark:border-rose-900/30 rounded-md px-1 py-0.5 truncate flex items-center gap-1 text-foreground/80"
+                      >
                         <span>{e.icon}</span>
                         <span className="truncate">{e.title}</span>
                       </div>
@@ -540,7 +778,9 @@ export default function CalendarPage() {
       {showDayDetail && selectedDate && (
         <div
           className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-end md:items-center justify-center z-50 p-4 transition-all duration-300"
-          onClick={(e) => e.target === e.currentTarget && setShowDayDetail(false)}
+          onClick={(e) =>
+            e.target === e.currentTarget && setShowDayDetail(false)
+          }
         >
           <div className="bg-card rounded-t-3xl md:rounded-2xl p-6 w-full max-w-2xl max-h-[85vh] md:max-h-[80vh] overflow-y-auto shadow-card border border-border animate-slide-up">
             {/* Modal Header */}
@@ -562,7 +802,9 @@ export default function CalendarPage() {
             {selectedEvents.length === 0 ? (
               <div className="text-center py-8">
                 <span className="text-4xl block mb-2">🎈</span>
-                <p className="text-muted-foreground text-sm">Chưa có sự kiện nào cho ngày này.</p>
+                <p className="text-muted-foreground text-sm">
+                  Chưa có sự kiện nào cho ngày này.
+                </p>
                 <button
                   type="button"
                   onClick={() => {
@@ -577,7 +819,8 @@ export default function CalendarPage() {
             ) : (
               <div className="space-y-6">
                 {selectedEvents.map((event) => {
-                  const isCurrentPhotosEvent = selectedEventIdForPhotos === event.id;
+                  const isCurrentPhotosEvent =
+                    selectedEventIdForPhotos === event.id;
                   return (
                     <div
                       key={event.id}
@@ -600,16 +843,27 @@ export default function CalendarPage() {
                             </h4>
                             <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground mt-1">
                               {event.event_time && (
-                                <span className="flex items-center gap-1">🕐 {event.event_time.slice(0, 5)}</span>
+                                <span className="flex items-center gap-1">
+                                  🕐 {event.event_time.slice(0, 5)}
+                                </span>
                               )}
                               {event.location_name && (
-                                <span className="flex items-center gap-1">📍 {event.location_name}</span>
+                                <span className="flex items-center gap-1">
+                                  📍 {event.location_name}
+                                </span>
                               )}
                               {event.latitude && event.longitude && (
-                                <span className="flex items-center gap-1 opacity-70">🧭 ({event.latitude}, {event.longitude})</span>
+                                <span className="flex items-center gap-1 opacity-70">
+                                  🧭 ({event.latitude}, {event.longitude})
+                                </span>
                               )}
                               {event.reminder_before && (
-                                <span className="flex items-center gap-1">🔔 {REMINDER_OPTIONS.find(o => o.value === event.reminder_before)?.label || event.reminder_before}</span>
+                                <span className="flex items-center gap-1">
+                                  🔔{" "}
+                                  {REMINDER_OPTIONS.find(
+                                    (o) => o.value === event.reminder_before,
+                                  )?.label || event.reminder_before}
+                                </span>
                               )}
                             </div>
                           </div>
@@ -645,17 +899,23 @@ export default function CalendarPage() {
                       <div className="space-y-2 pt-2">
                         <div className="flex justify-between items-center">
                           <button
-                            onClick={() => setSelectedEventIdForPhotos(event.id)}
+                            onClick={() =>
+                              setSelectedEventIdForPhotos(event.id)
+                            }
                             className={`text-xs font-bold tracking-wider uppercase flex items-center gap-1 transition-all ${
-                              isCurrentPhotosEvent ? "text-rose-500" : "text-muted-foreground hover:text-foreground"
+                              isCurrentPhotosEvent
+                                ? "text-rose-500"
+                                : "text-muted-foreground hover:text-foreground"
                             }`}
                           >
-                            📸 Ảnh Kỷ Niệm {isCurrentPhotosEvent && `(${eventPhotos.length})`}
+                            📸 Ảnh Kỷ Niệm{" "}
+                            {isCurrentPhotosEvent && `(${eventPhotos.length})`}
                           </button>
-                          
+
                           {/* File Uploader button */}
                           <label className="text-xs font-semibold text-rose-500 hover:underline cursor-pointer flex items-center gap-1">
-                            {addPhotoMutation.isPending && isCurrentPhotosEvent ? (
+                            {addPhotoMutation.isPending &&
+                            isCurrentPhotosEvent ? (
                               <span className="flex items-center gap-1 animate-pulse">
                                 ⏳ Đang tải...
                               </span>
@@ -667,8 +927,16 @@ export default function CalendarPage() {
                               accept="image/*"
                               className="hidden"
                               disabled={addPhotoMutation.isPending}
-                              ref={(el) => { fileInputRefs.current[event.id] = el; }}
-                              onChange={(e) => handleFileChange(event.id, event.event_date, e.target.files)}
+                              ref={(el) => {
+                                fileInputRefs.current[event.id] = el;
+                              }}
+                              onChange={(e) =>
+                                handleFileChange(
+                                  event.id,
+                                  event.event_date,
+                                  e.target.files,
+                                )
+                              }
                             />
                           </label>
                         </div>
@@ -677,11 +945,18 @@ export default function CalendarPage() {
                         {isCurrentPhotosEvent ? (
                           eventPhotos.length === 0 ? (
                             <div
-                              onClick={() => fileInputRefs.current[event.id]?.click()}
+                              onClick={() =>
+                                fileInputRefs.current[event.id]?.click()
+                              }
                               className="border-2 border-dashed border-border hover:border-rose-300 dark:hover:border-rose-900/50 rounded-xl p-6 text-center cursor-pointer transition-all duration-200"
                             >
-                              <span className="text-2xl block mb-1 opacity-70">📷</span>
-                              <p className="text-xs text-muted-foreground">Kéo thả hoặc nhấp vào đây để đăng ảnh kỷ niệm của hai bạn</p>
+                              <span className="text-2xl block mb-1 opacity-70">
+                                📷
+                              </span>
+                              <p className="text-xs text-muted-foreground">
+                                Kéo thả hoặc nhấp vào đây để đăng ảnh kỷ niệm
+                                của hai bạn
+                              </p>
                             </div>
                           ) : (
                             <div className="grid grid-cols-3 gap-2">
@@ -698,7 +973,9 @@ export default function CalendarPage() {
                                   />
                                   <button
                                     type="button"
-                                    onClick={() => handleDeletePhoto(photo.id, event.id)}
+                                    onClick={() =>
+                                      handleDeletePhoto(photo.id, event.id)
+                                    }
                                     className="absolute top-1 right-1 w-6 h-6 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer text-[10px]"
                                     title="Xóa ảnh"
                                   >
@@ -710,7 +987,9 @@ export default function CalendarPage() {
                           )
                         ) : (
                           <button
-                            onClick={() => setSelectedEventIdForPhotos(event.id)}
+                            onClick={() =>
+                              setSelectedEventIdForPhotos(event.id)
+                            }
                             className="w-full py-2 bg-muted/40 hover:bg-muted/70 rounded-xl border border-border/50 text-xs font-semibold text-muted-foreground cursor-pointer transition-all"
                           >
                             Hiển thị album ảnh kỷ niệm 📁
@@ -756,7 +1035,9 @@ export default function CalendarPage() {
                 type="text"
                 placeholder="Ví dụ: Valentine's Day 💕"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 required
               />
 
@@ -769,7 +1050,9 @@ export default function CalendarPage() {
                     <button
                       key={t.id}
                       type="button"
-                      onClick={() => setFormData({ ...formData, event_type: t.id })}
+                      onClick={() =>
+                        setFormData({ ...formData, event_type: t.id })
+                      }
                       className={`px-3 py-2 rounded-full border text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1 ${
                         formData.event_type === t.id
                           ? "border-rose-400 bg-rose-100/50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 shadow-sm"
@@ -788,7 +1071,9 @@ export default function CalendarPage() {
                   name="event_date"
                   type="date"
                   value={formData.event_date}
-                  onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, event_date: e.target.value })
+                  }
                   required
                 />
                 <FormField
@@ -796,7 +1081,9 @@ export default function CalendarPage() {
                   name="event_time"
                   type="time"
                   value={formData.event_time}
-                  onChange={(e) => setFormData({ ...formData, event_time: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, event_time: e.target.value })
+                  }
                 />
               </div>
 
@@ -806,7 +1093,9 @@ export default function CalendarPage() {
                 type="text"
                 placeholder="Ví dụ: Hồ Gươm, Hà Nội"
                 value={formData.location_name}
-                onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, location_name: e.target.value })
+                }
               />
 
               {/* Coordinates Input */}
@@ -817,7 +1106,9 @@ export default function CalendarPage() {
                   type="number"
                   placeholder="21.0285"
                   value={formData.latitude}
-                  onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, latitude: e.target.value })
+                  }
                 />
                 <FormField
                   label="Kinh độ (Longitude)"
@@ -825,7 +1116,9 @@ export default function CalendarPage() {
                   type="number"
                   placeholder="105.8542"
                   value={formData.longitude}
-                  onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, longitude: e.target.value })
+                  }
                 />
               </div>
 
@@ -837,7 +1130,12 @@ export default function CalendarPage() {
                   </label>
                   <select
                     value={formData.reminder_before}
-                    onChange={(e) => setFormData({ ...formData, reminder_before: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        reminder_before: e.target.value,
+                      })
+                    }
                     className="w-full rounded-xl border border-border bg-input text-foreground text-sm p-3 focus:outline-rose-400 focus:outline focus:outline-2"
                   >
                     {REMINDER_OPTIONS.map((o) => (
@@ -854,7 +1152,12 @@ export default function CalendarPage() {
                     <input
                       type="checkbox"
                       checked={formData.is_recurring}
-                      onChange={(e) => setFormData({ ...formData, is_recurring: e.target.checked })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          is_recurring: e.target.checked,
+                        })
+                      }
                       className="w-4 h-4 rounded-md border-border text-rose-500 focus:ring-rose-400"
                     />
                     Lặp lại hàng năm 🔁
@@ -871,12 +1174,18 @@ export default function CalendarPage() {
                   rows={3}
                   placeholder="Ghi chú gì đó cho ngày đặc biệt này..."
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                 />
               </div>
 
               <div className="flex gap-3 pt-2">
-                <Button variant="ghost" onClick={() => setShowCreate(false)} className="flex-1">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowCreate(false)}
+                  className="flex-1"
+                >
                   Hủy
                 </Button>
                 <Button
@@ -909,7 +1218,9 @@ export default function CalendarPage() {
                 name="title"
                 type="text"
                 value={editFormData.title}
-                onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, title: e.target.value })
+                }
                 required
               />
 
@@ -922,7 +1233,9 @@ export default function CalendarPage() {
                     <button
                       key={t.id}
                       type="button"
-                      onClick={() => setEditFormData({ ...editFormData, event_type: t.id })}
+                      onClick={() =>
+                        setEditFormData({ ...editFormData, event_type: t.id })
+                      }
                       className={`px-3 py-2 rounded-full border text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1 ${
                         editFormData.event_type === t.id
                           ? "border-rose-400 bg-rose-100/50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 shadow-sm"
@@ -941,7 +1254,12 @@ export default function CalendarPage() {
                   name="event_date"
                   type="date"
                   value={editFormData.event_date}
-                  onChange={(e) => setEditFormData({ ...editFormData, event_date: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      event_date: e.target.value,
+                    })
+                  }
                   required
                 />
                 <FormField
@@ -949,7 +1267,12 @@ export default function CalendarPage() {
                   name="event_time"
                   type="time"
                   value={editFormData.event_time}
-                  onChange={(e) => setEditFormData({ ...editFormData, event_time: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      event_time: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -958,7 +1281,12 @@ export default function CalendarPage() {
                 name="location_name"
                 type="text"
                 value={editFormData.location_name}
-                onChange={(e) => setEditFormData({ ...editFormData, location_name: e.target.value })}
+                onChange={(e) =>
+                  setEditFormData({
+                    ...editFormData,
+                    location_name: e.target.value,
+                  })
+                }
               />
 
               {/* Coordinates Input */}
@@ -969,7 +1297,12 @@ export default function CalendarPage() {
                   type="number"
                   placeholder="21.0285"
                   value={editFormData.latitude}
-                  onChange={(e) => setEditFormData({ ...editFormData, latitude: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      latitude: e.target.value,
+                    })
+                  }
                 />
                 <FormField
                   label="Kinh độ (Longitude)"
@@ -977,7 +1310,12 @@ export default function CalendarPage() {
                   type="number"
                   placeholder="105.8542"
                   value={editFormData.longitude}
-                  onChange={(e) => setEditFormData({ ...editFormData, longitude: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      longitude: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -989,7 +1327,12 @@ export default function CalendarPage() {
                   </label>
                   <select
                     value={editFormData.reminder_before}
-                    onChange={(e) => setEditFormData({ ...editFormData, reminder_before: e.target.value })}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        reminder_before: e.target.value,
+                      })
+                    }
                     className="w-full rounded-xl border border-border bg-input text-foreground text-sm p-3 focus:outline-rose-400 focus:outline focus:outline-2"
                   >
                     {REMINDER_OPTIONS.map((o) => (
@@ -1005,7 +1348,12 @@ export default function CalendarPage() {
                     <input
                       type="checkbox"
                       checked={editFormData.is_recurring}
-                      onChange={(e) => setEditFormData({ ...editFormData, is_recurring: e.target.checked })}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          is_recurring: e.target.checked,
+                        })
+                      }
                       className="w-4 h-4 rounded-md border-border text-rose-500 focus:ring-rose-400"
                     />
                     Lặp lại hàng năm 🔁
@@ -1021,12 +1369,21 @@ export default function CalendarPage() {
                   className="w-full rounded-xl border border-border bg-input text-foreground text-sm p-3 focus:outline-rose-400 focus:outline focus:outline-2"
                   rows={3}
                   value={editFormData.description}
-                  onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      description: e.target.value,
+                    })
+                  }
                 />
               </div>
 
               <div className="flex gap-3 pt-2">
-                <Button variant="ghost" onClick={() => setShowEdit(false)} className="flex-1">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowEdit(false)}
+                  className="flex-1"
+                >
                   Hủy
                 </Button>
                 <Button

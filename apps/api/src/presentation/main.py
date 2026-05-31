@@ -105,4 +105,3 @@ app.include_router(photos_router, prefix="/api/v1")
 # Expose wrapped ASGI app as 'app' to match standard runner entrypoint
 socket_app = socketio.ASGIApp(sio, other_app=app)
 app = socket_app
-

@@ -81,24 +81,16 @@ class Password:
             raise ValidationError("Password cannot be empty")
 
         if len(plaintext) < _MIN_LENGTH:
-            raise ValidationError(
-                f"Password must be at least {_MIN_LENGTH} characters"
-            )
+            raise ValidationError(f"Password must be at least {_MIN_LENGTH} characters")
 
         if len(plaintext) > _MAX_LENGTH:
-            raise ValidationError(
-                f"Password must be at most {_MAX_LENGTH} characters"
-            )
+            raise ValidationError(f"Password must be at most {_MAX_LENGTH} characters")
 
         if not any(c.isupper() for c in plaintext):
-            raise ValidationError(
-                "Password must contain at least 1 uppercase letter"
-            )
+            raise ValidationError("Password must contain at least 1 uppercase letter")
 
         if not any(c.islower() for c in plaintext):
-            raise ValidationError(
-                "Password must contain at least 1 lowercase letter"
-            )
+            raise ValidationError("Password must contain at least 1 lowercase letter")
 
         if not any(c.isdigit() for c in plaintext):
             raise ValidationError("Password must contain at least 1 digit")

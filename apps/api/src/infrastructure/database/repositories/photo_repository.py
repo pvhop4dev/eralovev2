@@ -89,6 +89,7 @@ class PostgresPhotoRepository(PhotoRepository):
         model = result.scalar_one_or_none()
         if model is None:
             from domain.exceptions import NotFoundError
+
             raise NotFoundError("Photo not found")
 
         model.event_id = photo.event_id

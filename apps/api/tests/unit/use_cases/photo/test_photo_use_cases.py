@@ -25,7 +25,7 @@ class TestPhotoUseCases:
 
         couple_id = uuid4()
         user_id = uuid4()
-        
+
         request = AddPhotoRequest(
             s3_key="events/photo.jpg",
             original_url="http://localhost:9000/eralove-media/events/photo.jpg",
@@ -62,7 +62,7 @@ class TestPhotoUseCases:
         couple_id = uuid4()
         user_id = uuid4()
         event_id = uuid4()
-        
+
         request = AddPhotoRequest(
             s3_key="events/photo.jpg",
             original_url="http://localhost:9000/eralove-media/events/photo.jpg",
@@ -101,7 +101,7 @@ class TestPhotoUseCases:
         couple_id = uuid4()
         user_id = uuid4()
         event_id = uuid4()
-        
+
         request = AddPhotoRequest(
             s3_key="events/photo.jpg",
             original_url="http://localhost:9000/eralove-media/events/photo.jpg",
@@ -127,7 +127,7 @@ class TestPhotoUseCases:
         other_couple_id = uuid4()
         user_id = uuid4()
         event_id = uuid4()
-        
+
         request = AddPhotoRequest(
             s3_key="events/photo.jpg",
             original_url="http://localhost:9000/eralove-media/events/photo.jpg",

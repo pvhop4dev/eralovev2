@@ -64,7 +64,14 @@ export default function WelcomePage() {
       </p>
 
       {/* CTA Buttons */}
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+          justifyContent: "center",
+        }}
+      >
         <a
           href="/register"
           style={{

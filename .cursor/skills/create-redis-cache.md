@@ -37,6 +37,7 @@ class CacheService:
 ## 3. Use in Repository or Use Case
 
 ### Option A: Cache in Repository (for hot data)
+
 ```python
 class CachedEventRepository(EventRepository):
     def __init__(self, db_repo: PostgresEventRepository, cache: CacheService):
@@ -57,6 +58,7 @@ class CachedEventRepository(EventRepository):
 ```
 
 ### Option B: Cache in Use Case (for computed/aggregated data)
+
 ```python
 class GetDashboardUseCase:
     async def execute(self, user_id: UUID) -> DashboardResponse:
@@ -97,18 +99,19 @@ class CreateEventUseCase:
 
 ## TTL Reference
 
-| Data | TTL | Reason |
-|---|---|---|
-| Weather data | 1 hour | External API, rarely changes |
-| Daily horoscope | 24 hours | Changes daily |
-| Daily quote | 24 hours | Changes daily |
-| Dashboard summary | 5 min | Frequently updated |
-| User profile | 30 min | Rarely changes |
-| Event details | 15 min | Occasional updates |
-| Couple days count | 24 hours | Changes daily |
-| Online status | 5 min | Heartbeat refreshed |
+| Data              | TTL      | Reason                       |
+| ----------------- | -------- | ---------------------------- |
+| Weather data      | 1 hour   | External API, rarely changes |
+| Daily horoscope   | 24 hours | Changes daily                |
+| Daily quote       | 24 hours | Changes daily                |
+| Dashboard summary | 5 min    | Frequently updated           |
+| User profile      | 30 min   | Rarely changes               |
+| Event details     | 15 min   | Occasional updates           |
+| Couple days count | 24 hours | Changes daily                |
+| Online status     | 5 min    | Heartbeat refreshed          |
 
 ## Checklist
+
 - [ ] Cache key follows naming convention: `eralove:{domain}:{id}:{scope}`
 - [ ] TTL is appropriate for data freshness requirements
 - [ ] Cache invalidated on every write operation

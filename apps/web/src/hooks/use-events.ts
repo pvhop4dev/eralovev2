@@ -56,12 +56,15 @@ export function useEvents(year: number, month: number) {
   return useQuery<LoveEvent[]>({
     queryKey: ["events", year, month],
     queryFn: async () => {
-      const response = await apiClient.get<{ events: LoveEvent[] }>("/api/v1/events", {
-        params: {
-          year: String(year),
-          month: String(month),
+      const response = await apiClient.get<{ events: LoveEvent[] }>(
+        "/api/v1/events",
+        {
+          params: {
+            year: String(year),
+            month: String(month),
+          },
         },
-      });
+      );
       return response?.events || [];
     },
   });
@@ -113,6 +116,64 @@ export function useDeleteEvent() {
         queryKey: ["events", eventDate.getFullYear(), eventDate.getMonth() + 1],
       });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
+export interface CalendarHeaderData {
+  solar_date: {
+    iso: string;
+    day_name: string;
+    formatted: string;
+  };
+  lunar_date: string;
+  weather: {
+    temp: number;
+    condition: string;
+    emoji: string;
+    windspeed: number;
+  };
+  daily_quote: {
+    text: string;
+    author: string;
+  };
+  days_together: number;
+  horoscope: {
+    user: {
+      sign: string;
+      prediction: string;
+    };
+    partner: {
+      name: string;
+      sign: string;
+      prediction: string;
+    } | null;
+  };
+  feng_shui: {
+    direction: string;
+    lucky_color: string;
+    good_for: string;
+    avoid: string;
+  };
+}
+
+export function useCalendarHeader(
+  latitude?: number | null,
+  longitude?: number | null,
+) {
+  return useQuery<CalendarHeaderData>({
+    queryKey: ["calendarHeader", latitude, longitude],
+    queryFn: async () => {
+      const params: Record<string, string> = {};
+      if (latitude !== undefined && latitude !== null) {
+        params.latitude = String(latitude);
+      }
+      if (longitude !== undefined && longitude !== null) {
+        params.longitude = String(longitude);
+      }
+      return apiClient.get<CalendarHeaderData>("/api/v1/events/header", {
+        params,
+      });
     },
   });
 }

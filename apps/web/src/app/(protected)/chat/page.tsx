@@ -27,13 +27,18 @@ export default function ChatPage() {
   const [partnerTyping, setPartnerTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const currentUserId = typeof window !== "undefined" ? localStorage.getItem("user_id") : null;
+  const currentUserId =
+    typeof window !== "undefined" ? localStorage.getItem("user_id") : null;
 
   const fetchMessages = async () => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/messages?limit=50`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("access_token") || ""}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
+          },
+        },
       );
       if (res.ok) {
         const data = await res.json();
@@ -74,8 +79,8 @@ export default function ChatPage() {
   useSocketEvent<{ reader_id: string }>("chat:read", (data) => {
     setMessages((prev) =>
       prev.map((m) =>
-        m.sender_id !== data.reader_id ? { ...m, status: "read" } : m
-      )
+        m.sender_id !== data.reader_id ? { ...m, status: "read" } : m,
+      ),
     );
   });
 
@@ -103,7 +108,7 @@ export default function ChatPage() {
         message_type: type,
       });
       setInput("");
-      
+
       // Stop typing status immediately
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
@@ -123,13 +128,14 @@ export default function ChatPage() {
               Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
             },
             body: JSON.stringify({ content: msgContent, message_type: type }),
-          }
+          },
         );
         if (res.ok) {
           setInput("");
           fetchMessages();
         }
-      } catch {} finally {
+      } catch {
+      } finally {
         setIsSending(false);
       }
     }
@@ -137,19 +143,19 @@ export default function ChatPage() {
 
   const handleInputChange = (val: string) => {
     setInput(val);
-    
+
     const socket = getSocket();
     if (socket && socket.connected) {
       // Emit typing=true if not already typing
       if (!typingTimeoutRef.current) {
         socket.emit("chat:typing", { is_typing: true });
       }
-      
+
       // Clear previous timeout and set new one to emit typing=false after 2s of inactivity
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
-      
+
       typingTimeoutRef.current = setTimeout(() => {
         socket.emit("chat:typing", { is_typing: false });
         typingTimeoutRef.current = null;
@@ -183,8 +189,10 @@ export default function ChatPage() {
           `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/messages/read`,
           {
             method: "POST",
-            headers: { Authorization: `Bearer ${localStorage.getItem("access_token") || ""}` },
-          }
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
+            },
+          },
         );
       } catch {}
     }
@@ -197,7 +205,15 @@ export default function ChatPage() {
   const isMyMessage = (msg: ChatMessage) => msg.sender_id === currentUserId;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)", maxWidth: "800px", margin: "0 auto" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 64px)",
+        maxWidth: "800px",
+        margin: "0 auto",
+      }}
+    >
       {/* Header */}
       <div
         style={{
@@ -213,9 +229,13 @@ export default function ChatPage() {
           <Avatar fallback="💕" size="md" />
           <div>
             <div style={{ fontWeight: 600 }}>Chat Yêu Thương 💬</div>
-            <div style={{ fontSize: "0.75rem", color: "var(--muted-foreground)" }}>
+            <div
+              style={{ fontSize: "0.75rem", color: "var(--muted-foreground)" }}
+            >
               {partnerTyping ? (
-                <span style={{ color: "var(--pink-500)", fontWeight: 500 }}>Đang nhập tin nhắn... 💬</span>
+                <span style={{ color: "var(--pink-500)", fontWeight: 500 }}>
+                  Đang nhập tin nhắn... 💬
+                </span>
               ) : (
                 `${messages.length} tin nhắn`
               )}
@@ -257,7 +277,11 @@ export default function ChatPage() {
             gap: "0.75rem",
           }}
         >
-          <span style={{ fontSize: "0.8rem", color: "var(--muted-foreground)" }}>Gửi Love Touch:</span>
+          <span
+            style={{ fontSize: "0.8rem", color: "var(--muted-foreground)" }}
+          >
+            Gửi Love Touch:
+          </span>
           <button
             type="button"
             onClick={sendLoveTouch}
@@ -330,7 +354,13 @@ export default function ChatPage() {
         }}
       >
         {messages.length === 0 && (
-          <div style={{ textAlign: "center", padding: "3rem", color: "var(--muted-foreground)" }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "3rem",
+              color: "var(--muted-foreground)",
+            }}
+          >
             <div style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>💬</div>
             <p>Bắt đầu cuộc trò chuyện yêu thương!</p>
           </div>
@@ -359,16 +389,24 @@ export default function ChatPage() {
                   background: isLove
                     ? "var(--gradient-primary)"
                     : mine
-                    ? "var(--gradient-primary)"
-                    : "var(--card)",
+                      ? "var(--gradient-primary)"
+                      : "var(--card)",
                   color: mine || isLove ? "white" : "var(--foreground)",
                   border: mine ? "none" : "1px solid var(--border)",
-                  boxShadow: isLove ? "0 4px 20px rgba(255,107,157,0.3)" : "none",
+                  boxShadow: isLove
+                    ? "0 4px 20px rgba(255,107,157,0.3)"
+                    : "none",
                   position: "relative",
                 }}
               >
                 {isLove && (
-                  <div style={{ textAlign: "center", fontSize: "1.5rem", marginBottom: "0.25rem" }}>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      fontSize: "1.5rem",
+                      marginBottom: "0.25rem",
+                    }}
+                  >
                     💗
                   </div>
                 )}
@@ -383,7 +421,12 @@ export default function ChatPage() {
                     textAlign: "right",
                   }}
                 >
-                  {msg.created_at ? new Date(msg.created_at).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) : ""}
+                  {msg.created_at
+                    ? new Date(msg.created_at).toLocaleTimeString("vi-VN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : ""}
                   {mine && (
                     <span style={{ marginLeft: "0.25rem" }}>
                       {msg.status === "read" ? "✓✓" : "✓"}
@@ -391,7 +434,14 @@ export default function ChatPage() {
                   )}
                 </div>
                 {msg.is_pinned && (
-                  <span style={{ position: "absolute", top: "-8px", right: "-4px", fontSize: "0.7rem" }}>
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-8px",
+                      right: "-4px",
+                      fontSize: "0.7rem",
+                    }}
+                  >
                     📌
                   </span>
                 )}
@@ -450,4 +500,3 @@ export default function ChatPage() {
     </div>
   );
 }
-

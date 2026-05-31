@@ -103,6 +103,7 @@ class RegisterUserUseCase:
         if self.email_sender:
             try:
                 from infrastructure.email.email_service import send_verification_email
+
                 await send_verification_email(email_vo.value, otp)
             except Exception as e:
                 logger.warning("verification_email_failed", email=email_vo.value, error=str(e))
@@ -115,7 +116,7 @@ class RegisterUserUseCase:
         payload = decode_token(refresh_token, expected_type="refresh")
         expires_at = datetime.fromtimestamp(payload["exp"], tz=UTC)
         token_hash = hash_token(refresh_token)
-        
+
         token_entity = RefreshToken(
             id=None,
             user_id=created_user.id,

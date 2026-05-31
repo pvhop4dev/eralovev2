@@ -34,9 +34,7 @@ def _calculate_zodiac(dob: date) -> str:
         if sign == "Capricorn":
             if (month == 12 and day >= 22) or (month == 1 and day <= 19):
                 return sign
-        elif (month == start_m and day >= start_d) or (
-            month == end_m and day <= end_d
-        ):
+        elif (month == start_m and day >= start_d) or (month == end_m and day <= end_d):
             return sign
     return "Unknown"
 

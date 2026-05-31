@@ -49,7 +49,7 @@ export function useEventPhotos(eventId: string) {
     queryFn: async () => {
       if (!eventId) return [];
       const response = await apiClient.get<{ photos: EventPhoto[] }>(
-        `/api/v1/photos/event/${eventId}`
+        `/api/v1/photos/event/${eventId}`,
       );
       return response?.photos || [];
     },

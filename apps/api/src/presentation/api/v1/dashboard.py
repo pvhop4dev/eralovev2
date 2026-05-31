@@ -3,7 +3,6 @@
 GET /api/v1/dashboard — Aggregated dashboard data
 """
 
-
 from fastapi import APIRouter
 
 from infrastructure.database.repositories.couple_repository import PostgresCoupleRepository
@@ -75,6 +74,7 @@ async def get_dashboard(
         from infrastructure.database.repositories.event_repository import (
             PostgresLoveEventRepository,
         )
+
         event_repo = PostgresLoveEventRepository(session)
         upcoming = await event_repo.get_upcoming(couple.id, 7)
         flashback = await event_repo.get_past_events_on_this_day(couple.id)
@@ -83,4 +83,3 @@ async def get_dashboard(
         dashboard_data["memory_flashback"] = [e.to_dict() for e in flashback]
 
     return {"data": dashboard_data, "meta": None, "error": None}
-
