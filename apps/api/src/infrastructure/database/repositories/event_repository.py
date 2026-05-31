@@ -102,8 +102,12 @@ class PostgresLoveEventRepository(LoveEventRepository):
         model.event_time = event.event_time
         model.end_date = event.end_date
         model.location_name = event.location_name
+        model.latitude = event.latitude
+        model.longitude = event.longitude
         model.color = event.color
         model.icon = event.icon
+        model.is_recurring = event.is_recurring
+        model.recurrence_rule = event.recurrence_rule
         model.reminder_before = event.reminder_before
 
         await self.session.flush()

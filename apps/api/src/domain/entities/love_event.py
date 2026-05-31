@@ -101,7 +101,11 @@ class LoveEvent:
         event_time: time | None = None,
         end_date: date | None = None,
         location_name: str | None = None,
+        latitude: float | None = None,
+        longitude: float | None = None,
         color: str | None = None,
+        is_recurring: bool | None = None,
+        recurrence_rule: str | None = None,
         reminder_before: str | None = None,
     ) -> None:
         """Update event fields."""
@@ -124,8 +128,16 @@ class LoveEvent:
             self.end_date = end_date
         if location_name is not None:
             self.location_name = location_name
+        if latitude is not None:
+            self.latitude = latitude
+        if longitude is not None:
+            self.longitude = longitude
         if color is not None:
             self.color = color
+        if is_recurring is not None:
+            self.is_recurring = is_recurring
+        if recurrence_rule is not None:
+            self.recurrence_rule = recurrence_rule
         if reminder_before is not None:
             self.reminder_before = reminder_before
 
@@ -142,8 +154,11 @@ class LoveEvent:
             "event_time": self.event_time.isoformat() if self.event_time else None,
             "end_date": self.end_date.isoformat() if self.end_date else None,
             "location_name": self.location_name,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
             "icon": self.icon,
             "is_recurring": self.is_recurring,
+            "recurrence_rule": self.recurrence_rule,
             "reminder_before": self.reminder_before,
             "days_until": self.days_until,
             "created_at": self.created_at.isoformat() if self.created_at else None,

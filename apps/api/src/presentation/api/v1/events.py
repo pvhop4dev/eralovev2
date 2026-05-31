@@ -27,8 +27,11 @@ class CreateEventRequest(BaseModel):
     event_time: str | None = Field(None, description="HH:MM format")
     end_date: date | None = None
     location_name: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
     color: str | None = None
     is_recurring: bool = False
+    recurrence_rule: str | None = None
     reminder_before: str | None = None
 
 
@@ -40,7 +43,11 @@ class UpdateEventRequest(BaseModel):
     event_time: str | None = None
     end_date: date | None = None
     location_name: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
     color: str | None = None
+    is_recurring: bool | None = None
+    recurrence_rule: str | None = None
     reminder_before: str | None = None
 
 
@@ -73,8 +80,11 @@ async def create_event(
         event_time=event_time,
         end_date=body.end_date,
         location_name=body.location_name,
+        latitude=body.latitude,
+        longitude=body.longitude,
         color=body.color,
         is_recurring=body.is_recurring,
+        recurrence_rule=body.recurrence_rule,
         reminder_before=body.reminder_before,
     )
 

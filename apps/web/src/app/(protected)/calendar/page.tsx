@@ -1,32 +1,21 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Button } from "@/components/atoms/button";
 import { FormField } from "@/components/molecules/form-field";
 import { toast } from "sonner";
-
-interface EventPhoto {
-  id: string;
-  original_url: string;
-  caption: string | null;
-  photo_date: string | null;
-}
-
-interface LoveEvent {
-  id: string;
-  couple_id: string;
-  created_by: string;
-  title: string;
-  description: string | null;
-  event_type: string;
-  event_date: string;
-  event_time: string | null;
-  end_date: string | null;
-  location_name: string | null;
-  icon: string;
-  color: string | null;
-  is_recurring: boolean;
-}
+import {
+  useEvents,
+  useCreateEvent,
+  useUpdateEvent,
+  useDeleteEvent,
+  LoveEvent,
+} from "@/hooks/use-events";
+import {
+  useEventPhotos,
+  useAddPhoto,
+  useDeletePhoto,
+} from "@/hooks/use-photos";
 
 const EVENT_TYPES = [
   { id: "date", icon: "❤️", label: "Hẹn hò" },
@@ -34,6 +23,14 @@ const EVENT_TYPES = [
   { id: "travel", icon: "✈️", label: "Du lịch" },
   { id: "birthday", icon: "🎂", label: "Sinh nhật" },
   { id: "custom", icon: "⭐", label: "Khác" },
+];
+
+const REMINDER_OPTIONS = [
+  { value: "", label: "Không nhắc nhở" },
+  { value: "15m", label: "15 phút trước" },
+  { value: "1h", label: "1 giờ trước" },
+  { value: "1d", label: "1 ngày trước" },
+  { value: "1w", label: "1 tuần trước" },
 ];
 
 const DAYS = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
@@ -46,17 +43,15 @@ export default function CalendarPage() {
   const today = new Date();
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth()); // 0-indexed
-  const [events, setEvents] = useState<LoveEvent[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"month" | "week">("month");
   
   // Modals state
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDayDetail, setShowDayDetail] = useState(false);
   
-  const [isLoading, setIsLoading] = useState(false);
-  const [photosByEvent, setPhotosByEvent] = useState<Record<string, EventPhoto[]>>({});
-  const [isUploading, setIsUploading] = useState<string | null>(null); // maps to eventId
+  const [selectedEventIdForPhotos, setSelectedEventIdForPhotos] = useState<string | null>(null);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const [formData, setFormData] = useState({
@@ -66,6 +61,10 @@ export default function CalendarPage() {
     event_time: "",
     description: "",
     location_name: "",
+    latitude: "",
+    longitude: "",
+    is_recurring: false,
+    reminder_before: "",
   });
 
   const [editFormData, setEditFormData] = useState({
@@ -76,150 +75,115 @@ export default function CalendarPage() {
     event_time: "",
     description: "",
     location_name: "",
+    latitude: "",
+    longitude: "",
+    is_recurring: false,
+    reminder_before: "",
   });
 
+  // Queries & Mutations
+  const { data: events = [], isLoading: isEventsLoading } = useEvents(currentYear, currentMonth + 1);
+  const createEventMutation = useCreateEvent();
+  const updateEventMutation = useUpdateEvent();
+  const deleteEventMutation = useDeleteEvent();
+
+  const { data: eventPhotos = [] } = useEventPhotos(selectedEventIdForPhotos || "");
+  const addPhotoMutation = useAddPhoto();
+  const deletePhotoMutation = useDeletePhoto();
+
+  // Day detail auto-select
+  const selectedEvents = useMemo(() => {
+    return selectedDate ? events.filter((e) => e.event_date === selectedDate) : [];
+  }, [events, selectedDate]);
+
+  // Load photos when selectedEvents change or an event is selected
   useEffect(() => {
-    fetchEvents();
-  }, [currentYear, currentMonth]);
-
-  const getHeaders = () => ({
-    Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
-  });
-
-  const fetchEvents = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/events?year=${currentYear}&month=${currentMonth + 1}`,
-        { headers: getHeaders() }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setEvents(data.data?.events || []);
+    if (selectedEvents.length > 0) {
+      if (!selectedEventIdForPhotos || !selectedEvents.some((e) => e.id === selectedEventIdForPhotos)) {
+        setSelectedEventIdForPhotos(selectedEvents[0].id);
       }
-    } catch {
-      toast.error("Không thể tải danh sách sự kiện");
+    } else {
+      setSelectedEventIdForPhotos(null);
     }
-  };
-
-  const fetchPhotosForEvent = async (eventId: string) => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/photos/event/${eventId}`,
-        { headers: getHeaders() }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setPhotosByEvent((prev) => ({
-          ...prev,
-          [eventId]: data.data?.photos || [],
-        }));
-      }
-    } catch {}
-  };
+  }, [selectedEvents, selectedEventIdForPhotos]);
 
   const handleCreateEvent = async () => {
     if (!formData.title || !formData.event_date) return;
-    setIsLoading(true);
+    
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/events`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(),
-          },
-          body: JSON.stringify({
-            title: formData.title,
-            event_type: formData.event_type,
-            event_date: formData.event_date,
-            event_time: formData.event_time || undefined,
-            description: formData.description || undefined,
-            location_name: formData.location_name || undefined,
-          }),
-        }
-      );
-      if (res.ok) {
-        toast.success("Tạo sự kiện thành công! 🎉");
-        setShowCreate(false);
-        setFormData({ title: "", event_type: "date", event_date: "", event_time: "", description: "", location_name: "" });
-        fetchEvents();
-        if (selectedDate === formData.event_date) {
-          // Refresh details if open
-          setSelectedDate(formData.event_date);
-        }
-      } else {
-        const data = await res.json();
-        toast.error(data.error?.message || "Lỗi tạo sự kiện");
+      await createEventMutation.mutateAsync({
+        title: formData.title,
+        event_type: formData.event_type,
+        event_date: formData.event_date,
+        event_time: formData.event_time || undefined,
+        description: formData.description || undefined,
+        location_name: formData.location_name || undefined,
+        latitude: formData.latitude ? parseFloat(formData.latitude) : undefined,
+        longitude: formData.longitude ? parseFloat(formData.longitude) : undefined,
+        is_recurring: formData.is_recurring,
+        recurrence_rule: formData.is_recurring ? "YEARLY" : undefined,
+        reminder_before: formData.reminder_before || undefined,
+      });
+
+      toast.success("Tạo sự kiện thành công! 🎉");
+      setShowCreate(false);
+      setFormData({
+        title: "",
+        event_type: "date",
+        event_date: "",
+        event_time: "",
+        description: "",
+        location_name: "",
+        latitude: "",
+        longitude: "",
+        is_recurring: false,
+        reminder_before: "",
+      });
+      if (selectedDate === formData.event_date) {
+        setSelectedDate(formData.event_date);
       }
-    } catch {
-      toast.error("Lỗi kết nối đến máy chủ");
-    } finally {
-      setIsLoading(false);
+    } catch (err: any) {
+      toast.error(err.message || "Lỗi tạo sự kiện");
     }
   };
 
   const handleEditEvent = async () => {
     if (!editFormData.title || !editFormData.event_date) return;
-    setIsLoading(true);
+    
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/events/${editFormData.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(),
-          },
-          body: JSON.stringify({
-            title: editFormData.title,
-            event_type: editFormData.event_type,
-            event_date: editFormData.event_date,
-            event_time: editFormData.event_time || undefined,
-            description: editFormData.description || undefined,
-            location_name: editFormData.location_name || undefined,
-          }),
-        }
-      );
-      if (res.ok) {
-        toast.success("Cập nhật sự kiện thành công! ✏️");
-        setShowEdit(false);
-        fetchEvents();
-      } else {
-        const data = await res.json();
-        toast.error(data.error?.message || "Lỗi cập nhật sự kiện");
-      }
-    } catch {
-      toast.error("Lỗi kết nối đến máy chủ");
-    } finally {
-      setIsLoading(false);
+      await updateEventMutation.mutateAsync({
+        id: editFormData.id,
+        title: editFormData.title,
+        event_type: editFormData.event_type,
+        event_date: editFormData.event_date,
+        event_time: editFormData.event_time || undefined,
+        description: editFormData.description || undefined,
+        location_name: editFormData.location_name || undefined,
+        latitude: editFormData.latitude ? parseFloat(editFormData.latitude) : undefined,
+        longitude: editFormData.longitude ? parseFloat(editFormData.longitude) : undefined,
+        is_recurring: editFormData.is_recurring,
+        recurrence_rule: editFormData.is_recurring ? "YEARLY" : undefined,
+        reminder_before: editFormData.reminder_before || undefined,
+      });
+
+      toast.success("Cập nhật sự kiện thành công! ✏️");
+      setShowEdit(false);
+    } catch (err: any) {
+      toast.error(err.message || "Lỗi cập nhật sự kiện");
     }
   };
 
-  const handleDeleteEvent = async (eventId: string) => {
+  const handleDeleteEvent = async (event: LoveEvent) => {
     if (!confirm("Bạn có chắc chắn muốn xóa sự kiện này không?")) return;
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/events/${eventId}`,
-        {
-          method: "DELETE",
-          headers: getHeaders(),
-        }
-      );
-      if (res.ok) {
-        toast.success("Xóa sự kiện thành công! 🗑️");
-        fetchEvents();
-        // If no events left on that day, we could auto-close day details
-        const updatedSelectedEvents = events.filter((e) => e.id !== eventId && e.event_date === selectedDate);
-        if (updatedSelectedEvents.length === 0) {
-          setShowDayDetail(false);
-        }
-      } else {
-        const data = await res.json();
-        toast.error(data.error?.message || "Lỗi xóa sự kiện");
+      await deleteEventMutation.mutateAsync({ id: event.id, eventDate: event.event_date });
+      toast.success("Xóa sự kiện thành công! 🗑️");
+      const updatedSelectedEvents = events.filter((e) => e.id !== event.id && e.event_date === selectedDate);
+      if (updatedSelectedEvents.length === 0) {
+        setShowDayDetail(false);
       }
-    } catch {
-      toast.error("Lỗi kết nối đến máy chủ");
+    } catch (err: any) {
+      toast.error(err.message || "Lỗi xóa sự kiện");
     }
   };
 
@@ -228,7 +192,7 @@ export default function CalendarPage() {
     if (!fileList || fileList.length === 0) return;
     const file = fileList[0];
     
-    setIsUploading(eventId);
+    const toastId = toast.loading("Đang tải ảnh kỷ niệm lên...");
     try {
       // 1. Get presigned upload URL
       const presignedRes = await fetch(
@@ -237,7 +201,7 @@ export default function CalendarPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...getHeaders(),
+            Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
           },
           body: JSON.stringify({
             file_name: file.name,
@@ -272,59 +236,31 @@ export default function CalendarPage() {
       const s3Key = match ? match[1] : "";
 
       // 4. Save metadata to API
-      const saveRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/photos`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...getHeaders(),
-          },
-          body: JSON.stringify({
-            s3_key: s3Key,
-            original_url: file_url,
-            event_id: eventId,
-            caption: file.name.split(".")[0], // default caption as filename
-            photo_date: eventDate,
-          }),
-        }
-      );
+      await addPhotoMutation.mutateAsync({
+        s3_key: s3Key,
+        original_url: file_url,
+        event_id: eventId,
+        caption: file.name.split(".")[0],
+        photo_date: eventDate,
+      });
 
-      if (saveRes.ok) {
-        toast.success("Tải kỷ niệm lên thành công! 📸");
-        fetchPhotosForEvent(eventId);
-      } else {
-        throw new Error("Không thể lưu thông tin ảnh");
-      }
+      toast.success("Tải kỷ niệm lên thành công! 📸", { id: toastId });
     } catch (err: any) {
-      toast.error(err.message || "Đã xảy ra lỗi khi tải ảnh lên");
-    } finally {
-      setIsUploading(null);
+      toast.error(err.message || "Đã xảy ra lỗi khi tải ảnh lên", { id: toastId });
     }
   };
 
   const handleDeletePhoto = async (photoId: string, eventId: string) => {
     if (!confirm("Bạn có muốn xóa ảnh kỷ niệm này?")) return;
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/photos/${photoId}`,
-        {
-          method: "DELETE",
-          headers: getHeaders(),
-        }
-      );
-      if (res.ok) {
-        toast.success("Xóa ảnh kỷ niệm thành công! 🗑️");
-        fetchPhotosForEvent(eventId);
-      } else {
-        toast.error("Không thể xóa ảnh");
-      }
+      await deletePhotoMutation.mutateAsync({ id: photoId, eventId });
+      toast.success("Xóa ảnh kỷ niệm thành công! 🗑️");
     } catch {
-      toast.error("Lỗi kết nối");
+      toast.error("Không thể xóa ảnh");
     }
   };
 
-  // Calendar calculations
+  // Calendar math
   const calendarDays = useMemo(() => {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -334,8 +270,23 @@ export default function CalendarPage() {
     return days;
   }, [currentYear, currentMonth]);
 
-  const getEventsForDay = (day: number) => {
-    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  // Week View math
+  const currentWeekDays = useMemo(() => {
+    const current = selectedDate ? new Date(selectedDate) : new Date();
+    const dayOfWeek = current.getDay(); // 0 is Sunday
+    const startOfWeek = new Date(current);
+    startOfWeek.setDate(current.getDate() - dayOfWeek); // set to Sunday
+
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+      days.push(d);
+    }
+    return days;
+  }, [selectedDate]);
+
+  const getEventsForDate = (dateStr: string) => {
     return events.filter((e) => e.event_date === dateStr);
   };
 
@@ -359,15 +310,14 @@ export default function CalendarPage() {
     }
   };
 
-  const selectedEvents = selectedDate ? events.filter((e) => e.event_date === selectedDate) : [];
-
-  // Load photos when opening day detail
   const handleOpenDayDetail = (dateStr: string) => {
     setSelectedDate(dateStr);
     const dayEvents = events.filter((e) => e.event_date === dateStr);
-    dayEvents.forEach((event) => {
-      fetchPhotosForEvent(event.id);
-    });
+    if (dayEvents.length > 0) {
+      setSelectedEventIdForPhotos(dayEvents[0].id);
+    } else {
+      setSelectedEventIdForPhotos(null);
+    }
     setShowDayDetail(true);
   };
 
@@ -381,6 +331,10 @@ export default function CalendarPage() {
       event_time: event.event_time ? event.event_time.slice(0, 5) : "",
       description: event.description || "",
       location_name: event.location_name || "",
+      latitude: event.latitude ? String(event.latitude) : "",
+      longitude: event.longitude ? String(event.longitude) : "",
+      is_recurring: event.is_recurring,
+      reminder_before: event.reminder_before || "",
     });
     setShowEdit(true);
   };
@@ -395,41 +349,73 @@ export default function CalendarPage() {
           </h1>
           <p className="text-muted-foreground text-xs md:text-sm mt-1">Lưu trữ các cột mốc tình yêu và kỷ niệm đẹp đẽ</p>
         </div>
-        <Button
-          size="sm"
-          className="shadow-rose hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
-          onClick={() => {
-            setFormData((prev) => ({ ...prev, event_date: todayStr }));
-            setShowCreate(true);
-          }}
-        >
-          + Sự kiện mới
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Month/Week Toggle */}
+          <div className="flex bg-muted p-1 rounded-xl border border-border">
+            <button
+              onClick={() => setViewMode("month")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === "month"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Tháng
+            </button>
+            <button
+              onClick={() => setViewMode("week")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === "week"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Tuần
+            </button>
+          </div>
+
+          <Button
+            size="sm"
+            className="shadow-rose hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, event_date: selectedDate || todayStr }));
+              setShowCreate(true);
+            }}
+          >
+            + Sự kiện mới
+          </Button>
+        </div>
       </div>
 
       {/* Main Calendar Card */}
-      <div
-        className="bg-card rounded-2xl p-6 shadow-card border border-border"
-        style={{ transition: "box-shadow 0.3s ease" }}
-      >
+      <div className="bg-card rounded-2xl p-6 shadow-card border border-border transition-all">
         {/* Navigation month/year */}
-        <div className="flex justify-between items-center mb-6">
-          <button
-            onClick={prevMonth}
-            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground text-lg transition-all duration-200 active:scale-95"
-          >
-            ←
-          </button>
-          <span className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
-            ✨ {MONTHS[currentMonth]} {currentYear}
-          </span>
-          <button
-            onClick={nextMonth}
-            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground text-lg transition-all duration-200 active:scale-95"
-          >
-            →
-          </button>
-        </div>
+        {viewMode === "month" ? (
+          <div className="flex justify-between items-center mb-6">
+            <button
+              onClick={prevMonth}
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground text-lg transition-all duration-200 active:scale-95"
+            >
+              ←
+            </button>
+            <span className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
+              ✨ {MONTHS[currentMonth]} {currentYear}
+            </span>
+            <button
+              onClick={nextMonth}
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground text-lg transition-all duration-200 active:scale-95"
+            >
+              →
+            </button>
+          </div>
+        ) : (
+          <div className="flex justify-between items-center mb-6">
+            <span className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
+              📅 Tuần Hiện Tại (Tháng {currentMonth + 1} {currentYear})
+            </span>
+            <p className="text-xs text-muted-foreground">Nhấp vào một ngày để xem chi tiết</p>
+          </div>
+        )}
 
         {/* Days Header */}
         <div className="grid grid-cols-7 gap-1 mb-2">
@@ -443,58 +429,116 @@ export default function CalendarPage() {
           ))}
         </div>
 
-        {/* Calendar Days Grid */}
-        <div className="grid grid-cols-7 gap-1">
-          {calendarDays.map((day, i) => {
-            if (day === null) return <div key={`empty-${i}`} className="min-h-[50px] md:min-h-[70px]" />;
-            const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-            const dayEvents = getEventsForDay(day);
-            const isToday = dateStr === todayStr;
+        {/* Month View Grid */}
+        {viewMode === "month" ? (
+          <div className="grid grid-cols-7 gap-1">
+            {isEventsLoading ? (
+              Array.from({ length: 35 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="min-h-[55px] md:min-h-[75px] bg-muted/20 animate-pulse rounded-xl"
+                />
+              ))
+            ) : (
+              calendarDays.map((day, i) => {
+                if (day === null) return <div key={`empty-${i}`} className="min-h-[50px] md:min-h-[70px]" />;
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                const dayEvents = getEventsForDate(dateStr);
+                const isToday = dateStr === todayStr;
+                const isSelected = dateStr === selectedDate;
 
-            return (
-              <button
-                key={day}
-                type="button"
-                onClick={() => handleOpenDayDetail(dateStr)}
-                className={`group relative min-h-[55px] md:min-h-[75px] p-2 text-left flex flex-col justify-between rounded-xl border border-transparent transition-all duration-200 cursor-pointer ${
-                  isToday
-                    ? "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/30"
-                    : "hover:bg-muted hover:border-border"
-                }`}
-              >
-                <span
-                  className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full transition-all ${
-                    isToday
-                      ? "bg-gradient-to-r from-rose-400 to-pink-500 text-white shadow-rose"
-                      : "text-foreground group-hover:text-rose-500"
+                return (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => handleOpenDayDetail(dateStr)}
+                    className={`group relative min-h-[55px] md:min-h-[75px] p-2 text-left flex flex-col justify-between rounded-xl border border-transparent transition-all duration-200 cursor-pointer ${
+                      isSelected
+                        ? "bg-rose-100/30 dark:bg-rose-950/20 border-rose-300 dark:border-rose-900"
+                        : isToday
+                        ? "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/30"
+                        : "hover:bg-muted hover:border-border"
+                    }`}
+                  >
+                    <span
+                      className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full transition-all ${
+                        isToday
+                          ? "bg-gradient-to-r from-rose-400 to-pink-500 text-white shadow-rose"
+                          : "text-foreground group-hover:text-rose-500"
+                      }`}
+                    >
+                      {day}
+                    </span>
+
+                    {dayEvents.length > 0 && (
+                      <div className="w-full flex flex-wrap gap-1 mt-1">
+                        {dayEvents.slice(0, 3).map((e, j) => (
+                          <span key={j} title={e.title} className="text-sm p-0.5 rounded-md hover:scale-115 transition-transform">
+                            {e.icon}
+                          </span>
+                        ))}
+                        {dayEvents.length > 3 && (
+                          <span className="text-[10px] font-bold text-muted-foreground self-center">
+                            +{dayEvents.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        ) : (
+          /* Week View Grid */
+          <div className="grid grid-cols-7 gap-1">
+            {currentWeekDays.map((dateObj, i) => {
+              const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`;
+              const dayEvents = getEventsForDate(dateStr);
+              const isToday = dateStr === todayStr;
+              const isSelected = dateStr === selectedDate;
+
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => handleOpenDayDetail(dateStr)}
+                  className={`group relative min-h-[90px] p-3 text-left flex flex-col justify-between rounded-xl border border-transparent transition-all duration-200 cursor-pointer ${
+                    isSelected
+                      ? "bg-rose-100/30 dark:bg-rose-950/20 border-rose-300 dark:border-rose-900"
+                      : isToday
+                      ? "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/30"
+                      : "bg-muted/10 border-border hover:bg-muted"
                   }`}
                 >
-                  {day}
-                </span>
+                  <span
+                    className={`text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full transition-all ${
+                      isToday
+                        ? "bg-gradient-to-r from-rose-400 to-pink-500 text-white shadow-rose"
+                        : "text-foreground group-hover:text-rose-500"
+                    }`}
+                  >
+                    {dateObj.getDate()}
+                  </span>
 
-                {/* Event list snippet */}
-                {dayEvents.length > 0 && (
-                  <div className="w-full flex flex-wrap gap-1 mt-1">
-                    {dayEvents.slice(0, 3).map((e, j) => (
-                      <span
-                        key={j}
-                        title={e.title}
-                        className="text-sm p-0.5 rounded-md hover:scale-110 transition-transform"
-                      >
-                        {e.icon}
-                      </span>
+                  <div className="w-full mt-2 flex flex-col gap-1">
+                    {dayEvents.slice(0, 2).map((e, j) => (
+                      <div key={j} className="text-[10px] bg-rose-100/40 dark:bg-rose-950/30 border border-rose-200/50 dark:border-rose-900/30 rounded-md px-1 py-0.5 truncate flex items-center gap-1 text-foreground/80">
+                        <span>{e.icon}</span>
+                        <span className="truncate">{e.title}</span>
+                      </div>
                     ))}
-                    {dayEvents.length > 3 && (
-                      <span className="text-[10px] font-bold text-muted-foreground self-center">
-                        +{dayEvents.length - 3}
+                    {dayEvents.length > 2 && (
+                      <span className="text-[9px] font-bold text-muted-foreground pl-1">
+                        +{dayEvents.length - 2} sự kiện khác
                       </span>
                     )}
                   </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Day Detail Slide-up/Modal */}
@@ -538,7 +582,7 @@ export default function CalendarPage() {
             ) : (
               <div className="space-y-6">
                 {selectedEvents.map((event) => {
-                  const photos = photosByEvent[event.id] || [];
+                  const isCurrentPhotosEvent = selectedEventIdForPhotos === event.id;
                   return (
                     <div
                       key={event.id}
@@ -551,8 +595,13 @@ export default function CalendarPage() {
                             {event.icon}
                           </span>
                           <div>
-                            <h4 className="font-heading font-bold text-base text-foreground">
+                            <h4 className="font-heading font-bold text-base text-foreground flex items-center gap-1.5">
                               {event.title}
+                              {event.is_recurring && (
+                                <span className="text-xs bg-rose-100 dark:bg-rose-950/30 text-rose-500 px-2 py-0.5 rounded-full font-bold">
+                                  🔁 Hàng năm
+                                </span>
+                              )}
                             </h4>
                             <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground mt-1">
                               {event.event_time && (
@@ -560,6 +609,12 @@ export default function CalendarPage() {
                               )}
                               {event.location_name && (
                                 <span className="flex items-center gap-1">📍 {event.location_name}</span>
+                              )}
+                              {event.latitude && event.longitude && (
+                                <span className="flex items-center gap-1 opacity-70">🧭 ({event.latitude}, {event.longitude})</span>
+                              )}
+                              {event.reminder_before && (
+                                <span className="flex items-center gap-1">🔔 {REMINDER_OPTIONS.find(o => o.value === event.reminder_before)?.label || event.reminder_before}</span>
                               )}
                             </div>
                           </div>
@@ -575,7 +630,7 @@ export default function CalendarPage() {
                             ✏️
                           </button>
                           <button
-                            onClick={() => handleDeleteEvent(event.id)}
+                            onClick={() => handleDeleteEvent(event)}
                             title="Xóa"
                             className="p-2 hover:bg-muted rounded-full text-muted-foreground hover:text-red-500 transition-all cursor-pointer text-xs"
                           >
@@ -594,13 +649,18 @@ export default function CalendarPage() {
                       {/* Attached memories / photos */}
                       <div className="space-y-2 pt-2">
                         <div className="flex justify-between items-center">
-                          <h5 className="text-xs font-bold tracking-wider text-muted-foreground uppercase flex items-center gap-1">
-                            📸 Ảnh Kỷ Niệm ({photos.length})
-                          </h5>
+                          <button
+                            onClick={() => setSelectedEventIdForPhotos(event.id)}
+                            className={`text-xs font-bold tracking-wider uppercase flex items-center gap-1 transition-all ${
+                              isCurrentPhotosEvent ? "text-rose-500" : "text-muted-foreground hover:text-foreground"
+                            }`}
+                          >
+                            📸 Ảnh Kỷ Niệm {isCurrentPhotosEvent && `(${eventPhotos.length})`}
+                          </button>
                           
                           {/* File Uploader button */}
                           <label className="text-xs font-semibold text-rose-500 hover:underline cursor-pointer flex items-center gap-1">
-                            {isUploading === event.id ? (
+                            {addPhotoMutation.isPending && isCurrentPhotosEvent ? (
                               <span className="flex items-center gap-1 animate-pulse">
                                 ⏳ Đang tải...
                               </span>
@@ -611,46 +671,55 @@ export default function CalendarPage() {
                               type="file"
                               accept="image/*"
                               className="hidden"
-                              disabled={isUploading !== null}
+                              disabled={addPhotoMutation.isPending}
                               ref={(el) => { fileInputRefs.current[event.id] = el; }}
                               onChange={(e) => handleFileChange(event.id, event.event_date, e.target.files)}
                             />
                           </label>
                         </div>
 
-                        {/* Photo list grid */}
-                        {photos.length === 0 ? (
-                          <div
-                            onClick={() => fileInputRefs.current[event.id]?.click()}
-                            className="border-2 border-dashed border-border hover:border-rose-300 dark:hover:border-rose-900/50 rounded-xl p-6 text-center cursor-pointer transition-all duration-200"
-                          >
-                            <span className="text-2xl block mb-1 opacity-70">📷</span>
-                            <p className="text-xs text-muted-foreground">Kéo thả hoặc nhấp vào đây để đăng ảnh kỷ niệm của hai bạn</p>
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-3 gap-2">
-                            {photos.map((photo) => (
-                              <div
-                                key={photo.id}
-                                className="group relative aspect-square rounded-xl overflow-hidden bg-muted border border-border shadow-sm"
-                              >
-                                <img
-                                  src={photo.original_url}
-                                  alt={photo.caption || "Memory"}
-                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                  loading="lazy"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeletePhoto(photo.id, event.id)}
-                                  className="absolute top-1 right-1 w-6 h-6 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer text-[10px]"
-                                  title="Xóa ảnh"
+                        {/* Photo list grid (on-demand loading) */}
+                        {isCurrentPhotosEvent ? (
+                          eventPhotos.length === 0 ? (
+                            <div
+                              onClick={() => fileInputRefs.current[event.id]?.click()}
+                              className="border-2 border-dashed border-border hover:border-rose-300 dark:hover:border-rose-900/50 rounded-xl p-6 text-center cursor-pointer transition-all duration-200"
+                            >
+                              <span className="text-2xl block mb-1 opacity-70">📷</span>
+                              <p className="text-xs text-muted-foreground">Kéo thả hoặc nhấp vào đây để đăng ảnh kỷ niệm của hai bạn</p>
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-3 gap-2">
+                              {eventPhotos.map((photo) => (
+                                <div
+                                  key={photo.id}
+                                  className="group relative aspect-square rounded-xl overflow-hidden bg-muted border border-border shadow-sm"
                                 >
-                                  ✕
-                                </button>
-                              </div>
-                            ))}
-                          </div>
+                                  <img
+                                    src={photo.original_url}
+                                    alt={photo.caption || "Memory"}
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                    loading="lazy"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeletePhoto(photo.id, event.id)}
+                                    className="absolute top-1 right-1 w-6 h-6 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer text-[10px]"
+                                    title="Xóa ảnh"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )
+                        ) : (
+                          <button
+                            onClick={() => setSelectedEventIdForPhotos(event.id)}
+                            className="w-full py-2 bg-muted/40 hover:bg-muted/70 rounded-xl border border-border/50 text-xs font-semibold text-muted-foreground cursor-pointer transition-all"
+                          >
+                            Hiển thị album ảnh kỷ niệm 📁
+                          </button>
                         )}
                       </div>
                     </div>
@@ -745,6 +814,59 @@ export default function CalendarPage() {
                 onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
               />
 
+              {/* Coordinates Input */}
+              <div className="grid grid-cols-2 gap-3 bg-muted/20 border border-border p-3 rounded-xl">
+                <FormField
+                  label="Vĩ độ (Latitude)"
+                  name="latitude"
+                  type="number"
+                  placeholder="21.0285"
+                  value={formData.latitude}
+                  onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                />
+                <FormField
+                  label="Kinh độ (Longitude)"
+                  name="longitude"
+                  type="number"
+                  placeholder="105.8542"
+                  value={formData.longitude}
+                  onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                />
+              </div>
+
+              {/* Reminder options */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1.5 uppercase tracking-wider">
+                    Nhắc nhở
+                  </label>
+                  <select
+                    value={formData.reminder_before}
+                    onChange={(e) => setFormData({ ...formData, reminder_before: e.target.value })}
+                    className="w-full rounded-xl border border-border bg-input text-foreground text-sm p-3 focus:outline-rose-400 focus:outline focus:outline-2"
+                  >
+                    {REMINDER_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Recurrence Checkbox */}
+                <div className="flex items-center pt-5 pl-2">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={formData.is_recurring}
+                      onChange={(e) => setFormData({ ...formData, is_recurring: e.target.checked })}
+                      className="w-4 h-4 rounded-md border-border text-rose-500 focus:ring-rose-400"
+                    />
+                    Lặp lại hàng năm 🔁
+                  </label>
+                </div>
+              </div>
+
               <div>
                 <label className="text-xs font-semibold text-muted-foreground block mb-1 uppercase tracking-wider">
                   Mô tả sự kiện
@@ -762,7 +884,11 @@ export default function CalendarPage() {
                 <Button variant="ghost" onClick={() => setShowCreate(false)} className="flex-1">
                   Hủy
                 </Button>
-                <Button onClick={handleCreateEvent} isLoading={isLoading} className="flex-2 shadow-rose">
+                <Button
+                  onClick={handleCreateEvent}
+                  isLoading={createEventMutation.isPending}
+                  className="flex-2 shadow-rose"
+                >
                   Tạo sự kiện 🎉
                 </Button>
               </div>
@@ -840,6 +966,58 @@ export default function CalendarPage() {
                 onChange={(e) => setEditFormData({ ...editFormData, location_name: e.target.value })}
               />
 
+              {/* Coordinates Input */}
+              <div className="grid grid-cols-2 gap-3 bg-muted/20 border border-border p-3 rounded-xl">
+                <FormField
+                  label="Vĩ độ (Latitude)"
+                  name="latitude"
+                  type="number"
+                  placeholder="21.0285"
+                  value={editFormData.latitude}
+                  onChange={(e) => setEditFormData({ ...editFormData, latitude: e.target.value })}
+                />
+                <FormField
+                  label="Kinh độ (Longitude)"
+                  name="longitude"
+                  type="number"
+                  placeholder="105.8542"
+                  value={editFormData.longitude}
+                  onChange={(e) => setEditFormData({ ...editFormData, longitude: e.target.value })}
+                />
+              </div>
+
+              {/* Reminder & Recurrence */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1.5 uppercase tracking-wider">
+                    Nhắc nhở
+                  </label>
+                  <select
+                    value={editFormData.reminder_before}
+                    onChange={(e) => setEditFormData({ ...editFormData, reminder_before: e.target.value })}
+                    className="w-full rounded-xl border border-border bg-input text-foreground text-sm p-3 focus:outline-rose-400 focus:outline focus:outline-2"
+                  >
+                    {REMINDER_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center pt-5 pl-2">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.is_recurring}
+                      onChange={(e) => setEditFormData({ ...editFormData, is_recurring: e.target.checked })}
+                      className="w-4 h-4 rounded-md border-border text-rose-500 focus:ring-rose-400"
+                    />
+                    Lặp lại hàng năm 🔁
+                  </label>
+                </div>
+              </div>
+
               <div>
                 <label className="text-xs font-semibold text-muted-foreground block mb-1 uppercase tracking-wider">
                   Mô tả sự kiện
@@ -856,7 +1034,11 @@ export default function CalendarPage() {
                 <Button variant="ghost" onClick={() => setShowEdit(false)} className="flex-1">
                   Hủy
                 </Button>
-                <Button onClick={handleEditEvent} isLoading={isLoading} className="flex-2 shadow-rose">
+                <Button
+                  onClick={handleEditEvent}
+                  isLoading={updateEventMutation.isPending}
+                  className="flex-2 shadow-rose"
+                >
                   Lưu thay đổi ✏️
                 </Button>
               </div>

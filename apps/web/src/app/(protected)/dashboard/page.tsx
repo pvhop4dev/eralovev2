@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar } from "@/components/atoms/avatar";
 import { Button } from "@/components/atoms/button";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
+import { useDashboardData, useCheckinMood } from "@/hooks/use-dashboard";
 
 const MOOD_EMOJIS = ["😊", "😍", "🥰", "😢", "😤", "😴", "🤗", "😎"];
 
@@ -15,7 +17,10 @@ const SHORTCUTS = [
 ];
 
 export default function DashboardPage() {
-  const [dashboard, setDashboard] = useState<any>(null);
+  const queryClient = useQueryClient();
+  const { data: dashboard, isLoading } = useDashboardData();
+  const checkinMoodMutation = useCheckinMood();
+
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [moodNote, setMoodNote] = useState("");
   const [moodSubmitted, setMoodSubmitted] = useState(false);
@@ -43,7 +48,7 @@ export default function DashboardPage() {
       if (res.ok) {
         setShowUnmatchModal(false);
         setConfirmText("");
-        fetchDashboard();
+        queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       } else {
         const data = await res.json();
         setUnmatchError(data.error?.message || "Không thể hủy kết nối");
@@ -55,44 +60,13 @@ export default function DashboardPage() {
     }
   };
 
-
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
-
-  const fetchDashboard = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/dashboard`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
-          },
-        }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setDashboard(data.data);
-      }
-    } catch {
-      // Offline — show placeholder
-    }
-  };
-
   const submitMood = async () => {
     if (!selectedMood) return;
     try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/mood/checkin`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
-          },
-          body: JSON.stringify({ mood_emoji: selectedMood, mood_note: moodNote || undefined }),
-        }
-      );
+      await checkinMoodMutation.mutateAsync({
+        mood_emoji: selectedMood,
+        mood_note: moodNote || undefined,
+      });
       setMoodSubmitted(true);
     } catch {}
   };
@@ -104,6 +78,14 @@ export default function DashboardPage() {
   const daysCount = dashboard?.days_together || 0;
   const upcomingEvents = dashboard?.upcoming_events || [];
   const memoryFlashback = dashboard?.memory_flashback || [];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-10 h-10 border-4 border-rose-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "1.5rem", maxWidth: "800px", margin: "0 auto" }}>
