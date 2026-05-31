@@ -37,6 +37,10 @@ out/
 *.swo
 *~
 
+# Agent local settings (each dev configures their own)
+.claude/settings.local.json
+.cursor/settings.json
+
 # OS
 .DS_Store
 Thumbs.db

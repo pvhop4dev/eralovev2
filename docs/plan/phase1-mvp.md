@@ -12,38 +12,38 @@ Deliver core couples experience: Auth, Match, Dashboard, Calendar (basic), Chat 
 ### Tasks
 
 #### 1.1 Monorepo Setup
-- [ ] Initialize Turborepo with `apps/web`, `apps/api`, `packages/`
-- [ ] Configure `turbo.json` with build/dev/lint/test pipelines
-- [ ] Root `package.json` with workspace scripts
-- [ ] Root `pyproject.toml` for Python workspace
+- [x] Initialize Turborepo with `apps/web`, `apps/api`, `packages/`
+- [x] Configure `turbo.json` with build/dev/lint/test pipelines
+- [x] Root `package.json` with workspace scripts
+- [x] Root `pyproject.toml` for Python workspace
 
 #### 1.2 Frontend Scaffolding (Next.js)
-- [ ] `npx create-next-app@latest` with App Router, TypeScript, Tailwind
-- [ ] Configure Tailwind with Eralove design tokens (colors, fonts, spacing)
-- [ ] Install & configure: Zustand, TanStack Query, Framer Motion, next-intl
-- [ ] Setup `next/font` for Nunito + Inter
-- [ ] Create base layout with metadata
-- [ ] Setup API client (`lib/api-client.ts`) with interceptors for auth
-- [ ] Setup ESLint + Prettier configs
+- [x] `npx create-next-app@latest` with App Router, TypeScript, Tailwind
+- [x] Configure Tailwind with Eralove design tokens (colors, fonts, spacing)
+- [x] Install & configure: Zustand, TanStack Query, Framer Motion, next-intl
+- [x] Setup `next/font` for Nunito + Inter
+- [x] Create base layout with metadata
+- [x] Setup API client (`lib/api-client.ts`) with interceptors for auth
+- [x] Setup ESLint + Prettier configs
 
 #### 1.3 Backend Scaffolding (Python FastAPI)
-- [ ] Initialize FastAPI project with `pyproject.toml`
-- [ ] Setup project structure (domain/application/infrastructure/presentation)
-- [ ] Configure SQLAlchemy 2.0 async engine + session
-- [ ] Configure Alembic for migrations
-- [ ] Setup Redis client
+- [x] Initialize FastAPI project with `pyproject.toml`
+- [x] Setup project structure (domain/application/infrastructure/presentation)
+- [x] Configure SQLAlchemy 2.0 async engine + session
+- [x] Configure Alembic for migrations
+- [x] Setup Redis client
 - [ ] Setup S3 client (boto3) with presigned URL helper
-- [ ] Setup dependency injection container
-- [ ] Configure CORS, rate limiter middleware
-- [ ] Setup pytest + pytest-asyncio
-- [ ] Dockerfile for development
+- [x] Setup dependency injection container
+- [x] Configure CORS, rate limiter middleware
+- [x] Setup pytest + pytest-asyncio
+- [x] Dockerfile for development
 
 #### 1.4 Infrastructure
-- [ ] `docker-compose.yml` with PostgreSQL, Redis, MinIO (local S3), Mailpit
-- [ ] Create initial Alembic migration (users table)
+- [x] `docker-compose.yml` with PostgreSQL, Redis, MinIO (local S3), Mailpit
+- [x] Create initial Alembic migration (users table)
 - [ ] Seed script for development data
-- [ ] `.env.example` with all required variables
-- [ ] `.gitignore` for both Python and Node.js
+- [x] `.env.example` with all required variables
+- [x] `.gitignore` for both Python and Node.js
 
 #### Deliverable
 - `turbo dev` starts both frontend (port 3000) and backend (port 8000)
